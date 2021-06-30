@@ -1,0 +1,169 @@
+title: Главная
+icon: mdi:home-assistant
+
+cards:
+  - type: vertical-stack
+    title: Дата и время
+    cards:
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: sensor.date
+            type: custom:multiple-entity-row
+            name: Сейчас
+            icon: mdi:calendar-clock
+            state_header: Дата
+            entities:
+            - entity: sensor.sun_next_rising
+              format: relative
+              hide_unavailable: true
+            - entity: sensor.sun_next_setting
+              format: relative
+              hide_unavailable: true
+            - entity: sensor.time
+              name: Время
+  
+  - type: vertical-stack
+    title: Качество воздуха
+    cards:
+      - type: custom:mini-graph-card
+        color_thresholds:
+          - value: 450
+            color: "#00FFFF"
+          - value: 600
+            color: "#00FF00"
+          - value: 800
+            color: "#FFFF00"
+          - value: 1000
+            color: "#FFD700"
+          - value: 1200
+            color: "#FF0000"
+          - value: 9999
+            color: "#800000"
+        animate: true
+        line_width: 2
+        hour24: true
+        points_per_hour: 1
+        group_by: hour
+        entities:
+          - entity: sensor.cleargrass_air_co2a
+            name: CO2
+      - type: horizontal-stack
+        cards:
+          - type: custom:mini-graph-card
+            color_thresholds:
+              - value: 3
+                color: "#00FFFF"
+              - value: 12
+                color: "#00FF00"
+              - value: 25
+                color: "#FFFF00"
+              - value: 75
+                color: "#FFD700"
+              - value: 150
+                color: "#FF0000"
+              - value: 999
+                color: "#800000"
+            animate: true
+            line_width: 2
+            hour24: true
+            points_per_hour: 1
+            group_by: hour
+            entities:
+              - entity: sensor.cleargrass_air_pm25
+                name: PM2.5
+          - type: custom:mini-graph-card
+            color_thresholds:
+              - value: 60
+                color: "#00FFFF"
+              - value: 100
+                color: "#00FF00"
+              - value: 200
+                color: "#FFFF00"
+              - value: 500
+                color: "#FF0000"
+            animate: true
+            line_width: 2
+            hour24: true
+            points_per_hour: 1
+            group_by: hour
+            entities:
+              - entity: sensor.cleargrass_air_tvoc
+                name: tVOC
+      
+# - type: entities
+#   show_header_toggle: false
+#   entities:
+#     - entity: sensor.maria_db_size
+#       name: Объем БД
+#       icon: mdi:database
+
+
+  - type: vertical-stack
+    title: Raspberry Pi
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            name: Загрузка CPU
+            unit: '%'
+            entity: sensor.processor_use_percent
+            severity:
+              green: 0
+              yellow: 60
+              red: 85
+         
+          - type: gauge
+            name: Загрузка ОЗУ
+            unit: '%'
+            entity: sensor.memory_use_percent
+            severity:
+              green: 0
+              yellow: 60
+              red: 85
+              
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            name: Температура CPU
+            unit: '°C'
+            entity: sensor.cpu_temperature
+            min: 20
+            max: 100
+            severity:
+              green: 0
+              yellow: 50
+              red: 60
+          
+          - type: gauge
+            name: Температура GPU
+            unit: '°C'
+            entity: sensor.gpu_temperature
+            min: 20
+            max: 100
+            severity:
+              green: 0
+              yellow: 50
+              red: 60
+            
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            name: Диск заполнен
+            unit: '%'
+            entity: sensor.disk_use_percent
+            severity:
+              green: 0
+              yellow: 60
+              red: 85    
+            
+          - type: gauge
+            name: Свободное место
+            unit: 'Гб'
+            entity: sensor.disk_free
+            min: 0
+            max: 458
+            severity:
+              red: 1
+              yellow: 20
+              green: 100

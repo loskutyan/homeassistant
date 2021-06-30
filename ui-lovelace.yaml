@@ -1,0 +1,4 @@
+title: My Home Assistant - Raspberry Pi 3B
+views:
+  - !include lovelace/01_now.yaml
+  - !include lovelace/02_weather.yaml
