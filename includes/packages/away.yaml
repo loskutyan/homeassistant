@@ -1,0 +1,161 @@
+away:
+  input_boolean:
+    somebody_home:
+      name: 'Дома'
+      initial: 'on'
+
+
+  binary_sensor:
+    - platform: template
+      sensors:
+        some_motion_at_home:
+          friendly_name: 'Движение дома'
+          device_class: motion
+          value_template: >
+            {{ states('binary_sensor.hallway_motion_sensor_occupancy')
+               or states('binary_sensor.kitchen_motion_sensor_occupancy') }}
+          delay_off:
+            minutes: 10
+          icon_template: >
+            {% if is_state("binary_sensor.some_motion_at_home", "on") %}
+              mdi:motion-sensor
+            {% else %}
+              mdi:motion-sensor-off
+            {% endif %}
+  
+  
+  switch:
+    - platform: template
+      switches:
+        somebody_home:
+          friendly_name: 'Дома'
+          value_template: >
+            {{ states('input_boolean.somebody_home') }}
+          turn_on:
+            service: input_boolean.turn_on
+            data:
+              entity_id: input_boolean.somebody_home
+          turn_off:
+            service: input_boolean.turn_off
+            data:
+              entity_id: input_boolean.somebody_home
+          icon_template: >
+            {% if is_state('input_boolean.somebody_home', 'on') %}
+              mdi:home-account
+            {% else %}
+              mdi:home-minus
+            {% endif %}
+
+
+  script:
+    turn_off_all_lights:
+      sequence:
+        - service: light.turn_off
+          entity_id: light.bedroom_aqara_led_bulb
+        - service: switch.turn_off
+          target:
+            entity_id:
+              - switch.kidsroom_lights_common_switch_left
+              - switch.kidsroom_wall_lights_switch
+              - switch.kitchen_lights_switch_left
+              - switch.kitchen_lights_switch_right
+              - switch.hallway_lights_switch
+        - service: notify.tg
+          data:
+            message: >
+              {{ "\U0001F4A1" }} Весь свет выключен
+
+
+  automation:
+    - id: 'Все ушли из дома'
+      alias: everyone_left_home
+      trigger:
+        - platform: state
+          entity_id: input_boolean.somebody_home
+          from: 'on'
+          to: 'off'
+      action:
+        - service: script.turn_on
+          entity_id: script.turn_off_all_lights
+
+    - id: 'Входная дверь закрылась, запуск таймера проверки отсутствия'
+      alias: left_home_check_timer_start
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.hallway_door_sensor_contact
+          from: 'on'
+          to: 'off'
+      condition:
+        - condition: state
+          entity_id: binary_sensor.phone_presence
+          state: 'on'
+        - condition: state
+          entity_id: timer.left_home_by_phone_presence_after_door_closed
+          state: 'idle'
+      action:
+        - service: timer.start
+          entity_id: timer.left_home_by_phone_presence_after_door_closed
+
+    - id: 'Телефон вышел из сети после закрытия двери'
+      alias: phone_left_home_after_door_was_closed
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.phone_presence
+          from: 'on'
+          to: 'off'
+      condition:
+        - condition: state
+          entity_id: timer.left_home_by_phone_presence_after_door_closed
+          state: 'active'
+      action:
+        - service: input_boolean.turn_off
+          entity_id: input_boolean.somebody_home
+        - service: timer.finish
+          entity_id: timer.left_home_by_phone_presence_after_door_closed
+
+    - id: 'Кто-то дома после закрытия двери'
+      alias: somebody_home_after_door_was_closed
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.some_motion_at_home
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.hallway_door_sensor_contact
+          to: 'on'
+        - platform: state
+          entity_id: sensor.bedroom_aqara_button_action
+          to:
+            - 'single'
+            - 'double'
+            - 'hold'
+      condition:
+        - condition: state
+          entity_id: timer.left_home_by_phone_presence_after_door_closed
+          state: 'active'
+      action:
+        - service: input_boolean.turn_on
+          entity_id: input_boolean.somebody_home
+        - service: timer.finish
+          entity_id: timer.left_home_by_phone_presence_after_door_closed
+
+    - id: 'Кто-то вернулся домой'
+      alias: somebody_back_home
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.hallway_door_sensor_contact
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.phone_presence
+          from: 'off'
+          to: 'on'
+      condition:
+        - condition: state
+          entity_id: input_boolean.somebody_home
+          state: 'off'
+      action:
+        - service: input_boolean.turn_on
+          entity_id: input_boolean.somebody_home
+        - service: notify.tg
+          data:
+            message: >
+              {{ "\U0001F596" }} С возвращением!

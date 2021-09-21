@@ -1,0 +1,3 @@
+- name: tg
+  platform: telegram
+  chat_id: !secret chat_id_loskutyan

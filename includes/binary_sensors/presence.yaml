@@ -1,0 +1,9 @@
+- platform: template
+  sensors:
+    phone_presence:
+      friendly_name: 'Телефон дома'
+      device_class: presence
+      value_template: >
+        {% set mac = states('sensor.phone_mac_address') %}
+        {{ states('device_tracker.' ~ mac) == 'home' }}
+      icon_template: mdi:cellphone

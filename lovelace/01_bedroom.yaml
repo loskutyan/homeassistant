@@ -1,0 +1,217 @@
+title: Спальня
+icon: mdi:bed-king
+
+cards:
+  - type: vertical-stack
+    title: Aqara Hub
+    cards:
+      - type: entities
+        entities:
+          - entity: input_number.aqara_hub_volume
+            type: custom:slider-entity-row
+            name: 'Громкость'
+            step: 2
+            hide_state: false
+          - entity: light.miio_gateway
+            type: custom:slider-entity-row
+            name: 'Яркость'
+            step: 1
+  
+  
+  - type: vertical-stack
+    title: Очиститель воздуха
+    cards:
+      - type: entities
+        entities:
+          - entity: fan.mijia_airpurifier_bedroom
+            name: 'Mi Fresh Air Ventilator A1'
+            
+          - entity: switch.bedroom_airpurifier_forced_ventilation
+            name: 'Режим проветривания'
+            state_color: true
+          
+          - entity: input_select.bedroom_airpurifier_mode
+            name: 'Режим работы'
+              
+          - type: conditional
+            conditions:
+              - entity: input_select.bedroom_airpurifier_mode
+                state: 'Favorite'
+            row:
+              entity: switch.bedroom_airpurifier_favourite_speed_smart_control
+              name: 'Умное управление скоростью'
+              state_color: true
+          
+          - type: conditional
+            conditions:
+              - entity: input_select.bedroom_airpurifier_mode
+                state: 'Favorite'
+            row:
+              entity: input_number.bedroom_airpurifier_favorite_speed
+              name: 'Заданная скорость'
+              type: custom:slider-entity-row
+              hide_state: false
+          
+          - entity: sensor.bedroom_airpurifier_current_speed
+            name: 'Текущая скорость'
+          
+          - entity: switch.bedroom_airpurifier_ptc
+            name: 'Нагреватель'
+            type: custom:multiple-entity-row
+            toggle: true
+            state_color: true
+            entities:
+            - entity: binary_sensor.bedroom_airpurifier_ptc_status
+              name: 'Статус'
+              icon: true
+          
+          - entity: switch.bedroom_airpurifier_display
+            name: 'Дисплей'
+            state_color: true
+          
+          - entity: switch.bedroom_airpurifier_buzzer
+            name: 'Звук'
+            state_color: true
+
+  
+  - type: vertical-stack
+    title: Свет
+    cards:
+      - entity: light.bedroom_aqara_led_bulb
+        type: custom:light-entity-card
+        header: 'Лампа Aqara'
+        shorten_cards: true
+        brightness: true
+        color_temp: true
+        full_width_sliders: true
+        show_slider_percent: true
+        effects_list: false
+  
+  
+  - type: vertical-stack
+    title: Климат
+    cards:      
+      - type: custom:mini-graph-card
+        color_thresholds:
+          - value: 21
+            color: "#00FFFF"
+          - value: 23
+            color: "#00FF00"
+          - value: 25
+            color: "#FFFF00"
+          - value: 27
+            color: "#FFD700"
+          - value: 29
+            color: "#FF0000"
+          - value: 32
+            color: "#800000"
+        animate: true
+        line_width: 2
+        hour24: true
+        points_per_hour: 1
+        group_by: hour
+        lower_bound: 18
+        upper_bound: 30
+        show:
+          legend: false
+        entities:
+          - entity: sensor.bedroom_average_temperature
+            name: Температура
+            
+      - type: custom:mini-graph-card
+        color_thresholds:
+          - value: 20
+            color: "#FF0000"
+          - value: 30
+            color: "#FFD700"
+          - value: 45
+            color: "#00FF00"
+          - value: 60
+            color: "#00FFFF"
+          - value: 80
+            color: "#0000FF"
+        animate: true
+        line_width: 2
+        hour24: true
+        points_per_hour: 1
+        group_by: hour
+        lower_bound: 15
+        upper_bound: 75
+        entities:
+          - entity: sensor.bedroom_average_humidity
+            name: Влажность
+
+
+  - type: vertical-stack
+    title: Качество воздуха
+    cards:      
+      - type: custom:mini-graph-card
+        color_thresholds:
+          - value: 450
+            color: "#00FFFF"
+          - value: 600
+            color: "#00FF00"
+          - value: 800
+            color: "#FFFF00"
+          - value: 1000
+            color: "#FFD700"
+          - value: 1200
+            color: "#FF0000"
+          - value: 9999
+            color: "#800000"
+        animate: true
+        line_width: 2
+        hour24: true
+        points_per_hour: 1
+        group_by: hour
+        lower_bound: 400
+        upper_bound: 1200
+        entities:
+          - entity: sensor.cleargrass_air_co2a
+            name: CO2
+      
+      - type: custom:mini-graph-card
+        color_thresholds:
+          - value: 1
+            color: "#00FFFF"
+          - value: 3
+            color: "#00FF00"
+          - value: 10
+            color: "#FFFF00"
+          - value: 25
+            color: "#FFD700"
+          - value: 75
+            color: "#FF0000"
+          - value: 999
+            color: "#800000"
+        animate: true
+        line_width: 2
+        hour24: true
+        points_per_hour: 1
+        group_by: hour
+        lower_bound: 0.0
+        upper_bound: 20.0
+        entities:
+          - entity: sensor.cleargrass_air_pm25
+            name: PM2.5
+      
+      - type: custom:mini-graph-card
+        color_thresholds:
+          - value: 60
+            color: "#00FFFF"
+          - value: 100
+            color: "#00FF00"
+          - value: 200
+            color: "#FFFF00"
+          - value: 500
+            color: "#FF0000"
+        animate: true
+        line_width: 2
+        hour24: true
+        points_per_hour: 1
+        group_by: hour
+        lower_bound: 0
+        upper_bound: 500
+        entities:
+          - entity: sensor.cleargrass_air_tvoc
+            name: tVOC

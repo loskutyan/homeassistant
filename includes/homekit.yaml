@@ -1,0 +1,52 @@
+- port: 21170
+  filter:
+    include_domains:
+      - vacuum
+      - humidifier
+      - light
+    include_entities:
+      - sensor.cleargrass_air_co2a
+      - sensor.cleargrass_air_pm25
+      - sensor.qingping_air_lite_co2a
+      - sensor.qingping_air_lite_pm25
+      - sensor.bedroom_average_temperature
+      - sensor.bedroom_average_humidity
+      - sensor.kidsroom_average_temperature
+      - sensor.kidsroom_average_humidity
+      - switch.hallway_lights_switch
+      - switch.kidsroom_lights_common_switch_left
+      - switch.kidsroom_wall_lights_switch
+      - switch.kitchen_lights_switch_left
+      - switch.kitchen_lights_switch_right
+    include_entity_globs:
+      - binary_sensor.*water_leak_sensor*
+      - switch.*_forced_ventilation
+  entity_config:
+    vacuum.roborock_s5max:
+      name: 'Пылесос'
+    light.bedroom_aqara_led_bulb:
+      name: 'Торшер'
+    fan.mijia_airpurifier_bedroom:
+      name: 'Бризер'
+    fan.mijia_airpurifier_kidsroom:
+      name: 'Бризер'
+    switch.hallway_lights_switch:
+      name: 'Свет'
+    switch.kidsroom_lights_common_switch_left:
+      name: 'Люстра'
+    switch.kidsroom_wall_lights_switch:
+      name: 'Бра'
+    switch.kitchen_lights_switch_left:
+      name: 'Бра'
+    switch.kitchen_lights_switch_right:
+      name: 'Люстра'
+    binary_sensor.water_leak_sensor_5269:
+      name: 'Протечка под душевой кабиной'
+    binary_sensor.water_leak_sensor_53CD:
+      name: 'Протечка под стиральной машиной'
+    binary_sensor.water_leak_sensor_5414:
+      name: 'Протечка под мойкой'
+    switch.bedroom_airpurifier_forced_ventilation:
+      name: 'Проветривание'
+    switch.kidsroom_airpurifier_forced_ventilation:
+      name: 'Проветривание'

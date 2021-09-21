@@ -1,0 +1,19 @@
+- platform: template
+  sensors:
+    vacuum_main_brush_left:
+      friendly_name: 'Roborock S5 Max Часов уборки до замены основной щетки'
+      value_template: "{{ state_attr('vacuum.roborock_s5max', 'main_brush_left') | float }}"
+      availability_template: "{{ state_attr('vacuum.roborock_s5max', 'main_brush_left') | float > 0 }}"
+      icon_template: mdi:robot-vacuum
+    
+    vacuum_side_brush_left:
+      friendly_name: 'Roborock S5 Max Часов уборки до замены боковой щетки'
+      value_template: "{{ state_attr('vacuum.roborock_s5max', 'side_brush_left') | float }}"
+      availability_template: "{{ state_attr('vacuum.roborock_s5max', 'side_brush_left') | float > 0 }}"
+      icon_template: mdi:robot-vacuum
+    
+    vacuum_filter_left:
+      friendly_name: 'Roborock S5 Max Часов уборки до замены фильтра'
+      value_template: "{{ state_attr('vacuum.roborock_s5max', 'filter_left') | float }}"
+      availability_template: "{{ state_attr('vacuum.roborock_s5max', 'filter_left') | float > 0 }}"
+      icon_template: mdi:air-filter

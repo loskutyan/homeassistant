@@ -1,0 +1,11 @@
+- platform: xiaomi_miio_airpurifier
+  name: mijia_airpurifier_bedroom
+  host: 192.168.1.176
+  token: 50b486f69aa3b0c6af71f7db7f8f8b97
+  model: dmaker.airfresh.a1
+  
+- platform: xiaomi_miio_airpurifier
+  name: mijia_airpurifier_kidsroom
+  host: 192.168.1.177
+  token: 868bb0ee63738f25dc4a0d058da4b151
+  model: dmaker.airfresh.a1

@@ -1,0 +1,89 @@
+aqara_hub:
+  input_number:
+    aqara_hub_volume:
+      name: 'Aqara Hub Громкость'
+      min: 0
+      max: 100
+      step: 1
+      icon: mdi:volume-high
+  
+  
+  sensor:
+    - platform: template
+      sensors:
+        aqara_hub_volume:
+          friendly_name: 'Aqara Hub Громкость'
+          unit_of_measurement: '%'
+          value_template: "{{ (state_attr('media_player.miio_gateway', 'volume_level') | float * 100) | int }}"
+          icon_template: >
+            {% set vol = states(sensor.aqara_hub_volume) | int %}
+            {% if vol > 60  %}
+              mdi:volume-high
+            {% elif vol > 25 %}
+              mdi:volume-medium
+            {% elif vol > 0 %}
+              mdi:volume-low
+            {% else %}
+              mdi: volume-mute
+            {% endif %}
+
+  
+  automation:
+    - id: 'Выбор громкости хаба Aqara'
+      alias: select_aqara_hub_volume
+      trigger:
+        platform: state
+        entity_id: input_number.aqara_hub_volume
+      action:
+        - service: media_player.volume_set
+          entity_id: media_player.miio_gateway
+          data_template:
+            volume_level: "{{ min(max(states('input_number.aqara_hub_volume') | float / 100, 0), 1) }}"
+  
+    - id: 'Отслеживание громкости хаба Aqara'
+      alias: tracking_aqara_hub_volume
+      trigger:
+        platform: state
+        entity_id: sensor.aqara_hub_volume
+      action:
+        service: input_number.set_value
+        entity_id: input_number.aqara_hub_volume
+        data_template:
+          value: "{{ (state_attr('media_player.miio_gateway', 'volume_level') | float * 100) | int }}"
+    
+    - id: 'Звонок в дверь - рингтон'
+      alias: rings_elevator_hall_doorbell_ringtone
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.elevator_hall_aqara_button_action
+          to: 'single'
+        - platform: state
+          entity_id: sensor.elevator_hall_aqara_button_action
+          to: 'double'
+      condition:
+        - condition: time
+          after: '09:00:00'
+          before: '23:00:00'
+      action:
+        - service: media_player.play_media
+          entity_id: media_player.miio_gateway
+          data:
+            media_content_type: 'music'
+            media_content_id: 10
+    
+    - id: 'Звонок в дверь - уведомление'
+      alias: rings_elevator_hall_doorbell_notify
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.elevator_hall_aqara_button_action
+          to: 'single'
+        - platform: state
+          entity_id: sensor.elevator_hall_aqara_button_action
+          to: 'double'
+      action:
+        - service: notify.tg
+          data:
+            message: >
+              {{ "\U0001F514" }} Кто-то позвонил в дверь в {{ states('sensor.time_date') }}

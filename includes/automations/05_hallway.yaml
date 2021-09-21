@@ -1,0 +1,123 @@
+- id: 'Дверь в прихожей открылась'
+  alias: hallway_door_was_opened
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.hallway_door_sensor_contact
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: timer.hallway_door_time_to_close
+      state: 'idle'
+  action:
+    - service: notify.tg
+      data:
+        message: >
+          {{"\U0001F6AA"}} Входная дверь открыта в {{ states('sensor.time_date') }}
+    - service: timer.start
+      entity_id: timer.hallway_door_left_opened
+    - service: timer.start
+      entity_id: timer.hallway_door_time_to_close
+      
+- id: 'Проверка закрытия двери'
+  alias: hallway_door_was_closed_check
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: timer.hallway_door_left_opened
+      from: 'active'
+      to: 'idle'
+  condition:
+    - condition: state
+      entity_id: binary_sensor.hallway_door_sensor_contact
+      state: 'on'
+  action:
+    - service: notify.tg
+      data:
+        message: >
+          {{"\U0001F6AA"}} {{ states('sensor.time') }} - входная дверь все еще открыта!
+    - service: timer.start
+      entity_id: timer.hallway_door_left_opened
+
+- id: 'Свет при движении в прихожей'
+  alias: hallway_motion_lights_turn_on
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.hallway_motion_sensor_occupancy
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.hallway_door_sensor_contact
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: input_boolean.kids_asleep
+      state: 'off'
+    - condition: numeric_state
+      entity_id: sensor.hallway_motion_sensor_illuminance_lux
+      below: 100
+    - condition: state
+      entity_id: switch.hallway_lights_switch
+      state: 'off'
+  action:
+    - service: switch.turn_on
+      entity_id: switch.hallway_lights_switch
+
+- id: 'Включить таймер выключения света в прихожей'
+  alias: hallway_lights_on_timer_start
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: switch.hallway_lights_switch
+      to: 'on'
+  action:
+    - service: timer.start
+      entity_id: timer.hallway_lights_turn_off_without_motion
+
+- id: 'Выключить таймер выключения света в прихожей'
+  alias: hallway_lights_on_timer_finish
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: switch.hallway_lights_switch
+      from: 'on'
+      to: 'off'
+  action:
+    - service: timer.finish
+      entity_id: timer.hallway_lights_turn_off_without_motion
+
+- id: 'Продлить таймер выключения света при движении в прихожей'
+  alias: hallway_motion_lights_timer_reset
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.hallway_motion_sensor_occupancy
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.hallway_motion_sensor_occupancy
+      from: 'off'
+      for: '00:01:30'
+  condition:
+    - condition: state
+      entity_id: timer.hallway_lights_turn_off_without_motion
+      state: 'active'
+  action:
+    - service: timer.start
+      entity_id: timer.hallway_lights_turn_off_without_motion
+
+- id: 'Выключить свет в прихожей если нет движения'
+  alias: hallway_no_motion_lights_turn_off
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: timer.hallway_lights_turn_off_without_motion
+      from: 'active'
+      to: 'idle'
+  condition:
+    - condition: state
+      entity_id: switch.hallway_lights_switch
+      state: 'on'
+  action:
+    - service: switch.turn_off
+      entity_id: switch.hallway_lights_switch
+

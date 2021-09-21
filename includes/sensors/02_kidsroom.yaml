@@ -1,0 +1,83 @@
+- platform: template
+  sensors:
+    qingping_air_lite_co2a:
+      friendly_name: 'Qingping air lite CO²'
+      device_class: carbon_dioxide
+      unit_of_measurement: 'ppm'
+      value_template: "{{ state_attr('sensor.cgdn1_04cf8c28a7b6', 'environmen_co2_density') | float }}"
+      availability_template: "{{ state_attr('sensor.cgdn1_04cf8c28a7b6', 'environmen_co2_density') | float > 100 }}"
+      icon_template: mdi:molecule-co2
+      
+    qingping_air_lite_pm25:
+      friendly_name: 'Qingping air lite PM2.5'
+      device_class: pm25
+      unit_of_measurement: 'ppm'
+      value_template: "{{ state_attr('sensor.cgdn1_04cf8c28a7b6', 'environmen_pm2_5_density') | float }}"
+      icon_template: mdi:grain
+      
+    qingping_air_lite_pm10:
+      friendly_name: 'Qingping air lite PM10'
+      device_class: pm10
+      unit_of_measurement: 'ppm'
+      value_template: "{{ state_attr('sensor.cgdn1_04cf8c28a7b6', 'environmen_pm10_density') | float }}"
+      icon_template: mdi:grain
+      
+    qingping_air_lite_temperature:
+      friendly_name: 'Qingping air lite Температура'
+      device_class: temperature
+      unit_of_measurement: '°C'
+      value_template: "{{ state_attr('sensor.cgdn1_04cf8c28a7b6', 'environmen_temperature') | float }}"
+      availability_template: "{{ state_attr('sensor.cgdn1_04cf8c28a7b6', 'environmen_temperature') | float > 10 }}"
+      icon_template: mdi:thermometer
+      
+    qingping_air_lite_humidity:
+      friendly_name: 'Qingping air lite Влажность'
+      device_class: humidity
+      unit_of_measurement: '%'
+      value_template: "{{ state_attr('sensor.cgdn1_04cf8c28a7b6', 'environmen_relative_humidity') | float }}"
+      availability_template: "{{ state_attr('sensor.cgdn1_04cf8c28a7b6', 'environmen_relative_humidity') | float > 5 }}"
+      icon_template: mdi:water-percent
+    
+    kidsroom_aqara_temperature:
+      friendly_name: 'Kidsroom Aqara Температура'
+      device_class: temperature
+      unit_of_measurement: '°C'
+      value_template: "{{ states('sensor.kidsroom_aqara_air_sensor_temperature') | float }}"
+      availability_template: "{{ states('sensor.kidsroom_aqara_air_sensor_temperature') | float > 10 }}"
+      icon_template: mdi:thermometer
+    
+    kidsroom_aqara_humidity:
+      friendly_name: 'Kidsroom Aqara Влажность'
+      device_class: humidity
+      unit_of_measurement: '%'
+      value_template: "{{ states('sensor.kidsroom_aqara_air_sensor_humidity') | float }}"
+      availability_template: "{{ states('sensor.kidsroom_aqara_air_sensor_humidity') | float > 5 }}"
+      icon_template: mdi:water-percent
+    
+    kidsroom_average_temperature:
+      friendly_name: 'Температура'
+      device_class: temperature
+      unit_of_measurement: '°C'
+      value_template: >
+        {% set qingping_temperature = states('sensor.qingping_air_lite_temperature') | float %}
+        {% set aqara_temperature = states('sensor.kidsroom_aqara_temperature') | float %}
+        {{ (aqara_temperature + qingping_temperature) / 2 }}
+      availability_template: >
+        {% set qingping_temperature = states('sensor.qingping_air_lite_temperature') | float %}
+        {% set aqara_temperature = states('sensor.kidsroom_aqara_temperature') | float %}
+        {{ aqara_temperature > 10 and qingping_temperature > 10 }}
+      icon_template: mdi:thermometer
+      
+    kidsroom_average_humidity:
+      friendly_name: 'Влажность'
+      device_class: humidity
+      unit_of_measurement: '%'
+      value_template: >
+        {% set qingping_humidity = states('sensor.qingping_air_lite_humidity') | float %}
+        {% set aqara_humidity = states('sensor.kidsroom_aqara_humidity') | float %}
+        {{ (aqara_humidity + qingping_humidity) / 2 }}
+      availability_template: >
+        {% set qingping_humidity = states('sensor.qingping_air_lite_humidity') | float %}
+        {% set aqara_humidity = states('sensor.kidsroom_aqara_humidity') | float %}
+        {{ aqara_humidity > 5 and qingping_humidity > 5 }}
+      icon_template: mdi:water-percent

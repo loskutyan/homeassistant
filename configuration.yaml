@@ -15,19 +15,21 @@ logger:
      libav.rtsp: critical
 
 
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 192.168.1.10
+
+
+miio_gateway:
+  host: 192.168.1.20
+  port: 54321
+
+
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
-homekit:
-  - port: 21170
-    filter:
-      include_domains:
-        - vacuum
-        - humidifier
-      include_entities:
-        - sensor.cleargrass_air_co2a
-        - sensor.cleargrass_air_pm25
-        - sensor.cpu_temperature
+homekit: !include includes/homekit.yaml
 
 lovelace:
   mode: yaml
@@ -40,15 +42,40 @@ lovelace:
       type: module
     - url: /hacsfiles/stack-in-card/stack-in-card.js
       type: module
+    - url: /hacsfiles/vacuum-card/vacuum-card.js
+      type: module
+    - url: /hacsfiles/lovelace-slider-entity-row/slider-entity-row.js
+      type: module
+    - url: /hacsfiles/light-entity-card/light-entity-card.js
+      type: module
+      
+device_tracker:
+  - platform: padavan_tracker
+    consider_home: 180
+    interval_seconds: 5
+    url: http://192.168.1.1:81/
+    username: !secret mi3g_username
+    password: !secret mi3g_password
 
 # Text to speech
 tts:
   - platform: google_translate
 
+telegram_bot:
+  - platform: polling
+    api_key: !secret tg_bot_api_key
+    allowed_chat_ids:
+      - !secret chat_id_loskutyan
+
+notify: !include includes/notify.yaml
+timer: !include includes/timer.yaml
 group: !include includes/groups.yaml
-automation: !include includes/automations.yaml
-script: !include includes/scripts.yaml
 scene: !include includes/scenes.yaml
 recorder: !include includes/recorder.yaml
+fan: !include includes/fan.yaml
 
+automation:  !include_dir_merge_list includes/automations
+binary_sensor: !include_dir_merge_list includes/binary_sensors
+script: !include_dir_merge_named includes/scripts
 sensor: !include_dir_merge_list includes/sensors
+switch: !include_dir_merge_list includes/switches

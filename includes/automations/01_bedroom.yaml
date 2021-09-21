@@ -1,0 +1,200 @@
+- id: 'Включить лампу Aqara в спальне в будний день утром'
+  alias: bedroom_aqara_led_bulb_workday_morning_turn_on
+  initial_state: true
+  trigger:
+    - platform: time
+      at: '09:30'
+  condition:
+    - condition: state
+      entity_id: light.bedroom_aqara_led_bulb
+      state: 'off'
+    - condition: state
+      entity_id: binary_sensor.workday_sensor
+      state: 'on'
+    - condition: state
+      entity_id: input_boolean.somebody_home
+      state: 'on'
+  action:
+    - service: light.turn_on
+      entity_id: light.bedroom_aqara_led_bulb
+      data:
+        brightness: 51
+        color_temp: 325
+        transition: 5
+    - service: timer.start
+      entity_id: timer.bedroom_aqara_led_bulb_brightness_increase_interval
+
+- id: 'Включить лампу Aqara в спальне в выходной день утром'
+  alias: bedroom_aqara_led_bulb_weekend_morning_turn_on
+  initial_state: true
+  trigger:
+    - platform: time
+      at: '10:30'
+  condition:
+    - condition: state
+      entity_id: light.bedroom_aqara_led_bulb
+      state: 'off'
+    - condition: state
+      entity_id: binary_sensor.workday_sensor
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.somebody_home
+      state: 'on'
+  action:
+    - service: light.turn_on
+      entity_id: light.bedroom_aqara_led_bulb
+      data:
+        brightness: 51
+        color_temp: 325
+        transition: 5
+    - service: timer.start
+      entity_id: timer.bedroom_aqara_led_bulb_brightness_increase_interval
+
+- id: 'Прибавить яркость лампы Aqara в спальне утром'
+  alias: bedroom_aqara_led_bulb_morning_increase_brightness
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: timer.bedroom_aqara_led_bulb_brightness_increase_interval
+      from: 'active'
+      to: 'idle'
+  condition:
+    - condition: state
+      entity_id: light.bedroom_aqara_led_bulb
+      state: 'on'
+    - condition: numeric_state
+      entity_id: light.bedroom_aqara_led_bulb
+      attribute: brightness
+      below: 154
+  action:
+    - service: light.turn_on
+      entity_id: light.bedroom_aqara_led_bulb
+      data:
+        brightness: >
+          {{ min(state_attr('light.bedroom_aqara_led_bulb', 'brightness') + 5, 255) }}
+        color_temp: >
+          {{ max(state_attr('light.bedroom_aqara_led_bulb', 'color_temp') - 7, 150) }}
+        transition: 5
+    - service: timer.start
+      entity_id: timer.bedroom_aqara_led_bulb_brightness_increase_interval
+
+- id: 'Включить лампу Aqara в спальне вечером'
+  alias: bedroom_aqara_led_bulb_evening_turn_on
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: input_boolean.somebody_home
+      to: 'on'
+    - platform: numeric_state
+      entity_id: sun.sun
+      attribute: elevation
+      below: 4
+  condition:
+    - condition: state
+      entity_id: input_boolean.somebody_home
+      state: 'on'
+    - condition: numeric_state
+      entity_id: sun.sun
+      attribute: elevation
+      below: 4
+    - condition: state
+      entity_id: light.bedroom_aqara_led_bulb
+      state: 'off'
+  action:
+    - service: light.turn_on
+      entity_id: light.bedroom_aqara_led_bulb
+      data:
+        brightness: 230
+        color_temp: 325
+        transition: 2
+
+- id: 'Убавить яркость лампы Aqara в спальне вечером'
+  alias: bedroom_aqara_led_bulb_evening_decrease_brightness
+  initial_state: true
+  trigger:
+    - platform: time
+      at: '00:00'
+  condition:
+    - condition: state
+      entity_id: light.bedroom_aqara_led_bulb
+      state: 'on'
+  action:
+    - service: light.turn_on
+      entity_id: light.bedroom_aqara_led_bulb
+      data:
+        brightness: 192
+        color_temp: 360
+        transition: 5
+
+- id: 'Минимальная яркость лампы Aqara в спальне вечером'
+  alias: bedroom_aqara_led_bulb_evening_min_brightness
+  initial_state: true
+  trigger:
+    - platform: time
+      at: '01:00'
+  condition:
+    - condition: state
+      entity_id: light.bedroom_aqara_led_bulb
+      state: 'on'
+  action:
+    - service: light.turn_on
+      entity_id: light.bedroom_aqara_led_bulb
+      data:
+        brightness: 154
+        color_temp: 395
+        transition: 5
+
+- id: 'Включить/выключить лампу Aqara в спальне'
+  alias: bedroom_aqara_led_bulb_button_toggle
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: sensor.bedroom_aqara_button_action
+      to: 'single'
+  action:
+    - service: light.toggle
+      entity_id: light.bedroom_aqara_led_bulb
+      data:
+        transition: 2
+      
+- id: 'Прибавить яркость лампы Aqara в спальне'
+  alias: bedroom_aqara_led_bulb_button_add_brightness
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: sensor.bedroom_aqara_button_action
+      to: 'double'
+  condition:
+    - condition: state
+      entity_id: light.bedroom_aqara_led_bulb
+      state: 'on'
+  action:
+    - service: light.turn_on
+      entity_id: light.bedroom_aqara_led_bulb
+      data_template:
+        brightness: >
+          {{ min(state_attr('light.bedroom_aqara_led_bulb', 'brightness') + 51, 255) }}
+        transition: 1
+
+- id: 'Отход ко сну в спальне'
+  alias: bedroom_going_to_sleep
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: sensor.bedroom_aqara_button_action
+      to: 'hold'
+  action:
+    - service: input_select.select_option
+      entity_id: input_select.bedroom_airpurifier_mode
+      data:
+        option: 'Favorite'
+    - service: timer.start
+      entity_id: timer.bedroom_airpurifier_fixed_speed
+    - service: input_number.set_value
+      entity_id: input_number.bedroom_airpurifier_favorite_speed
+      data:
+        value: 60
+    - service: light.turn_off
+      entity_id: light.bedroom_aqara_led_bulb
+      data:
+        transition: 1

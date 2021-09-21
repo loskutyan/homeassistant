@@ -1,0 +1,23 @@
+title: Кухня
+icon: mdi:food-fork-drink
+
+cards:
+  - type: vertical-stack
+    title: Свет
+    cards:
+      - type: glance
+        state_color: true
+        entities:
+          - entity: switch.kitchen_lights_switch_right
+            name: 'Люстра'
+            show_last_changed: true
+            icon: mdi:ceiling-light
+            tap_action:
+              action: toggle
+              
+          - entity: switch.kitchen_lights_switch_left
+            name: 'Бра'
+            show_last_changed: true
+            icon: mdi:coach-lamp
+            tap_action:
+              action: toggle

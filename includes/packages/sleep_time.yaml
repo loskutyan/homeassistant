@@ -1,0 +1,59 @@
+sleep_time:
+  input_boolean:
+    kids_asleep:
+      name: 'Ребенок спит'
+      initial: 'off'
+
+
+  switch:
+    - platform: template
+      switches:
+        kids_asleep:
+          friendly_name: 'Ребенок спит'
+          value_template: >
+            {{ states('input_boolean.kids_asleep') }}
+          turn_on:
+            service: input_boolean.turn_on
+            data:
+              entity_id: input_boolean.kids_asleep
+          turn_off:
+            service: input_boolean.turn_off
+            data:
+              entity_id: input_boolean.kids_asleep
+          icon_template: >
+            {% if is_state('input_boolean.kids_asleep', 'on') %}
+              mdi:bed
+            {% else %}
+              mdi:human-child
+            {% endif %}
+
+
+  automation:
+    - id: 'Ребенок ложится спать'
+      alias: kid_is_going_to_sleep
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.kidsroom_lights_common_switch_action
+          to: 'double_right'
+      action:
+        - service: switch.turn_off
+          entity_id: switch.kidsroom_lights_common_switch_left
+        - service: switch.turn_off
+          entity_id: switch.kidsroom_wall_lights_switch
+        - service: input_boolean.turn_on
+          entity_id: input_boolean.kids_asleep
+    
+    - id: 'Ребенок уже не спит'
+      alias: kid_supposed_to_wake_up
+      initial_state: true
+      trigger:
+        - platform: time
+          at: '09:30'
+        - platform: numeric_state
+          entity_id: sun.sun
+          attribute: elevation
+          above: 0
+      action:
+        - service: input_boolean.turn_off
+          entity_id: input_boolean.kids_asleep
