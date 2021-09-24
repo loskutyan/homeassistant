@@ -1,9 +1,9 @@
-title: Кухня
+title: 'Кухня'
 icon: mdi:food-fork-drink
 
 cards:
   - type: vertical-stack
-    title: Свет
+    title: 'Свет'
     cards:
       - type: glance
         state_color: true

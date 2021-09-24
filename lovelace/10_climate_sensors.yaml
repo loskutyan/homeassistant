@@ -1,0 +1,189 @@
+title: 'Датчики климата'
+icon: mdi:home-thermometer
+cards: 
+  - type: vertical-stack
+    title: 'Спальня'
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.cleargrass_air_temperature
+                name: 'Cleargrass'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+          
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.bedroom_aqara_temperature
+                name: 'Aqara'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+          
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.bedroom_airpurifier_temperature
+                name: 'Mi Fresh Air'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+      
+      - type: horizontal-stack
+        cards:
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.cleargrass_air_humidity
+                name: 'Cleargrass'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+          
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.bedroom_aqara_humidity
+                name: 'Aqara'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+      
+      - type: horizontal-stack
+        cards:
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.cleargrass_air_co2a
+                name: 'Cleargrass'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+          
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.bedroom_airpurifier_co2
+                name: 'Mi Fresh Air'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+  
+  
+  - type: vertical-stack
+    title: 'Детская'
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.qingping_air_lite_temperature
+                name: 'Qingping'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+          
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.kidsroom_aqara_temperature
+                name: 'Aqara'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+          
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.kidsroom_airpurifier_temperature
+                name: 'Mi Fresh Air'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+      
+      - type: horizontal-stack
+        cards:
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.qingping_air_lite_humidity
+                name: 'Qingping'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+          
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.kidsroom_aqara_humidity
+                name: 'Aqara'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+      
+      - type: horizontal-stack
+        cards:
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.qingping_air_lite_co2a
+                name: 'Qingping'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+          
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.kidsroom_airpurifier_co2
+                name: 'Mi Fresh Air'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center

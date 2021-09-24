@@ -4,4 +4,5 @@ views:
   - !include lovelace/01_bedroom.yaml
   - !include lovelace/02_kidsroom.yaml
   - !include lovelace/03_kitchen.yaml
-  - !include lovelace/10_weather.yaml
+  - !include lovelace/10_climate_sensors.yaml
+  - !include lovelace/90_weather.yaml

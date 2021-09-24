@@ -1,9 +1,9 @@
-title: Спальня
+title: 'Спальня'
 icon: mdi:bed-king
 
 cards:
   - type: vertical-stack
-    title: Aqara Hub
+    title: 'Aqara Hub'
     cards:
       - type: entities
         entities:
@@ -19,7 +19,7 @@ cards:
   
   
   - type: vertical-stack
-    title: Очиститель воздуха
+    title: 'Очиститель воздуха'
     cards:
       - type: entities
         entities:
@@ -75,7 +75,7 @@ cards:
 
   
   - type: vertical-stack
-    title: Свет
+    title: 'Свет'
     cards:
       - entity: light.bedroom_aqara_led_bulb
         type: custom:light-entity-card
@@ -89,7 +89,7 @@ cards:
   
   
   - type: vertical-stack
-    title: Климат
+    title: 'Климат'
     cards:      
       - type: custom:mini-graph-card
         color_thresholds:
@@ -116,7 +116,7 @@ cards:
           legend: false
         entities:
           - entity: sensor.bedroom_average_temperature
-            name: Температура
+            name: 'Температура'
             
       - type: custom:mini-graph-card
         color_thresholds:
@@ -139,11 +139,11 @@ cards:
         upper_bound: 75
         entities:
           - entity: sensor.bedroom_average_humidity
-            name: Влажность
+            name: 'Влажность'
 
 
   - type: vertical-stack
-    title: Качество воздуха
+    title: 'Качество воздуха'
     cards:      
       - type: custom:mini-graph-card
         color_thresholds:
@@ -168,7 +168,7 @@ cards:
         upper_bound: 1200
         entities:
           - entity: sensor.cleargrass_air_co2a
-            name: CO2
+            name: 'CO²'
       
       - type: custom:mini-graph-card
         color_thresholds:
@@ -193,7 +193,7 @@ cards:
         upper_bound: 20.0
         entities:
           - entity: sensor.cleargrass_air_pm25
-            name: PM2.5
+            name: 'PM2.5'
       
       - type: custom:mini-graph-card
         color_thresholds:
@@ -214,4 +214,4 @@ cards:
         upper_bound: 500
         entities:
           - entity: sensor.cleargrass_air_tvoc
-            name: tVOC
+            name: 'tVOC'

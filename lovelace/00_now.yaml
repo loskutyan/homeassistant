@@ -1,18 +1,18 @@
-title: Главная
+title: 'Главная'
 icon: mdi:home-assistant
 
 cards:
   - type: vertical-stack
-    title: Дата и время
+    title: 'Дата и время'
     cards:
       - type: entities
         show_header_toggle: false
         entities:
           - entity: sensor.date
             type: custom:multiple-entity-row
-            name: Сейчас
+            name: 'Сейчас'
             icon: mdi:calendar-clock
-            state_header: Дата
+            state_header: 'Дата'
             entities:
             - entity: sensor.sun_next_rising
               format: relative
@@ -21,10 +21,10 @@ cards:
               format: relative
               hide_unavailable: true
             - entity: sensor.time
-              name: Время
+              name: 'Время'
   
   - type: vertical-stack
-    title: Качество воздуха
+    title: 'Качество воздуха'
     cards:
       - type: entities
         entities:
@@ -125,7 +125,7 @@ cards:
 
 
   - type: vertical-stack
-    title: Статус
+    title: 'Статус'
     cards:
       - type: entities
         entities:
@@ -165,12 +165,12 @@ cards:
 
 
   - type: vertical-stack
-    title: Raspberry Pi
+    title: 'Raspberry Pi'
     cards:
       - type: horizontal-stack
         cards:
           - type: gauge
-            name: Загрузка CPU
+            name: 'Загрузка CPU'
             unit: '%'
             entity: sensor.processor_use_percent
             severity:
@@ -179,7 +179,7 @@ cards:
               red: 85
          
           - type: gauge
-            name: Загрузка ОЗУ
+            name: 'Загрузка ОЗУ'
             unit: '%'
             entity: sensor.memory_use_percent
             severity:
@@ -190,7 +190,7 @@ cards:
       - type: horizontal-stack
         cards:
           - type: gauge
-            name: Температура CPU
+            name: 'Температура CPU'
             unit: '°C'
             entity: sensor.cpu_temperature
             min: 20
@@ -201,7 +201,7 @@ cards:
               red: 60
           
           - type: gauge
-            name: Температура GPU
+            name: 'Температура GPU'
             unit: '°C'
             entity: sensor.gpu_temperature
             min: 20
@@ -214,7 +214,7 @@ cards:
       - type: horizontal-stack
         cards:
           - type: gauge
-            name: Диск заполнен
+            name: 'Диск заполнен'
             unit: '%'
             entity: sensor.disk_use_percent
             severity:
@@ -223,7 +223,7 @@ cards:
               red: 85    
             
           - type: gauge
-            name: Свободное место
+            name: 'Свободное место'
             unit: 'Гб'
             entity: sensor.disk_free
             min: 0
