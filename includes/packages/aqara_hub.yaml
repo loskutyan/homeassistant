@@ -26,7 +26,7 @@ aqara_hub:
             {% else %}
               mdi: volume-mute
             {% endif %}
-
+  
   
   automation:
     - id: 'Выбор громкости хаба Aqara'

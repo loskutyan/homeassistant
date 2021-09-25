@@ -14,14 +14,14 @@
   command: 'cat /sys/class/thermal/thermal_zone0/temp'
   # If errors occur, make sure configuration file is encoded as UTF-8
   value_template: '{{ value | multiply(0.001) | round(1) }}'
-  
+
 - platform: command_line
   name: GPU Temperature
   unit_of_measurement: '°C'
   command: '/opt/vc/bin/vcgencmd measure_temp | cut -c6- | rev | cut -c3- | rev'
   # If errors occur, make sure configuration file is encoded as UTF-8
   value_template: '{{ value }}'
-  
+
 - platform: sql
   db_url: mysql://homeassistant:homeassistant@core-mariadb/homeassistant?charset=utf8
   queries:

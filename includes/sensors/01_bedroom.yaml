@@ -7,7 +7,7 @@
       value_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'carbon_dioxide') | float }}"
       availability_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'carbon_dioxide') | float > 100 }}"
       icon_template: mdi:molecule-co2
-      
+    
     cleargrass_air_tvoc:
       friendly_name: 'Cleargrass air tVOC'
       device_class: volatile_organic_compounds
@@ -15,14 +15,14 @@
       value_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'total_volatile_organic_compounds') | float }}"
       availability_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'total_volatile_organic_compounds') | float > 1 }}"
       icon_template: mdi:atom
-      
+    
     cleargrass_air_pm25:
       friendly_name: 'Cleargrass air PM2.5'
       device_class: pm25
       unit_of_measurement: 'ppm'
       value_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'particulate_matter_2_5') | float }}"
       icon_template: mdi:grain
-      
+    
     cleargrass_air_temperature:
       friendly_name: 'Cleargrass air Температура'
       device_class: temperature
@@ -30,7 +30,7 @@
       value_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'temperature') | float }}"
       availability_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'temperature') | float > 10 }}"
       icon_template: mdi:thermometer
-      
+    
     cleargrass_air_humidity:
       friendly_name: 'Cleargrass air Влажность'
       device_class: humidity
@@ -38,7 +38,7 @@
       value_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'humidity') | float }}"
       availability_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'humidity') | float > 5 }}"
       icon_template: mdi:water-percent
-      
+    
     bedroom_aqara_temperature:
       friendly_name: 'Bedroom aqara Температура'
       device_class: temperature
@@ -68,7 +68,7 @@
         {% set aqara_temperature = states('sensor.bedroom_aqara_temperature') | float %}
         {{ aqara_temperature > 10 and cleargrass_temperature > 10 }}
       icon_template: mdi:thermometer
-      
+    
     bedroom_average_humidity:
       friendly_name: 'Влажность'
       device_class: humidity

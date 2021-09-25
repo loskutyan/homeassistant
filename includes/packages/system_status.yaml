@@ -3,25 +3,25 @@ system_status:
     - platform: template
       sensors:
         unavailable_lights_count:
-          friendly_name: "Всего недоступных светильников"
+          friendly_name: 'Всего недоступных светильников'
           value_template: >
             {{ states.light | selectattr ('state', 'equalto', 'unavailable') | list | length }}
           icon_template: mdi:counter        
 
         unavailable_switches_count:
-          friendly_name: "Всего недоступных переключателей"
+          friendly_name: 'Всего недоступных переключателей'
           value_template: >
             {{ states.switch | selectattr ('state', 'equalto', 'unavailable') | list | length }}
           icon_template: mdi:counter
         
         unavailable_sensors_count:
-          friendly_name: "Всего недоступных сенсоров"
+          friendly_name: 'Всего недоступных сенсоров'
           value_template: >
             {{ states.sensor | selectattr ('state', 'equalto', 'unavailable') | list | length - 1 }}
           icon_template: mdi:counter
           
         unavailable_binary_sensors_count:
-          friendly_name: "Всего недоступных бинарных сенсоров"
+          friendly_name: 'Всего недоступных бинарных сенсоров'
           value_template: >
             {{ states.binary_sensor | selectattr ('state', 'equalto', 'unavailable') | list | length }}
           icon_template: mdi:counter
@@ -34,12 +34,12 @@ system_status:
        - service: notify.tg
          data:
            message: |
-            {{"\U0001F6C0"}} Состояние системы
-            {{"\U0001F567"}} Отчет за {{ states('sensor.time_date') }}
-            {{"\U0001F4A1"}} Светильников недоступно - {{ states('sensor.unavailable_lights_count') }} 
-            {{"\U0001F50C"}} Свичей недоступно - {{ states('sensor.unavailable_switches_count') }} 
-            {{"\U0001F321"}} Сенсоров недоступно - {{ states('sensor.unavailable_sensors_count') }} 
-            {{"\U0001F51F"}} Бинарных сенсоров недоступно - {{ states('sensor.unavailable_binary_sensors_count') }}
+            {{'\U0001F6C0'}} Состояние системы
+            {{'\U0001F567'}} Отчет за {{ states('sensor.time_date') }}
+            {{'\U0001F4A1'}} Светильников недоступно - {{ states('sensor.unavailable_lights_count') }} 
+            {{'\U0001F50C'}} Свичей недоступно - {{ states('sensor.unavailable_switches_count') }} 
+            {{'\U0001F321'}} Сенсоров недоступно - {{ states('sensor.unavailable_sensors_count') }} 
+            {{'\U0001F51F'}} Бинарных сенсоров недоступно - {{ states('sensor.unavailable_binary_sensors_count') }}
 
 
   automation: 
@@ -53,8 +53,8 @@ system_status:
         - service: notify.tg
           data:
             message: |
-              {{"\U0001F4AC"}} Основной сервер Raspberry Pi 
-              {{"\U0001F567"}} Зафиксирован запуск в {{ states('sensor.time_date') }}
+              {{'\U0001F4AC'}} Основной сервер Raspberry Pi 
+              {{'\U0001F567'}} Зафиксирован запуск в {{ states('sensor.time_date') }}
         - delay: 00:01:10
         - service: script.turn_on
           entity_id: script.system_report
