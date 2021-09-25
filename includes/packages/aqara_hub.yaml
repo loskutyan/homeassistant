@@ -16,7 +16,7 @@ aqara_hub:
           unit_of_measurement: '%'
           value_template: "{{ (state_attr('media_player.miio_gateway', 'volume_level') | float * 100) | int }}"
           icon_template: >
-            {% set vol = states(sensor.aqara_hub_volume) | int %}
+            {% set vol = states('sensor.aqara_hub_volume') | int %}
             {% if vol > 60  %}
               mdi:volume-high
             {% elif vol > 25 %}
