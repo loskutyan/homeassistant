@@ -31,17 +31,17 @@ cards:
               - entity: input_select.kidsroom_airpurifier_mode
                 state: 'Favorite'
             row:
+              type: custom:slider-entity-row
               entity: input_number.kidsroom_airpurifier_favorite_speed
               name: 'Заданная скорость'
-              type: custom:slider-entity-row
               hide_state: false
           
           - entity: sensor.kidsroom_airpurifier_current_speed
             name: 'Текущая скорость'
           
-          - entity: switch.kidsroom_airpurifier_ptc
+          - type: custom:multiple-entity-row
+            entity: switch.kidsroom_airpurifier_ptc
             name: 'Нагреватель'
-            type: custom:multiple-entity-row
             toggle: true
             state_color: true
             entities:

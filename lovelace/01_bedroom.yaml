@@ -47,17 +47,17 @@ cards:
               - entity: input_select.bedroom_airpurifier_mode
                 state: 'Favorite'
             row:
+              type: custom:slider-entity-row
               entity: input_number.bedroom_airpurifier_favorite_speed
               name: 'Заданная скорость'
-              type: custom:slider-entity-row
               hide_state: false
           
           - entity: sensor.bedroom_airpurifier_current_speed
             name: 'Текущая скорость'
           
-          - entity: switch.bedroom_airpurifier_ptc
+          - type: custom:multiple-entity-row
+            entity: switch.bedroom_airpurifier_ptc
             name: 'Нагреватель'
-            type: custom:multiple-entity-row
             toggle: true
             state_color: true
             entities:
@@ -77,8 +77,8 @@ cards:
   - type: vertical-stack
     title: 'Свет'
     cards:
-      - entity: light.bedroom_aqara_led_bulb
-        type: custom:light-entity-card
+      - type: custom:light-entity-card
+        entity: light.bedroom_aqara_led_bulb
         header: 'Лампа Aqara'
         shorten_cards: true
         brightness: true

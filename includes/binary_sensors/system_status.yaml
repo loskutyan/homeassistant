@@ -1,0 +1,16 @@
+- platform: template
+  sensors:
+    hacs_updates_available:
+      friendly_name: 'Доступны обновления HACS'
+      device_class: update
+      value_template: "{{ states('sensor.hacs') | int > 0 }}"
+      icon_template: hacs:hacs
+    
+    any_software_updates_available:
+      friendly_name: 'Доступны софтверные обновления'
+      device_class: update
+      value_template: >
+        {% set hacs = states('binary_sensor.hacs_updates_available') %}
+        {% set ha = states('binary_sensor.updater') %}
+        {{ ha or hacs }}
+      icon_template: mdi:package-up
