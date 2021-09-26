@@ -1,0 +1,2 @@
+binary_sensor.bathroom_aqara_leak_sensor_water_leak:
+  friendly_name: 'Протечка в ванной'
