@@ -8,7 +8,7 @@
     - service: notify.tg
       data:
         message: >
-          {{ "\U00002B07" }} Началась загрузка торрента {{ trigger.event.data.name }}
+          {{ '\U00002B07' }} Началась загрузка торрента {{ trigger.event.data.name }}
 
 - id: 'Загрузка торрента завершена'
   alias: torrent_downloading_completed
@@ -20,4 +20,4 @@
     - service: notify.tg
       data:
         message: >
-          {{ "\U00002705" }} Завершена загрузка торрента {{ trigger.event.data.name }}
+          {{ '\U00002705' }} Завершена загрузка торрента {{ trigger.event.data.name }}

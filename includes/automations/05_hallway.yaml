@@ -13,7 +13,7 @@
     - service: notify.tg
       data:
         message: >
-          {{"\U0001F6AA"}} Входная дверь открыта в {{ states('sensor.time_date') }}
+          {{ '\U0001F6AA' }} Входная дверь открыта в {{ states('sensor.time_date') }}
     - service: timer.start
       entity_id: timer.hallway_door_left_opened
     - service: timer.start
@@ -35,7 +35,7 @@
     - service: notify.tg
       data:
         message: >
-          {{"\U0001F6AA"}} {{ states('sensor.time') }} - входная дверь все еще открыта!
+          {{ '\U0001F6AA' }} {{ states('sensor.time') }} - входная дверь все еще открыта!
     - service: timer.start
       entity_id: timer.hallway_door_left_opened
 

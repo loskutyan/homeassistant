@@ -195,6 +195,15 @@ cards:
 
 
   - type: vertical-stack
+    title: 'cubeserver'
+    cards:
+      - type: entities
+        entities:
+          - entity: switch.cuberserver_vm_windows10
+            name: 'Windows 10 VM'
+  
+  
+  - type: vertical-stack
     title: 'Raspberry Pi'
     cards:
       - type: horizontal-stack
