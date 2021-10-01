@@ -86,4 +86,7 @@ aqara_hub:
         - service: notify.tg
           data:
             message: >
-              {{ "\U0001F514" }} Кто-то позвонил в дверь в {{ states('sensor.time_date') }}
+              {% set messages = ['Кто-то позвонил в дверь в',
+                                 'Кажется, кто-то пришел и звонит в дверь',
+                                 'Билим-билим!'] %}
+              {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}

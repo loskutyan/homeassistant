@@ -64,7 +64,10 @@ away:
         - service: notify.tg
           data:
             message: >
-              {{ '\U0001F4A1' }} Весь свет выключен
+              {% set messages = ['Весь свет выключен',
+                                 'Свет выключен - сэкономили кучу денег',
+                                 'Светильники обесточены... но это неточно'] %}
+              {{ '\U0001F4A1' }} {{ messages | random }}
 
 
   automation:
@@ -159,4 +162,7 @@ away:
         - service: notify.tg
           data:
             message: >
-              {{ '\U0001F596' }} С возвращением!
+              {% set messages = ['С возвращением!',
+                                 'Welcome back',
+                                 'И снова здравствуйте!'] %}
+              {{ '\U0001F596' }} {{ messages | random }} {{ '\U0001F60A' }}
