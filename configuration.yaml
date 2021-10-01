@@ -27,6 +27,11 @@ miio_gateway:
   port: 54321
 
 
+weather:
+  - platform: yandex_weather
+    api_key: 'c294218f-49f8-425c-9218-cab6eb5e87f8'
+
+
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
