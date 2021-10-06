@@ -70,8 +70,10 @@ cards:
         entities:
           - entity: sensor.cleargrass_air_co2a
             name: 'CO² Спальня'
+            show_legend: false
           - entity: sensor.qingping_air_lite_co2a
             name: 'CO² Детская'
+            show_legend: false
       
       - type: horizontal-stack
         cards:
@@ -99,8 +101,10 @@ cards:
             entities:
               - entity: sensor.cleargrass_air_pm25
                 name: 'PM2.5 Спальня'
+                show_legend: false
               - entity: sensor.qingping_air_lite_pm25
                 name: 'PM2.5 Детская'
+                show_legend: false
           
           - type: custom:mini-graph-card
             color_thresholds:
