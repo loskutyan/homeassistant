@@ -46,6 +46,8 @@ cards:
             conditions:
               - entity: input_select.bedroom_airpurifier_mode
                 state: 'Favorite'
+              - entity: switch.bedroom_airpurifier_favourite_speed_smart_control
+                state: 'off'
             row:
               type: custom:slider-entity-row
               entity: input_number.bedroom_airpurifier_favorite_speed
