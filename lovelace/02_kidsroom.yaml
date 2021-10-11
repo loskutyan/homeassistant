@@ -160,7 +160,7 @@ cards:
         lower_bound: 400
         upper_bound: 1200
         entities:
-          - entity: sensor.qingping_air_lite_co2a
+          - entity: sensor.qingping_air_lite_co2
             name: 'CO²'
       
       - type: custom:mini-graph-card

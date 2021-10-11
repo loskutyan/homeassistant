@@ -1,6 +1,6 @@
 - platform: template
   sensors:
-    qingping_air_lite_co2a:
+    qingping_air_lite_co2:
       friendly_name: 'Qingping air lite CO²'
       device_class: carbon_dioxide
       unit_of_measurement: 'ppm'

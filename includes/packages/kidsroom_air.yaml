@@ -43,6 +43,8 @@ kidsroom_air:
             {% set fixed_speed_timer_on = is_state('timer.kidsroom_airpurifier_fixed_speed', 'active') %}
             {{ favorite_mode and max_speed_flag and fixed_speed_timer_on }}
           turn_on:
+            - service: fan.turn_on
+              entity_id: fan.mijia_airpurifier_kidsroom
             - service: input_select.select_option
               entity_id: input_select.kidsroom_airpurifier_mode
               data:
@@ -196,7 +198,7 @@ kidsroom_air:
           value_template: >
             {% set hi = (states('sensor.kidsroom_airpurifier_speed_max_co2') | float) + 15 %}
             {% set lo = (states('sensor.kidsroom_airpurifier_speed_min_co2') | float) - 35 %}
-            {% set co2 = states('sensor.qingping_air_lite_co2a') | float %}
+            {% set co2 = states('sensor.qingping_air_lite_co2') | float %}
             {% if co2 > hi %}
               up
             {% elif co2 < lo %}

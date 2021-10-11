@@ -43,6 +43,8 @@ bedroom_air:
             {% set fixed_speed_timer_on = is_state('timer.bedroom_airpurifier_fixed_speed', 'active') %}
             {{ favorite_mode and max_speed_flag and fixed_speed_timer_on }}
           turn_on:
+            - service: fan.turn_on
+              entity_id: fan.mijia_airpurifier_bedroom
             - service: input_select.select_option
               entity_id: input_select.bedroom_airpurifier_mode
               data:
@@ -196,7 +198,7 @@ bedroom_air:
           value_template: >
             {% set hi = (states('sensor.bedroom_airpurifier_speed_max_co2') | float) + 15 %}
             {% set lo = (states('sensor.bedroom_airpurifier_speed_min_co2') | float) - 35 %}
-            {% set co2 = states('sensor.cleargrass_air_co2a') | float %}
+            {% set co2 = states('sensor.cleargrass_air_co2') | float %}
             {% if co2 > hi %}
               up
             {% elif co2 < lo %}

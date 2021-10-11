@@ -72,7 +72,7 @@ cards:
         cards:
           - type: custom:mini-graph-card
             entities:
-              - entity: sensor.cleargrass_air_co2a
+              - entity: sensor.cleargrass_air_co2
                 name: 'Cleargrass'
             hour24: true
             show:
@@ -166,7 +166,7 @@ cards:
         cards:
           - type: custom:mini-graph-card
             entities:
-              - entity: sensor.qingping_air_lite_co2a
+              - entity: sensor.qingping_air_lite_co2
                 name: 'Qingping'
             hour24: true
             show:

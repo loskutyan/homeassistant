@@ -1,42 +1,42 @@
 - platform: template
   sensors:
-    cleargrass_air_co2a:
+    cleargrass_air_co2:
       friendly_name: 'Cleargrass air CO²'
       device_class: carbon_dioxide
       unit_of_measurement: 'ppm'
-      value_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'carbon_dioxide') | float }}"
-      availability_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'carbon_dioxide') | float > 100 }}"
+      value_template: "{{ state_attr('air_quality.cgllc_airmonitor_s1', 'carbon_dioxide') | float }}"
+      availability_template: "{{ state_attr('air_quality.cgllc_airmonitor_s1', 'carbon_dioxide') | float > 100 }}"
       icon_template: mdi:molecule-co2
     
     cleargrass_air_tvoc:
       friendly_name: 'Cleargrass air tVOC'
       device_class: volatile_organic_compounds
       unit_of_measurement: 'ppb'
-      value_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'total_volatile_organic_compounds') | float }}"
-      availability_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'total_volatile_organic_compounds') | float > 1 }}"
+      value_template: "{{ state_attr('air_quality.cgllc_airmonitor_s1', 'total_volatile_organic_compounds') | float }}"
+      availability_template: "{{ state_attr('air_quality.cgllc_airmonitor_s1', 'total_volatile_organic_compounds') | float > 1 }}"
       icon_template: mdi:atom
     
     cleargrass_air_pm25:
       friendly_name: 'Cleargrass air PM2.5'
       device_class: pm25
       unit_of_measurement: 'ppm'
-      value_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'particulate_matter_2_5') | float }}"
+      value_template: "{{ state_attr('air_quality.cgllc_airmonitor_s1', 'particulate_matter_2_5') | float }}"
       icon_template: mdi:grain
     
     cleargrass_air_temperature:
       friendly_name: 'Cleargrass air Температура'
       device_class: temperature
       unit_of_measurement: '°C'
-      value_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'temperature') | float }}"
-      availability_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'temperature') | float > 10 }}"
+      value_template: "{{ state_attr('air_quality.cgllc_airmonitor_s1', 'temperature') | float }}"
+      availability_template: "{{ state_attr('air_quality.cgllc_airmonitor_s1', 'temperature') | float > 10 }}"
       icon_template: mdi:thermometer
     
     cleargrass_air_humidity:
       friendly_name: 'Cleargrass air Влажность'
       device_class: humidity
       unit_of_measurement: '%'
-      value_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'humidity') | float }}"
-      availability_template: "{{ state_attr('air_quality.cleargrass_air_monitor', 'humidity') | float > 5 }}"
+      value_template: "{{ state_attr('air_quality.cgllc_airmonitor_s1', 'humidity') | float }}"
+      availability_template: "{{ state_attr('air_quality.cgllc_airmonitor_s1', 'humidity') | float > 5 }}"
       icon_template: mdi:water-percent
     
     bedroom_aqara_temperature:

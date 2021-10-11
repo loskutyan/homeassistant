@@ -35,7 +35,9 @@ weather:
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
+
 homekit: !include includes/homekit.yaml
+
 
 lovelace:
   mode: yaml
@@ -54,7 +56,10 @@ lovelace:
       type: module
     - url: /hacsfiles/light-entity-card/light-entity-card.js
       type: module
-      
+    - url: /hacsfiles/mini-humidifier/mini-humidifier-bundle.js
+      type: module
+
+
 device_tracker:
   - platform: padavan_tracker
     consider_home: 180
@@ -63,15 +68,18 @@ device_tracker:
     username: !secret mi3g_username
     password: !secret mi3g_password
 
+
 # Text to speech
 tts:
   - platform: google_translate
+
 
 telegram_bot:
   - platform: polling
     api_key: !secret tg_bot_api_key
     allowed_chat_ids:
       - !secret chat_id_loskutyan
+
 
 notify: !include includes/notify.yaml
 timer: !include includes/timer.yaml

@@ -5,9 +5,9 @@
       - humidifier
       - light
     include_entities:
-      - sensor.cleargrass_air_co2a
+      - sensor.cleargrass_air_co2
       - sensor.cleargrass_air_pm25
-      - sensor.qingping_air_lite_co2a
+      - sensor.qingping_air_lite_co2
       - sensor.qingping_air_lite_pm25
       - sensor.bedroom_average_temperature
       - sensor.bedroom_average_humidity
@@ -23,8 +23,10 @@
       - binary_sensor.*_water_leak
       - switch.*_forced_ventilation
   entity_config:
-    vacuum.roborock_s5max:
+    vacuum.roborock_vacuum_s5e:
       name: 'Пылесос'
+    humidifier.smartmi_humidifier_bedroom:
+      name: 'Увлажнитель'
     light.bedroom_aqara_led_bulb:
       name: 'Торшер'
     fan.mijia_airpurifier_bedroom:
