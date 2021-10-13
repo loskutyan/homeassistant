@@ -1,0 +1,52 @@
+weather:
+  automation: 
+    - id: 'Прогноз погоды на день'
+      alias: morning_weather_forecast
+      initial_state: true
+      trigger:
+        - platform: time
+          at: '09:30:00'          
+      action:
+        - service: notify.tg
+          data:
+            message: |
+              {% set emoji = state_attr('weather.yandex_weather', 'weather_condition_emoji') %}
+              {% set wind_bearing = state_attr('weather.yandex_weather', 'wind_bearing_txt').lower() %}
+              {% set messages = ['Итак.',
+                                 'Доброе утро!',
+                                 'Итак, поехали!'] %}
+              {{ messages | random }}
+              {{ emoji }} Сейчас на улице {{ state_attr('weather.yandex_weather', 'weather_condition').lower() }}.
+              Температура {{ state_attr('weather.yandex_weather', 'temperature') }}°C,
+              ощущается как {{ state_attr('weather.yandex_weather', 'feels_like') }}°C.
+              Ветер {{ wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'wind_speed_ms') }} м/с.
+        - delay: 00:00:30
+        - service: notify.tg
+          data:
+            message: |
+              {% set temp_min = state_attr('weather.yandex_weather', 'forecast')[0]['templow'] %}
+              {% set temp_max = state_attr('weather.yandex_weather', 'forecast')[0]['temperature'] %}
+              {% set wind_bearing = state_attr('weather.yandex_weather', 'forecast')[0]['wind_bearing_txt'].lower() %}
+              {% set emoji = state_attr('weather.yandex_weather', 'forecast')[0]['weather_condition_emoji'] %}
+              {% set messages = ['Теперь к прогнозам.',
+                                 'Далее.'] %}
+              {{ messages | random }}
+              
+              {{ emoji }} Днем на улице будет {{ state_attr('weather.yandex_weather', 'forecast')[0]['weather_condition'].lower() }}.
+              Температура ожидается около {{ temp_min }} - {{ temp_max }}°C,
+              по ощущениям это примерно {{ state_attr('weather.yandex_weather', 'forecast')[0]['feels_like'] }}°C.
+              Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[0]['precipitation_probability'] }}%.
+              Ветер {{ wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'forecast')[0]['wind_speed_ms'] }} м/с.
+        - delay: 00:00:30
+        - service: notify.tg
+          data:
+            message: |
+              {% set temp_min = state_attr('weather.yandex_weather', 'forecast')[1]['templow'] %}
+              {% set temp_max = state_attr('weather.yandex_weather', 'forecast')[1]['temperature'] %}
+              {% set wind_bearing = state_attr('weather.yandex_weather', 'forecast')[1]['wind_bearing_txt'].lower() %}
+              {% set emoji = state_attr('weather.yandex_weather', 'forecast')[1]['weather_condition_emoji'] %}
+              {{ emoji }} Ближе к вечеру будет {{ state_attr('weather.yandex_weather', 'forecast')[1]['weather_condition'].lower() }}.
+              Температура примерно {{ temp_min }} - {{ temp_max }}°C,
+              по ощущениям это около {{ state_attr('weather.yandex_weather', 'forecast')[1]['feels_like'] }}°C.
+              Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[1]['precipitation_probability'] }}%.
+              Ветер {{ wind_bearing }}, скорость {{ state_attr('weather.yandex_weather', 'forecast')[1]['wind_speed_ms'] }} м/с.
