@@ -103,7 +103,7 @@
     - platform: state
       entity_id: binary_sensor.hallway_motion_sensor_occupancy
       from: 'off'
-      for: '00:01:30'
+      for: '00:02:00'
   condition:
     - condition: state
       entity_id: timer.hallway_lights_turn_off_without_motion
