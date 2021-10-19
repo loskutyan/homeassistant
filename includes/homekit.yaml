@@ -27,6 +27,8 @@
       name: 'Пылесос'
     humidifier.smartmi_humidifier_bedroom:
       name: 'Увлажнитель'
+    humidifier.smartmi_humidifier_kidsroom:
+      name: 'Увлажнитель'
     light.bedroom_aqara_led_bulb:
       name: 'Торшер'
     fan.mijia_airpurifier_bedroom:
@@ -45,6 +47,8 @@
       name: 'Люстра'
     binary_sensor.bathroom_aqara_leak_sensor_water_leak:
       name: 'Протечка под душевой кабиной'
+    binary_sensor.washing_machine_aqara_leak_sensor_water_leak:
+      name: 'Протечка под стиральной машиной'
     switch.bedroom_airpurifier_forced_ventilation:
       name: 'Проветривание'
     switch.kidsroom_airpurifier_forced_ventilation:

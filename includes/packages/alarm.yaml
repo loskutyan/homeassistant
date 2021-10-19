@@ -6,7 +6,8 @@ alarm:
           friendly_name: 'Обнаружена протечка'
           value_template: >
             {% set bathroom = states('binary_sensor.bathroom_aqara_leak_sensor_water_leak') %}
-            {{ bathroom }}
+            {% set washing_machine = states('binary_sensor.washing_machine_aqara_leak_sensor_water_leak') %}
+            {{ bathroom or washing_machine }}
           device_class: moisture
           icon_template: mdi:water-alert
   
@@ -18,7 +19,8 @@ alarm:
       state: 'on'
       message: >
         {% set leakage_sensors = [
-          'binary_sensor.bathroom_aqara_leak_sensor_water_leak'
+          'binary_sensor.bathroom_aqara_leak_sensor_water_leak',
+          'binary_sensor.washing_machine_aqara_leak_sensor_water_leak'
         ] %}
         {{ '\U0001F30A' }} Протечка воды: {{ states | selectattr('entity_id','in', leakage_sensors)
                                                     | selectattr('state', 'eq', 'on')
@@ -38,6 +40,9 @@ alarm:
       trigger:
         - platform: state
           entity_id: binary_sensor.bathroom_aqara_leak_sensor_water_leak
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.washing_machine_aqara_leak_sensor_water_leak
           to: 'on'
       action:
         - service: alarm_control_panel.alarm_trigger

@@ -33,3 +33,7 @@ left_home_by_phone_presence_after_door_closed:
 bedroom_humidifier_fixed_mode:
   name: 'Фиксированный режим увлажнителя в спальне, осталось '
   duration: 1800
+
+kidsroom_humidifier_fixed_mode:
+  name: 'Фиксированный режим увлажнителя в детской, осталось '
+  duration: 1800

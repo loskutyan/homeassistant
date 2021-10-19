@@ -29,8 +29,8 @@ sleep_time:
 
 
   automation:
-    - id: 'Ребенок ложится спать'
-      alias: kid_is_going_to_sleep
+    - id: 'Отход ко сну в детской'
+      alias: kidsroom_going_to_sleep
       initial_state: true
       trigger:
         - platform: state
@@ -43,9 +43,27 @@ sleep_time:
           entity_id: switch.kidsroom_wall_lights_switch
         - service: input_boolean.turn_on
           entity_id: input_boolean.kids_asleep
+        
+        - service: input_select.select_option
+          entity_id: input_select.kidsroom_airpurifier_mode
+          data:
+            option: 'Favorite'
+        - service: timer.start
+          entity_id: timer.kidsroom_airpurifier_fixed_speed
+        - service: input_number.set_value
+          entity_id: input_number.kidsroom_airpurifier_favorite_speed
+          data:
+            value: 60
+        
+        - service: humidifier.set_mode
+          entity_id: humidifier.smartmi_humidifier_kidsroom
+          data:
+            mode: 'Silent'
+        - service: timer.start
+          entity_id: timer.kidsroom_humidifier_fixed_mode
     
-    - id: 'Ребенок уже не спит'
-      alias: kid_supposed_to_wake_up
+    - id: 'В детской уже не спят'
+      alias: kidsroom_supposed_to_wake_up
       initial_state: true
       trigger:
         - platform: time
@@ -57,3 +75,34 @@ sleep_time:
       action:
         - service: input_boolean.turn_off
           entity_id: input_boolean.kids_asleep
+    
+    - id: 'Отход ко сну в спальне'
+      alias: bedroom_going_to_sleep
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.bedroom_aqara_button_action
+          to: 'hold'
+      action:
+        - service: light.turn_off
+          entity_id: light.bedroom_aqara_led_bulb
+          data:
+            transition: 1
+        
+        - service: input_select.select_option
+          entity_id: input_select.bedroom_airpurifier_mode
+          data:
+            option: 'Favorite'
+        - service: timer.start
+          entity_id: timer.bedroom_airpurifier_fixed_speed
+        - service: input_number.set_value
+          entity_id: input_number.bedroom_airpurifier_favorite_speed
+          data:
+            value: 60
+        
+        - service: humidifier.set_mode
+          entity_id: humidifier.smartmi_humidifier_bedroom
+          data:
+            mode: 'Silent'
+        - service: timer.start
+          entity_id: timer.bedroom_humidifier_fixed_mode
