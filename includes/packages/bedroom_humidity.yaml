@@ -7,8 +7,9 @@ bedroom_humidity:
           value_template: >
             {% set humidifier_state = states('humidifier.smartmi_humidifier_bedroom') %}
             {% set humidifier_state_bool = humidifier_state if humidifier_state != 'unavailable' else False %}
+            {% set humidifier_speed = states('sensor.smartmi_humidifier_bedroom_motor_speed') %}
             {% set low_hum = states('sensor.bedroom_average_humidity') | float < 35 %}
-            {{ not humidifier_state_bool and low_hum }}
+            {{ (not humidifier_state_bool or humidifier_speed == 0) and low_hum }}
   
   
   sensor:
@@ -91,7 +92,7 @@ bedroom_humidity:
           value_template: >
             {% set last_triggered = state_attr('automation.bedroom_needs_humidification_notify', 'last_triggered') %}
             {% set now = utcnow() %}
-            {% set delta_minutes = (now - last_triggered).total_seconds() / 60 %}
+            {% set delta_minutes = (now - last_triggered).total_seconds() / 60 if last_triggered != none else 1000 %}
             {{ delta_minutes > 60 }}
       action:
         - service: notify.tg
@@ -122,7 +123,7 @@ bedroom_humidity:
           value_template: >
             {% set last_triggered = state_attr('automation.bedroom_humidifier_low_water_level_notify', 'last_triggered') %}
             {% set now = utcnow() %}
-            {% set delta_hours = (now - last_triggered).total_seconds() / 3600 %}
+            {% set delta_hours = (now - last_triggered).total_seconds() / 3600 if last_triggered != none else 1000 %}
             {{ delta_hours > 8 }}
       action:
         - service: notify.tg

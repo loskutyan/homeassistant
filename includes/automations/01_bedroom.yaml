@@ -175,34 +175,3 @@
         brightness: >
           {{ min(state_attr('light.bedroom_aqara_led_bulb', 'brightness') + 51, 255) }}
         transition: 1
-
-- id: 'Отход ко сну в спальне'
-  alias: bedroom_going_to_sleep
-  initial_state: true
-  trigger:
-    - platform: state
-      entity_id: sensor.bedroom_aqara_button_action
-      to: 'hold'
-  action:
-    - service: input_select.select_option
-      entity_id: input_select.bedroom_airpurifier_mode
-      data:
-        option: 'Favorite'
-    - service: timer.start
-      entity_id: timer.bedroom_airpurifier_fixed_speed
-    - service: input_number.set_value
-      entity_id: input_number.bedroom_airpurifier_favorite_speed
-      data:
-        value: 60
-    
-    - service: humidifier.set_mode
-      entity_id: humidifier.smartmi_humidifier_bedroom
-      data:
-        mode: 'Silent'
-    - service: timer.start
-      entity_id: timer.bedroom_humidifier_fixed_mode
-    
-    - service: light.turn_off
-      entity_id: light.bedroom_aqara_led_bulb
-      data:
-        transition: 1
