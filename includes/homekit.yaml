@@ -49,6 +49,8 @@
       name: 'Протечка под душевой кабиной'
     binary_sensor.washing_machine_aqara_leak_sensor_water_leak:
       name: 'Протечка под стиральной машиной'
+    binary_sensor.dishwasher_aqara_leak_sensor_water_leak:
+      name: 'Протечка под посудомоечной машиной'
     switch.bedroom_airpurifier_forced_ventilation:
       name: 'Проветривание'
     switch.kidsroom_airpurifier_forced_ventilation:

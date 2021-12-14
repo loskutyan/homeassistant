@@ -1,13 +1,14 @@
 alarm:
   binary_sensor:
-    - platform: template
+    - platform: template  #binary_sensor.dishwasher_aqara_leak_sensor_water_leak
       sensors:
         water_leak_detected:
           friendly_name: 'Обнаружена протечка'
           value_template: >
             {% set bathroom = states('binary_sensor.bathroom_aqara_leak_sensor_water_leak') %}
             {% set washing_machine = states('binary_sensor.washing_machine_aqara_leak_sensor_water_leak') %}
-            {{ bathroom or washing_machine }}
+            {% set dishwasher = states('binary_sensor.dishwasher_aqara_leak_sensor_water_leak') %}
+            {{ bathroom or washing_machine or dishwasher }}
           device_class: moisture
           icon_template: mdi:water-alert
   
@@ -21,6 +22,7 @@ alarm:
         {% set leakage_sensors = [
           'binary_sensor.bathroom_aqara_leak_sensor_water_leak',
           'binary_sensor.washing_machine_aqara_leak_sensor_water_leak'
+          'binary_sensor.dishwasher_aqara_leak_sensor_water_leak'
         ] %}
         {{ '\U0001F30A' }} Протечка воды: {{ states | selectattr('entity_id','in', leakage_sensors)
                                                     | selectattr('state', 'eq', 'on')
@@ -43,6 +45,9 @@ alarm:
           to: 'on'
         - platform: state
           entity_id: binary_sensor.washing_machine_aqara_leak_sensor_water_leak
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.dishwasher_aqara_leak_sensor_water_leak
           to: 'on'
       action:
         - service: alarm_control_panel.alarm_trigger

@@ -81,6 +81,11 @@ telegram_bot:
       - !secret chat_id_loskutyan
 
 
+home_connect:
+  client_id: !secret home_connect_client_id
+  client_secret: !secret home_connect_client_secret
+
+
 notify: !include includes/notify.yaml
 timer: !include includes/timer.yaml
 group: !include includes/groups.yaml
