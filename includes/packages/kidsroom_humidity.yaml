@@ -31,7 +31,7 @@ kidsroom_humidity:
   
   
   automation:
-    - id: 'Выключить звук увлажнителя в детской'
+    - id: 'Выключение звука увлажнителя в детской'
       alias: kidsroom_humidifier_buzzer_turn_off
       initial_state: true
       trigger:

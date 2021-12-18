@@ -31,7 +31,7 @@ bedroom_humidity:
   
   
   automation:
-    - id: 'Выключить звук увлажнителя в спальне'
+    - id: 'Выключение звука увлажнителя в спальне'
       alias: bedroom_humidifier_buzzer_turn_off
       initial_state: true
       trigger:

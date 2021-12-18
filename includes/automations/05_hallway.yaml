@@ -70,7 +70,7 @@
     - service: switch.turn_on
       entity_id: switch.hallway_lights_switch
 
-- id: 'Включить таймер выключения света в прихожей'
+- id: 'Включение таймера выключения света в прихожей'
   alias: hallway_lights_on_timer_start
   initial_state: true
   trigger:
@@ -81,7 +81,7 @@
     - service: timer.start
       entity_id: timer.hallway_lights_turn_off_without_motion
 
-- id: 'Выключить таймер выключения света в прихожей'
+- id: 'Выключение таймера выключения света в прихожей'
   alias: hallway_lights_on_timer_finish
   initial_state: true
   trigger:
@@ -93,17 +93,13 @@
     - service: timer.finish
       entity_id: timer.hallway_lights_turn_off_without_motion
 
-- id: 'Продлить таймер выключения света при движении в прихожей'
+- id: 'Продление таймера выключения света при движении в прихожей'
   alias: hallway_motion_lights_timer_reset
   initial_state: true
   trigger:
     - platform: state
       entity_id: binary_sensor.hallway_motion_sensor_occupancy
       to: 'on'
-    - platform: state
-      entity_id: binary_sensor.hallway_motion_sensor_occupancy
-      from: 'off'
-      for: '00:02:00'
   condition:
     - condition: state
       entity_id: timer.hallway_lights_turn_off_without_motion
@@ -112,7 +108,23 @@
     - service: timer.start
       entity_id: timer.hallway_lights_turn_off_without_motion
 
-- id: 'Выключить свет в прихожей если нет движения'
+- id: 'Таймер выключения света заново после окончания при движении в прихожей'
+  alias: kitchen_motion_timer_finished_lights_timer_reset
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: timer.hallway_lights_turn_off_without_motion
+      from: 'active'
+      to: 'idle'
+  condition:
+    - condition: state
+      entity_id: binary_sensor.hallway_motion_sensor_occupancy
+      state: 'on'
+  action:
+    - service: timer.start
+      entity_id: timer.hallway_lights_turn_off_without_motion
+
+- id: 'Выключение света в прихожей, если нет движения'
   alias: hallway_no_motion_lights_turn_off
   initial_state: true
   trigger:
@@ -124,6 +136,9 @@
     - condition: state
       entity_id: switch.hallway_lights_switch
       state: 'on'
+    - condition: state
+      entity_id: binary_sensor.hallway_motion_sensor_occupancy
+      state: 'off'
   action:
     - service: switch.turn_off
       entity_id: switch.hallway_lights_switch

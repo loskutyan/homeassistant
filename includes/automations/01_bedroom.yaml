@@ -1,4 +1,4 @@
-- id: 'Включить лампу Aqara в спальне в будний день утром'
+- id: 'Включение лампы Aqara в спальне в будний день утром'
   alias: bedroom_aqara_led_bulb_workday_morning_turn_on
   initial_state: true
   trigger:
@@ -24,7 +24,7 @@
     - service: timer.start
       entity_id: timer.bedroom_aqara_led_bulb_brightness_increase_interval
 
-- id: 'Включить лампу Aqara в спальне в выходной день утром'
+- id: 'Включение лампы Aqara в спальне в выходной день утром'
   alias: bedroom_aqara_led_bulb_weekend_morning_turn_on
   initial_state: true
   trigger:
@@ -50,7 +50,7 @@
     - service: timer.start
       entity_id: timer.bedroom_aqara_led_bulb_brightness_increase_interval
 
-- id: 'Прибавить яркость лампы Aqara в спальне утром'
+- id: 'Прибавление яркости лампы Aqara в спальне утром'
   alias: bedroom_aqara_led_bulb_morning_increase_brightness
   initial_state: true
   trigger:
@@ -78,7 +78,7 @@
     - service: timer.start
       entity_id: timer.bedroom_aqara_led_bulb_brightness_increase_interval
 
-- id: 'Включить лампу Aqara в спальне вечером'
+- id: 'Включение лампы Aqara в спальне вечером'
   alias: bedroom_aqara_led_bulb_evening_turn_on
   initial_state: true
   trigger:
@@ -108,7 +108,7 @@
         color_temp: 325
         transition: 2
 
-- id: 'Убавить яркость лампы Aqara в спальне вечером'
+- id: 'Убавление яркости лампы Aqara в спальне вечером'
   alias: bedroom_aqara_led_bulb_evening_decrease_brightness
   initial_state: true
   trigger:
@@ -144,7 +144,7 @@
         color_temp: 395
         transition: 5
 
-- id: 'Включить/выключить лампу Aqara в спальне'
+- id: 'Включение/выключение лампы Aqara в спальне'
   alias: bedroom_aqara_led_bulb_button_toggle
   initial_state: true
   trigger:
@@ -157,7 +157,7 @@
       data:
         transition: 2
       
-- id: 'Прибавить яркость лампы Aqara в спальне'
+- id: 'Прибавление яркости лампы Aqara в спальне'
   alias: bedroom_aqara_led_bulb_button_add_brightness
   initial_state: true
   trigger:

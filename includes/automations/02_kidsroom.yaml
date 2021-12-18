@@ -1,4 +1,4 @@
-- id: 'Включить/выключить бра в детской'
+- id: 'Включение/выключение бра в детской'
   alias: kidsroom_wall_lights_toggle_with_common_switch
   initial_state: true
   trigger:
