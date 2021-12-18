@@ -61,6 +61,8 @@ away:
               - switch.kitchen_lights_switch_left
               - switch.kitchen_lights_switch_right
               - switch.hallway_lights_switch
+              - switch.bedroom_lights_switch_right
+              - switch.bathroom_lights_switch_left
         - service: notify.tg
           data:
             message: >
