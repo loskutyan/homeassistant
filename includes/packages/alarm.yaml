@@ -1,6 +1,6 @@
 alarm:
   binary_sensor:
-    - platform: template  #binary_sensor.dishwasher_aqara_leak_sensor_water_leak
+    - platform: template
       sensors:
         water_leak_detected:
           friendly_name: 'Обнаружена протечка'
@@ -32,6 +32,17 @@ alarm:
       done_message: '{{ ''\U0001F3DC'' }} Протечка воды устранена'
       repeat: 5
       can_acknowledge: true
+      notifiers:
+        - tg
+    
+    fridge_door_left_opened:
+      name: 'Дверь холодильника не закрыта'
+      entity_id: binary_sensor.kholodilno_morozilnaia_kombinatsiia_door
+      state: 'on'
+      repeat: 5
+      skip_first: true
+      message: >
+        {{ '\U00002744' }} Дверь холодильника не закрыта!
       notifiers:
         - tg
   
