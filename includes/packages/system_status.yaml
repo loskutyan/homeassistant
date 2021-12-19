@@ -58,7 +58,7 @@ system_status:
         - delay: 00:01:10
         - service: script.turn_on
           entity_id: script.system_report
-
+    
     - id: 'Запрос на отчет о состоянии системы'
       alias: send_system_report
       initial_state: true
@@ -71,7 +71,7 @@ system_status:
         - service: script.turn_on
           entity_id: 
             - script.system_report
-            
+    
     - id: 'Клавиатура бота'
       alias: telegram_keyboard
       initial_state: true
@@ -87,5 +87,3 @@ system_status:
             data:
               keyboard:
                 - '/report'
-
-

@@ -88,6 +88,12 @@ cards:
         full_width_sliders: true
         show_slider_percent: true
         effects_list: false
+      
+      - type: entities
+        entities:
+          - entity: switch.bedroom_lights_switch_right
+            name: 'Люстра'
+            icon: mdi:ceiling-light
   
   
   - type: vertical-stack
