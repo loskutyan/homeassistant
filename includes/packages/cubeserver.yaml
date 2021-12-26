@@ -1,43 +1,51 @@
-cuberserver:
+cubeserver:
+  sensor:
+    - platform: template
+      sensors:
+        cubeserver_ip:
+          friendly_name: 'Cubeserver IP'
+          value_template: !secret cubeserver_ip
+  
+  
   binary_sensor:
     - platform: ping
-      name: cuberserver_vm_windows10_ping
-      host: 192.168.1.240
+      name: cubeserver_vm_windows10_ping
+      host: !secret cubeserver_windows10_vm_ip
       scan_interval: 20
       count: 2
     
     - platform: command_line
-      name: cuberserver_vm_windows10_virsh_status
-      command: 'if test $(ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@192.168.1.10 virsh list --all | grep ''Windows 10'' | awk ''{print $4}'') == running; then echo running; else echo ''not running''; fi'
+      name: cubeserver_vm_windows10_virsh_status
+      command: 'if test $(ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} virsh list --all | grep ''Windows 10'' | awk ''{print $4}'') == running; then echo running; else echo ''not running''; fi'
       device_class: connectivity
       payload_on: 'running'
       payload_off: 'not running'
   
   
   shell_command:
-    run_cuberserver_vm_windows10: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@192.168.1.10 virsh start ''Windows\ 10'''
-    shutdown_cuberserver_vm_windows10: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@192.168.1.10 virsh shutdown ''Windows\ 10'''
+    run_cubeserver_vm_windows10: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} virsh start ''Windows\ 10'''
+    shutdown_cubeserver_vm_windows10: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} virsh shutdown ''Windows\ 10'''
   
   
   script:
-    shutdown_cuberserver_vm_windows10:
-      alias: 'cuberserver: выключение VM Windows 10'
+    shutdown_cubeserver_vm_windows10:
+      alias: 'cubeserver: выключение VM Windows 10'
       sequence:
         service:
-          shell_command.shutdown_cuberserver_vm_windows10
+          shell_command.shutdown_cubeserver_vm_windows10
   
   
   switch:
     - platform: template
       switches:
-        cuberserver_vm_windows10:
+        cubeserver_vm_windows10:
           friendly_name: 'VM Windows 10'
           value_template: >
-            {% set ping_status = states('binary_sensor.cuberserver_vm_windows10_ping') %}
-            {% set virsh_status = states('binary_sensor.cuberserver_vm_windows10_virsh_status') %}
+            {% set ping_status = states('binary_sensor.cubeserver_vm_windows10_ping') %}
+            {% set virsh_status = states('binary_sensor.cubeserver_vm_windows10_virsh_status') %}
             {{ ping_status and virsh_status }}
           turn_on:
-            service: shell_command.run_cuberserver_vm_windows10
+            service: shell_command.run_cubeserver_vm_windows10
           turn_off:
-            service: shell_command.shutdown_cuberserver_vm_windows10
+            service: shell_command.shutdown_cubeserver_vm_windows10
           icon_template: mdi:desktop-classic
