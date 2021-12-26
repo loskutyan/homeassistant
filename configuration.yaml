@@ -19,7 +19,7 @@ logger:
 http:
   use_x_forwarded_for: true
   trusted_proxies:
-    - 192.168.1.10
+    - !secret cubeserver_ip
 
 
 miio_gateway:
@@ -37,6 +37,11 @@ default_config:
 
 
 homekit: !include includes/homekit.yaml
+
+
+apcupsd:
+  host: !secret cubeserver_ip
+  port: 3551
 
 
 lovelace:

@@ -11,6 +11,23 @@ alarm:
             {{ bathroom or washing_machine or dishwasher }}
           device_class: moisture
           icon_template: mdi:water-alert
+        
+        ups_not_fine:
+          friendly_name: 'Проблема с ИБП'
+          value_template: >
+            {{ states('sensor.ups_status') not in ['ONLINE', 'CHARGING', 'ONBATT'] }}
+          device_class: problem
+        
+        ups_powered_by_battery:
+          friendly_name: 'ИБП работает от аккумулятора'
+          value_template: >
+            {{ states('sensor.ups_status') == 'ONBATT' }}
+          icon_template: >
+            {% if is_state('binary_sensor.ups_powered_by_battery', 'on') %}
+              mdi:battery-arrow-down
+            {% else %}
+              mdi:battery-charging-100
+            {% endif %}
   
   
   alert:
@@ -45,6 +62,26 @@ alarm:
         {{ '\U00002744' }} Дверь холодильника не закрыта!
       notifiers:
         - tg
+    
+    ups_power_went_down:
+      name: 'ИБП работает от аккумулятора'
+      entity_id: binary_sensor.ups_powered_by_battery
+      state: 'on'
+      repeat: 15
+      message: >
+        {{ '\U0001F50B' }} ИБП работает от аккумулятора! {{ states('sensor.time_date') }}
+      notifiers:
+        - tg
+    
+    ups_is_not_fine:
+      name: 'Проблема с ИБП'
+      entity_id: binary_sensor.ups_not_fine
+      state: 'on'
+      repeat: 60
+      message: >
+        {{ '\U000026A0' }} Пробелма с ИБП, статус {{ states('sensor.ups_status') }}. {{ states('sensor.time_date') }}
+      notifiers:
+        - tg
   
   
   automation:
@@ -63,3 +100,19 @@ alarm:
       action:
         - service: alarm_control_panel.alarm_trigger
           entity_id: alarm_control_panel.miio_gateway
+    
+    - id: 'ИБП снова работает от сети'
+      alias: ups_power_is_up_again
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.ups_power_went_down
+          from: 'on'
+      condition:
+        - condition: state
+          entity_id: binary_sensor.ups_not_fine
+          state: 'off'
+      action:
+        - service: notify.tg
+          data:
+            message: >
+              {{ '\U0001F50C' }} ИБП снова работает от сети! {{ states('sensor.time_date') }}
