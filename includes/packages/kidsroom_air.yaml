@@ -34,7 +34,7 @@ kidsroom_air:
             service: xiaomi_miio_airpurifier.fan_set_ptc_off
             entity_id: fan.mijia_airpurifier_kidsroom
           icon_template: mdi:fire
-          
+        
         kidsroom_airpurifier_forced_ventilation:
           friendly_name: 'Mi Fresh Air Kidsroom Проветривание'
           value_template: >
@@ -59,7 +59,7 @@ kidsroom_air:
             - service: timer.finish
               entity_id: timer.kidsroom_airpurifier_fixed_speed
           icon_template: mdi:weather-windy
-          
+        
         kidsroom_airpurifier_favourite_speed_smart_control:
           friendly_name: 'Mi Fresh Air Kidsroom Умное управление скоростью'
           value_template: >
@@ -73,7 +73,7 @@ kidsroom_air:
             - service: timer.start
               entity_id: timer.kidsroom_airpurifier_fixed_speed
           icon_template: mdi:speedometer
-    
+  
   
   sensor:
     - platform: template
@@ -119,81 +119,85 @@ kidsroom_air:
           friendly_name: 'Mi Fresh Air Kidsroom Дней до замены фильтра'
           value_template: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'dust_filter_life_remaining_days') }}"
           icon_template: mdi:air-filter
-          
+        
         kidsroom_airpurifier_preset_mode:
           friendly_name: 'Mi Fresh Air Kidsroom Режим работы'
           value_template: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'preset_mode') }}"
-          
+        
         kidsroom_airpurifier_speed_min_co2:
           value_template:  >
+            {% set temp_delta = max(0, 22 - states('sensor.kidsroom_average_temperature') | float) %}
+            {% set shift_steps = temp_delta * 100 // 10 %}
             {% if states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 60 %}
               0
+            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 70 %}
+              {{ 600 + 10 * shift_steps }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 80 %}
-              600
+              {{ 650 + 10 * shift_steps }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 90 %}
-              650
+              {{ 700 + 10 * shift_steps }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 100 %}
-              700
-            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 110 %}
-              800
+              {{ 800 + 10 * shift_steps }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 120 %}
-              900
+              {{ 900 + 10 * shift_steps }}
             {% else %}
               1200
             {% endif %}
         
         kidsroom_airpurifier_speed_max_co2:
           value_template:  >
+            {% set temp_delta = max(0, 22 - states('sensor.kidsroom_average_temperature') | float) %}
+            {% set shift_steps = temp_delta * 100 // 10 %}
             {% if states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 60 %}
-              600
+              {{ 600 + 10 * shift_steps }}
+            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 70 %}
+              {{ 650 + 10 * shift_steps }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 80 %}
-              650
+              {{ 700 + 10 * shift_steps }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 90 %}
-              700
+              {{ 800 + 10 * shift_steps }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 100 %}
-              800
-            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 110 %}
-              900
+              {{ 900 + 10 * shift_steps }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 120 %}
               1200
             {% else %}
               5000
             {% endif %}
-            
+        
         kidsroom_airpurifier_next_speed:
           value_template:  >
             {% if states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 60 %}
+              70
+            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 70 %}
               80
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 80 %}
               90
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 90 %}
               100
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 100 %}
-              110
-            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 110 %}
               120
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 120 %}
               150
             {% else %}
               150
             {% endif %}
-            
+        
         kidsroom_airpurifier_previous_speed:
           value_template:  >
-            {% if states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 80 %}
+            {% if states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 70 %}
               60
+            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 80 %}
+              70
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 90 %}
               80
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 100 %}
               90
-            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 110 %}
-              100
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 120 %}
-              110
+              100
             {% else %}
               120
             {% endif %}
-          
+        
         kidsroom_airpurifier_favourite_speed_needs_changes:
           value_template: >
             {% set hi = (states('sensor.kidsroom_airpurifier_speed_max_co2') | float) + 15 %}
@@ -233,8 +237,8 @@ kidsroom_air:
         - Auto
         - Sleep
         - Favorite
-        
-        
+  
+  
   automation:
     - id: 'Выбор режима работы бризера в детской'
       alias: select_kidsroom_airpurifier_preset_mode
@@ -273,7 +277,7 @@ kidsroom_air:
           entity_id: fan.mijia_airpurifier_kidsroom
           data_template:
             speed: "{{ states('input_number.kidsroom_airpurifier_favorite_speed') | int }}"
-  
+    
     - id: 'Отслеживание скорости потока воздуха для бризера в детской'
       alias: tracking_kidsroom_airpurifier_speed
       trigger:
@@ -284,7 +288,7 @@ kidsroom_air:
         entity_id: input_number.kidsroom_airpurifier_favorite_speed
         data_template:
           value: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'favorite_speed') }}"
-          
+    
     - id: 'Умный контроль скорости работы бризера в детской'
       alias: kidsroom_airpurifier_favourite_speed_smart_control
       initial_state: true
@@ -314,3 +318,85 @@ kidsroom_air:
               {% else %}
                 {{ states('sensor.kidsroom_airpurifier_previous_speed') | int }}
               {% endif %}
+    
+    - id: 'Включение таймеров нагревателя бризера в детской'
+      alias: kidsroom_airpurifier_heater_timers_start
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: switch.kidsroom_airpurifier_ptc
+          to: 'on'
+        - platform: homeassistant
+          event: start
+      condition:
+        - condition: state
+          entity_id: switch.kidsroom_airpurifier_ptc
+          state: 'on'
+      action:
+        - service: timer.start
+          entity_id:
+            - timer.kidsroom_airpurifier_heater
+            - timer.kidsroom_airpurifier_heater_remind
+    
+    - id: 'Включен нагреватель бризера в детской - уведомление'
+      alias: kidsroom_airpurifier_heater_on_reminder
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: timer.kidsroom_airpurifier_heater_remind
+          from: 'active'
+          to: 'idle'
+        - platform: homeassistant
+          event: start
+      condition:
+        - condition: state
+          entity_id: switch.kidsroom_airpurifier_ptc
+          state: 'on'
+      action:
+        - service: notify.tg
+          data:
+            message: >
+              {% set messages = ['Нагреватель бризера в детской все еще работает!',
+                                 'Бризер в детской продолжает греть воздух..',
+                                 'Нагреватель бризера в детской еще жарит!'] %}
+              {{ '\U0001F525' }} {{ messages | random }} {{ states('sensor.time_date') }}
+        - service: timer.start
+          entity_id: timer.kidsroom_airpurifier_heater_remind
+    
+    - id: 'Выключение нагревателя бризера в детской'
+      alias: kidsroom_airpurifier_heater_timed_turn_off
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: timer.kidsroom_airpurifier_heater
+          from: 'active'
+          to: 'idle'
+      condition:
+        - condition: state
+          entity_id: switch.kidsroom_airpurifier_ptc
+          state: 'on'
+      action:
+        - service: switch.turn_off
+          entity_id: switch.kidsroom_airpurifier_ptc
+        - service: notify.tg
+          data:
+            message: >
+              {% set messages = ['Нагреватель бризера в детской выключен!',
+                                 'Бризер в детской завершает греть воздух..',
+                                 'Нагреватель бризера в детской покидает здание!'] %}
+              {{ '\U0001F9EF' }} {{ messages | random }} {{ states('sensor.time_date') }}
+        - service: timer.finish
+          entity_id: timer.kidsroom_airpurifier_heater_remind
+    
+    - id: 'Выключение таймеров нагревателя бризера в детской'
+      alias: kidsroom_airpurifier_heater_timers_turn_off
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: switch.kidsroom_airpurifier_ptc
+          to: 'off'
+      action:
+        - service: timer.finish
+          entity_id:
+            - timer.kidsroom_airpurifier_heater_remind
+            - timer.kidsroom_airpurifier_heater

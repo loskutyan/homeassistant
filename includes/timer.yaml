@@ -37,3 +37,19 @@ bedroom_humidifier_fixed_mode:
 kidsroom_humidifier_fixed_mode:
   name: 'Фиксированный режим увлажнителя в детской, осталось '
   duration: 1800
+
+bedroom_airpurifier_heater_remind:
+  name: 'Нагреватель бризера в спальне включен, напомнить через '
+  duration: 3600
+
+kidsroom_airpurifier_heater_remind:
+  name: 'Нагреватель бризера в детской включен, напомнить через '
+  duration: 3600
+
+bedroom_airpurifier_heater:
+  name: 'Нагреватель бризера в спальне включен, выключение через '
+  duration: 18000
+
+kidsroom_airpurifier_heater:
+  name: 'Нагреватель бризера в детской включен, выключение через '
+  duration: 18000
