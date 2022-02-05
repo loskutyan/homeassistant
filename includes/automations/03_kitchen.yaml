@@ -87,7 +87,7 @@
     - service: timer.finish
       entity_id: timer.kitchen_lights_turn_off_without_motion
 
-- id: 'Продление таймера выключения света при движении на кухне'
+- id: 'Сброс таймера выключения света при движении на кухне'
   alias: kitchen_motion_lights_timer_reset
   initial_state: true
   trigger:
@@ -102,7 +102,7 @@
     - service: timer.start
       entity_id: timer.kitchen_lights_turn_off_without_motion
 
-- id: 'Таймер выключения света заново после окончания при движении на кухне'
+- id: 'Сброс таймера выключения света после окончания при движении на кухне'
   alias: kitchen_motion_timer_finished_lights_timer_reset
   initial_state: true
   trigger:
