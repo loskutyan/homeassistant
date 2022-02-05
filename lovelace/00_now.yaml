@@ -203,7 +203,7 @@ cards:
     cards:
       - type: entities
         entities:
-          - entity: switch.cuberserver_vm_windows10
+          - entity: switch.cubeserver_vm_windows10
             name: 'Windows 10 VM'
   
   
