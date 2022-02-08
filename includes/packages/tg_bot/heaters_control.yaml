@@ -1,0 +1,39 @@
+heaters_control:
+  automation:
+    - id: 'Управление обогревателями в боте'
+      alias: telegram_heaters_control
+      initial_state: true
+      hide_entity: true
+      trigger:
+        - platform: event
+          event_type: telegram_callback
+          event_data:
+            data: '/heaters'
+      action:
+        - service: telegram_bot.answer_callback_query
+          data_template:
+            callback_query_id: '{{ trigger.event.data.id }}'
+            message: 'Что нужно сделать с обогревателями?'  
+        - service: notify.tg
+          data:
+            message: 'Управляем обогревателями..'
+            data:
+              inline_keyboard:
+                - 'Выключить все обогреватели:/all_heaters_off'
+    
+    - id: 'Выключить все обогреватели через бот'
+      alias: telegram_all_heaters_turn_off
+      initial_state: true
+      hide_entity: true
+      trigger:
+        platform: event
+        event_type: telegram_callback
+        event_data:
+          data: '/all_heaters_off'
+      action:
+        - service: telegram_bot.answer_callback_query
+          data_template:
+            callback_query_id: '{{ trigger.event.data.id }}'
+            message: 'Выключаем все обогреватели'
+        - service: script.turn_on
+          entity_id: script.turn_off_all_heaters

@@ -1,0 +1,39 @@
+lights_control:
+  automation:
+    - id: 'Управление светом в боте'
+      alias: telegram_lights_control
+      initial_state: true
+      hide_entity: true
+      trigger:
+        - platform: event
+          event_type: telegram_callback
+          event_data:
+            data: '/lights'
+      action:
+        - service: telegram_bot.answer_callback_query
+          data_template:
+            callback_query_id: '{{ trigger.event.data.id }}'
+            message: 'Что нужно сделать со светом?'  
+        - service: notify.tg
+          data:
+            message: 'Управляем светом..'
+            data:
+              inline_keyboard:
+                - 'Выключить весь свет:/all_lights_off'
+    
+    - id: 'Выключить весь свет через бот'
+      alias: telegram_all_lights_turn_off
+      initial_state: true
+      hide_entity: true
+      trigger:
+        platform: event
+        event_type: telegram_callback
+        event_data:
+          data: '/all_lights_off'
+      action:
+        - service: telegram_bot.answer_callback_query
+          data_template:
+            callback_query_id: '{{ trigger.event.data.id }}'
+            message: 'Выключаем весь свет'
+        - service: script.turn_on
+          entity_id: script.turn_off_all_lights

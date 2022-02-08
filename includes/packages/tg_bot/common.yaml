@@ -1,0 +1,46 @@
+common:
+  automation:
+    - id: 'Клавиатура бота'
+      alias: telegram_keyboard
+      initial_state: true
+      trigger:
+        - platform: event
+          event_type: telegram_command
+          event_data:
+            command: '/start'
+      action:
+        - service: notify.tg
+          data:
+            message: |
+              {% set messages = ['Привет!',
+                                 'Доброго времени суток!',
+                                 'Милорд.',
+                                 'Приступим!'] %}
+              {{ messages | random }}
+              
+              Доступные команды:
+            data:
+              keyboard:
+                - '/system_report'
+                - '/climate_report'
+                - '/control'
+    
+    - id: 'Панель управления бота'
+      alias: telegram_control_panel
+      initial_state: 'on'
+      trigger:
+        - platform: event
+          event_type: telegram_command
+          event_data:
+            command: '/control'
+      action:
+        - service: notify.tg
+          data:
+            message: |
+              {% set messages = ['Панель управления',
+                                 'Контрольная панель'] %}
+              {{ messages | random }}
+            data:
+              inline_keyboard:
+                - 'Свет:/lights, Отопление:/heaters'
+                - 'Статус:/status'

@@ -1,0 +1,31 @@
+climate_status:
+  script:
+    telegram_climate_report:
+      alias: 'Отправка отчета о состоянии воздуха'
+      sequence:
+       - service: notify.tg
+         data:
+           message: |
+            {{'\U0001F6CC'}} Спальня:
+            {{'\U0001F321'}} {{ states('sensor.bedroom_average_temperature') | round(1) }}°C  {{'\U0001F4A7'}} {{ states('sensor.bedroom_average_humidity') | round(1) }}%
+            {{'\U0001F332'}} {{ states('sensor.cleargrass_air_co2') | int }}ppm {{'\U0000269B'}} {{ states('sensor.cleargrass_air_pm25') }}ppm
+            
+            {{'\U0001F9D2'}} Детская:
+            {{'\U0001F321'}} {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C  {{'\U0001F4A7'}} {{ states('sensor.kidsroom_average_humidity') | round(1) }}%
+            {{'\U0001F332'}} {{ states('sensor.qingping_air_lite_co2') | int }}ppm {{'\U0000269B'}} {{ states('sensor.qingping_air_lite_pm25') }}ppm
+
+
+  automation:
+    - id: 'Отчет о состоянии воздуха в боте'
+      alias: telegram_climate_report
+      initial_state: true
+      trigger:
+        - platform: event
+          event_type: telegram_command
+          event_data:
+            command: '/climate_report'
+      action:
+        - service: script.turn_on
+          entity_id: 
+            - script.telegram_climate_report
+

@@ -70,6 +70,22 @@ away:
                                  'Свет выключен - сэкономили кучу денег',
                                  'Светильники обесточены... но это неточно'] %}
               {{ '\U0001F4A1' }} {{ messages | random }}
+    
+    turn_off_all_heaters:
+      alias: 'Выключение всех обогревателей'
+      sequence:
+        - service: switch.turn_off
+          target:
+            entity_id:
+              - switch.bedroom_airpurifier_ptc
+              - switch.kidsroom_airpurifier_ptc
+        - service: notify.tg
+          data:
+            message: >
+              {% set messages = ['Все обогреватели выключены',
+                                 'Нагрев выключен - сэкономили кучу денег',
+                                 'Обогреватели обесточены... но это неточно'] %}
+              {{ '\U0001F525' }} {{ messages | random }}
 
 
   automation:
@@ -82,7 +98,10 @@ away:
           to: 'off'
       action:
         - service: script.turn_on
-          entity_id: script.turn_off_all_lights
+          target:
+            entity_id:
+              - script.turn_off_all_lights
+              - script.turn_off_all_heaters
 
     - id: 'Входная дверь закрылась, запуск таймера проверки отсутствия'
       alias: left_home_check_timer_start
