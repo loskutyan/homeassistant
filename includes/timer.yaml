@@ -48,8 +48,8 @@ kidsroom_airpurifier_heater_remind:
 
 bedroom_airpurifier_heater:
   name: 'Нагреватель бризера в спальне включен, выключение через '
-  duration: 18000
+  duration: 10800
 
 kidsroom_airpurifier_heater:
   name: 'Нагреватель бризера в детской включен, выключение через '
-  duration: 18000
+  duration: 10800
