@@ -3,6 +3,54 @@ away:
     somebody_home:
       name: 'Дома'
       initial: 'on'
+  
+  
+  sensor:
+    - platform: template
+      sensors:
+        lights_switches_list_turned_on:
+          friendly_name: 'Список включенных выключателей света'
+          value_template: >
+            {% set lights_switches_entities_ids = [
+              'switch.kidsroom_lights_common_switch_left',
+              'switch.kitchen_lights_switch_left',
+              'switch.kitchen_lights_switch_right',
+              'switch.hallway_lights_switch',
+              'switch.bedroom_lights_switch_right',
+              'switch.bathroom_lights_switch_left',
+            ] %}
+            {{ states['switch']
+              | selectattr('entity_id', 'in', lights_switches_entities_ids)
+              | selectattr('state', '==', 'on')
+              | map(attribute='entity_id')
+              | list }}
+        
+        lights_list_turned_on:
+          friendly_name: 'Список включенных светильников'
+          value_template: >
+            {% set lights_entities_ids = [
+              'light.bedroom_aqara_led_bulb',
+            ] %}
+            {{ states['light']
+              | selectattr('entity_id', 'in', lights_entities_ids)
+              | selectattr('state', '==', 'on')
+              | map(attribute='entity_id')
+              | list }}
+        
+        heaters_list_turned_on:
+          friendly_name: 'Список включенных нагревателей'
+          value_template: >
+            {% set heaters_switches_entities_ids = [
+              'switch.bedroom_airpurifier_ptc',
+              'switch.kidsroom_airpurifier_ptc',
+            ] %}
+            {{ states['switch']
+              | selectattr('entity_id', 'in', heaters_switches_entities_ids)
+              | selectattr('state', '==', 'on')
+              | map(attribute='entity_id')
+              | list }}
+        
+            
 
 
   binary_sensor:
@@ -22,6 +70,18 @@ away:
             {% else %}
               mdi:motion-sensor-off
             {% endif %}
+        
+        any_light_is_on:
+          friendly_name: 'Дома включен свет'
+          device_class: light
+          value_template: >
+            {{ (states('sensor.lights_switches_list_turned_on') | length + states('sensor.lights_list_turned_on') | length) > 0 }}
+        
+        any_heater_is_on:
+          friendly_name: 'Дома включен подогрев воздуха'
+          device_class: heat
+          value_template: >
+            {{ states('sensor.lights_switches_list_turned_on') | length > 0 }}
   
   
   switch:
@@ -52,17 +112,13 @@ away:
       alias: 'Выключение всех светильников'
       sequence:
         - service: light.turn_off
-          entity_id: light.bedroom_aqara_led_bulb
+          data_template:
+            entity_id: >-
+              {{ states('sensor.lights_list_turned_on') }}
         - service: switch.turn_off
-          target:
-            entity_id:
-              - switch.kidsroom_lights_common_switch_left
-              - switch.kidsroom_wall_lights_switch
-              - switch.kitchen_lights_switch_left
-              - switch.kitchen_lights_switch_right
-              - switch.hallway_lights_switch
-              - switch.bedroom_lights_switch_right
-              - switch.bathroom_lights_switch_left
+          data_template:
+            entity_id: >-
+              {{ states('sensor.lights_switches_list_turned_on') }}
         - service: notify.tg
           data:
             message: >
@@ -75,10 +131,9 @@ away:
       alias: 'Выключение всех обогревателей'
       sequence:
         - service: switch.turn_off
-          target:
-            entity_id:
-              - switch.bedroom_airpurifier_ptc
-              - switch.kidsroom_airpurifier_ptc
+          data_template:
+            entity_id: >
+              {{ states('sensor.heaters_list_turned_on') }}
         - service: notify.tg
           data:
             message: >
@@ -89,20 +144,36 @@ away:
 
 
   automation:
-    - id: 'Все ушли из дома'
+    - id: 'Все ушли из дома, выключаем свет'
       alias: everyone_left_home
       trigger:
         - platform: state
           entity_id: input_boolean.somebody_home
           from: 'on'
           to: 'off'
+      condition:
+        - condition: state
+          entity_id: binary_sensor.any_light_is_on
+          state: 'on'
       action:
         - service: script.turn_on
-          target:
-            entity_id:
-              - script.turn_off_all_lights
-              - script.turn_off_all_heaters
-
+          entity_id: script.turn_off_all_lights
+    
+    - id: 'Все ушли из дома, выключаем нагреватели'
+      alias: everyone_left_home
+      trigger:
+        - platform: state
+          entity_id: input_boolean.somebody_home
+          from: 'on'
+          to: 'off'
+      condition:
+        - condition: state
+          entity_id: binary_sensor.any_header_is_on
+          state: 'on'
+      action:
+        - service: script.turn_on
+          entity_id: script.turn_off_all_heaters
+    
     - id: 'Входная дверь закрылась, запуск таймера проверки отсутствия'
       alias: left_home_check_timer_start
       trigger:
