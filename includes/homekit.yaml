@@ -25,6 +25,7 @@
     include_entity_globs:
       - binary_sensor.*_water_leak
       - switch.*_forced_ventilation
+      - switch.*_airpurifier_ptc
     exclude_entities:
       - light.miio_gateway
   entity_config:
@@ -64,3 +65,7 @@
       name: 'Проветривание'
     switch.kidsroom_airpurifier_forced_ventilation:
       name: 'Проветривание'
+    switch.bedroom_airpurifier_ptc:
+      name: 'Подогрев'
+    switch.kidsroom_airpurifier_ptc:
+      name: 'Подогрев'
