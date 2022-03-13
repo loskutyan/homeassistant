@@ -145,7 +145,7 @@ away:
 
   automation:
     - id: 'Все ушли из дома, выключаем свет'
-      alias: everyone_left_home
+      alias: everyone_left_home_turn_off_lights
       trigger:
         - platform: state
           entity_id: input_boolean.somebody_home
@@ -160,7 +160,7 @@ away:
           entity_id: script.turn_off_all_lights
     
     - id: 'Все ушли из дома, выключаем нагреватели'
-      alias: everyone_left_home
+      alias: everyone_left_home_turn_off_heaters
       trigger:
         - platform: state
           entity_id: input_boolean.somebody_home
