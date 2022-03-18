@@ -21,18 +21,17 @@ common:
               Доступные команды:
             data:
               keyboard:
-                - '/system_report'
-                - '/climate_report'
-                - '/control'
+                - 'Отчет по системе, Отчет по климату'
+                - 'Управление'
     
     - id: 'Панель управления бота'
       alias: telegram_control_panel
       initial_state: 'on'
       trigger:
         - platform: event
-          event_type: telegram_command
+          event_type: telegram_text
           event_data:
-            command: '/control'
+            text: 'Управление'
       action:
         - service: notify.tg
           data:

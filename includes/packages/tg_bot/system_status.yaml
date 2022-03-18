@@ -64,9 +64,9 @@ system_status:
       initial_state: true
       trigger:
         - platform: event
-          event_type: telegram_command
+          event_type: telegram_text
           event_data:
-            command: '/system_report'
+            text: 'Отчет по системе'
       action:
         - service: script.turn_on
           entity_id: 

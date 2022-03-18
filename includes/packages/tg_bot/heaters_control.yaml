@@ -3,7 +3,6 @@ heaters_control:
     - id: 'Управление обогревателями в боте'
       alias: telegram_heaters_control
       initial_state: true
-      hide_entity: true
       trigger:
         - platform: event
           event_type: telegram_callback
@@ -24,7 +23,6 @@ heaters_control:
     - id: 'Выключить все обогреватели через бот'
       alias: telegram_all_heaters_turn_off
       initial_state: true
-      hide_entity: true
       trigger:
         platform: event
         event_type: telegram_callback

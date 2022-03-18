@@ -21,9 +21,9 @@ climate_status:
       initial_state: true
       trigger:
         - platform: event
-          event_type: telegram_command
+          event_type: telegram_text
           event_data:
-            command: '/climate_report'
+            text: 'Отчет по климату'
       action:
         - service: script.turn_on
           entity_id: 
