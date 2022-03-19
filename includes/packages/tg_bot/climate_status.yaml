@@ -3,16 +3,106 @@ climate_status:
     telegram_climate_report:
       alias: 'Отправка отчета о состоянии воздуха'
       sequence:
-       - service: notify.tg
-         data:
-           message: |
-            {{'\U0001F6CC'}} Спальня:
-            {{'\U0001F321'}} {{ states('sensor.bedroom_average_temperature') | round(1) }}°C  {{'\U0001F4A7'}} {{ states('sensor.bedroom_average_humidity') | round(1) }}%
-            {{'\U0001F332'}} {{ states('sensor.cleargrass_air_co2') | int }}ppm {{'\U0000269B'}} {{ states('sensor.cleargrass_air_pm25') }}ppm
-            
-            {{'\U0001F9D2'}} Детская:
-            {{'\U0001F321'}} {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C  {{'\U0001F4A7'}} {{ states('sensor.kidsroom_average_humidity') | round(1) }}%
-            {{'\U0001F332'}} {{ states('sensor.qingping_air_lite_co2') | int }}ppm {{'\U0000269B'}} {{ states('sensor.qingping_air_lite_pm25') }}ppm
+        - service: notify.tg
+          data:
+            message: |
+              {% set bedroom_hum_status = states('humidifier.smartmi_humidifier_bedroom') %}
+              {% if bedroom_hum_status == 'off' %}
+                {% set bedroom_hum_status_message = 'выключен' %}
+              {% elif bedroom_hum_status == 'unavailable' %}
+                {% set bedroom_hum_status_message = 'недоступен' %}
+              {% elif bedroom_hum_status == 'on'%}
+                {% set bedroom_hum_tank_status = states('sensor.smartmi_humidifier_bedroom_water_tank') %}
+                {% if bedroom_hum_tank_status == 'off' %}
+                  {% set bedroom_hum_status_message = 'контейнер снят' %}
+                {% else %}
+                  {% set bedroom_hum_speed = states('sensor.smartmi_humidifier_bedroom_motor_speed') %}
+                  {% set bedroom_hum_water_level = states('sensor.smartmi_humidifier_bedroom_water_level') %}
+                  {% set bedroom_hum_status_message = bedroom_hum_speed + ' об/мин, ур. воды ' + bedroom_hum_water_level + '%' %}
+                {% endif %}
+              {% endif %}
+              {% set kidsroom_hum_status = states('humidifier.smartmi_humidifier_kidsroom') %}
+              {% if kidsroom_hum_status == 'off' %}
+                {% set kidsroom_hum_status_message = 'выключен' %}
+              {% elif kidsroom_hum_status == 'unavailable' %}
+                {% set kidsroom_hum_status_message = 'недоступен' %}
+              {% elif kidsroom_hum_status == 'on'%}
+                {% set kidsroom_hum_tank_status = states('sensor.smartmi_humidifier_kidsroom_water_tank') %}
+                {% if kidsroom_hum_tank_status == 'off' %}
+                  {% set kidsroom_hum_status_message = 'контейнер снят' %}
+                {% else %}
+                  {% set kidsroom_hum_speed = states('sensor.smartmi_humidifier_kidsroom_motor_speed') %}
+                  {% set kidsroom_hum_water_level = states('sensor.smartmi_humidifier_kidsroom_water_level') %}
+                  {% set kidsroom_hum_status_message = kidsroom_hum_speed + ' об/мин, ур. воды ' + kidsroom_hum_water_level + '%' %}
+                {% endif %}
+              {% endif %}
+              {% set bedroom_breezer_status = states('fan.mijia_airpurifier_bedroom') %}
+              {% if bedroom_breezer_status == 'off' %}
+                {% set bedroom_breezer_status_message = 'выключен' %}
+              {% elif bedroom_breezer_status == 'unavailable' %}
+                {% set bedroom_breezer_status_message = 'недоступен' %}
+              {% elif bedroom_breezer_status == 'on' %}
+                {% set bedroom_breezer_mode = states('sensor.bedroom_airpurifier_preset_mode') %}
+                {% if bedroom_breezer_mode == 'Sleep' %}
+                  {% set bedroom_breezer_mode_message = 'ночной' %}
+                {% elif bedroom_breezer_mode == 'Auto' %}
+                  {% set bedroom_breezer_mode_message = 'автоматический' %}
+                {% elif bedroom_breezer_mode == 'Favorite' %}
+                  {% if is_state('switch.bedroom_airpurifier_favourite_speed_smart_control', 'on') %}
+                    {% set bedroom_breezer_mode_message = 'умный' %}
+                  {% elif is_state('switch.bedroom_airpurifier_forced_ventilation', 'on') %}
+                    {% set bedroom_breezer_mode_message = 'проветривания' %}
+                  {% else %}
+                    {% set bedroom_breezer_mode_message = 'фиксированный' %}
+                  {% endif %}
+                {% endif %}
+                {% set bedroom_breezer_speed = states('sensor.bedroom_airpurifier_current_speed') %}
+                {% if is_state('binary_sensor.bedroom_airpurifier_ptc_status', 'on') %}
+                  {% set bedroom_breezer_heater_message = ', \U0001F525' + ' подогрев включен' %}
+                {% else %}
+                  {% set bedroom_breezer_heater_message = '' %}
+                {% endif %}
+                {% set bedroom_breezer_status_message = 'режим ' + bedroom_breezer_mode_message + ', скорость ' + bedroom_breezer_speed + bedroom_breezer_heater_message %}
+              {% endif %}
+              {% set kidsroom_breezer_status = states('fan.mijia_airpurifier_kidsroom') %}
+              {% if kidsroom_breezer_status == 'off' %}
+                {% set kidsroom_breezer_status_message = 'выключен' %}
+              {% elif kidsroom_breezer_status == 'unavailable' %}
+                {% set kidsroom_breezer_status_message = 'недоступен' %}
+              {% elif kidsroom_breezer_status == 'on' %}
+                {% set kidsroom_breezer_mode = states('sensor.kidsroom_airpurifier_preset_mode') %}
+                {% if kidsroom_breezer_mode == 'Sleep' %}
+                  {% set kidsroom_breezer_mode_message = 'ночной' %}
+                {% elif kidsroom_breezer_mode == 'Auto' %}
+                  {% set kidsroom_breezer_mode_message = 'автоматический' %}
+                {% elif kidsroom_breezer_mode == 'Favorite' %}
+                  {% if is_state('switch.kidsroom_airpurifier_favourite_speed_smart_control', 'on') %}
+                    {% set kidsroom_breezer_mode_message = 'умный' %}
+                  {% elif is_state('switch.kidsroom_airpurifier_forced_ventilation', 'on') %}
+                    {% set kidsroom_breezer_mode_message = 'проветривания' %}
+                  {% else %}
+                    {% set kidsroom_breezer_mode_message = 'фиксированный' %}
+                  {% endif %}
+                {% endif %}
+                {% set kidsroom_breezer_speed = states('sensor.kidsroom_airpurifier_current_speed') %}
+                {% if is_state('binary_sensor.kidsroom_airpurifier_ptc_status', 'on') %}
+                  {% set kidsroom_breezer_heater_message = ', \U0001F525' + ' подогрев включен' %}
+                {% else %}
+                  {% set kidsroom_breezer_heater_message = '' %}
+                {% endif %}
+                {% set kidsroom_breezer_status_message = 'режим ' + kidsroom_breezer_mode_message + ', скорость ' + kidsroom_breezer_speed + kidsroom_breezer_heater_message %}
+              {% endif %}
+              {{'\U0001F6CC'}} Спальня:
+              {{'\U0001F321'}} {{ states('sensor.bedroom_average_temperature') | round(1) }}°C  {{'\U0001F4A7'}} {{ states('sensor.bedroom_average_humidity') | round(1) }}%
+              {{'\U0001F332'}} {{ states('sensor.cleargrass_air_co2') | int }}ppm {{'\U0000269B'}} {{ states('sensor.cleargrass_air_pm25') }}ppm
+              {{'\U0001F6BF'}} Увлажнитель: {{ bedroom_hum_status_message }}
+              {{'\U0001F4A8'}} Бризер: {{ bedroom_breezer_status_message }}
+              
+              {{'\U0001F9D2'}} Детская:
+              {{'\U0001F321'}} {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C  {{'\U0001F4A7'}} {{ states('sensor.kidsroom_average_humidity') | round(1) }}%
+              {{'\U0001F332'}} {{ states('sensor.qingping_air_lite_co2') | int }}ppm {{'\U0000269B'}} {{ states('sensor.qingping_air_lite_pm25') }}ppm
+              {{'\U0001F6BF'}} Увлажнитель: {{ kidsroom_hum_status_message }}
+              {{'\U0001F4A8'}} Бризер: {{ kidsroom_breezer_status_message }}
 
 
   automation:
