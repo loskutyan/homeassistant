@@ -105,7 +105,7 @@ alarm:
       alias: ups_power_is_up_again
       trigger:
         - platform: state
-          entity_id: binary_sensor.ups_power_went_down
+          entity_id: binary_sensor.ups_powered_by_battery
           from: 'on'
       condition:
         - condition: state
