@@ -8,7 +8,7 @@ bedroom:
             {% set hour = now().hour %}
             {% if hour > 6 %}
               230
-            {% elif hour >= 1 %}
+            {% elif hour < 1 %}
               192
             {% else %}
               154
@@ -22,7 +22,7 @@ bedroom:
             {% set max_temp = state_attr('light.bedroom_aqara_led_bulb', 'max_mireds') %}
             {% if hour > 6 %}
               {{ 0.7 * (max_temp  - min_temp) + min_temp }}
-            {% elif hour >= 1 %}
+            {% elif hour < 1 %}
               {{ 0.8 * (max_temp  - min_temp) + min_temp }}
             {% else %}
               {{ 0.9 * (max_temp  - min_temp) + min_temp }}
@@ -107,6 +107,11 @@ bedroom:
           entity_id: sensor.bedroom_aqara_led_bulb_evening_color_temp_schedule
         - platform: time_pattern
           minutes: '/15'
+        - platform: state
+          entity_id: sensor.bedroom_movie_status
+          from:
+            - 'playing'
+            - 'paused'
       condition:
         - condition: state
           entity_id: light.bedroom_aqara_led_bulb
