@@ -11,19 +11,49 @@ system_status:
         unavailable_switches_count:
           friendly_name: 'Всего недоступных переключателей'
           value_template: >
-            {{ states.switch | selectattr ('state', 'equalto', 'unavailable') | list | length }}
+            {{ states.switch
+                | selectattr ('state', 'equalto', 'unavailable')
+                | map(attribute='entity_id')
+                | list
+                | length
+              - states.switch
+                | selectattr ('state', 'equalto', 'unavailable')
+                | map(attribute='entity_id')
+                | select('match', 'switch\.posudo.+')
+                | list
+                | length }}
           icon_template: mdi:counter
         
         unavailable_sensors_count:
           friendly_name: 'Всего недоступных сенсоров'
           value_template: >
-            {{ states.sensor | selectattr ('state', 'equalto', 'unavailable') | list | length - 1 }}
+            {{ states.sensor
+                | selectattr ('state', 'equalto', 'unavailable')
+                | map(attribute='entity_id')
+                | list
+                | length
+              - states.sensor
+                | selectattr ('state', 'equalto', 'unavailable')
+                | map(attribute='entity_id')
+                | select('match', 'sensor\.posudo.+|sensor\.sun_next.+')
+                | list
+                | length }}
           icon_template: mdi:counter
           
         unavailable_binary_sensors_count:
           friendly_name: 'Всего недоступных бинарных сенсоров'
           value_template: >
-            {{ states.binary_sensor | selectattr ('state', 'equalto', 'unavailable') | list | length }}
+            {{ states.binary_sensor
+                | selectattr ('state', 'equalto', 'unavailable')
+                | map(attribute='entity_id')
+                | list
+                | length
+              - states.binary_sensor
+                | selectattr ('state', 'equalto', 'unavailable')
+                | map(attribute='entity_id')
+                | select('match', 'binary_sensor\.posudo.+')
+                | list
+                | length }}
           icon_template: mdi:counter
 
 
