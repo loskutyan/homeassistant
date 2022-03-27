@@ -39,8 +39,8 @@ sleep_time:
       action:
         - service: switch.turn_off
           entity_id: switch.kidsroom_lights_common_switch_left
-        - service: switch.turn_off
-          entity_id: switch.kidsroom_wall_lights_switch
+        - service: light.turn_off
+          entity_id: light.kidsroom_wall_aqara_led_bulbs
         - service: input_boolean.turn_on
           entity_id: input_boolean.kids_asleep
         

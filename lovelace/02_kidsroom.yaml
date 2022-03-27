@@ -58,29 +58,29 @@ cards:
           - entity: switch.kidsroom_airpurifier_buzzer
             name: 'Звук'
             state_color: true
-
+  
   
   - type: vertical-stack
     title: 'Свет'
     cards:
-      - type: glance
-        state_color: true
+      - type: entities
         entities:
           - entity: switch.kidsroom_lights_common_switch_left
             name: 'Люстра'
-            show_last_changed: true
             icon: mdi:ceiling-light
-            tap_action:
-              action: toggle
-              
-          - entity: switch.kidsroom_wall_lights_switch
-            name: 'Бра'
-            show_last_changed: true
-            icon: mdi:coach-lamp
-            tap_action:
-              action: toggle
-
-
+      
+      - type: custom:light-entity-card
+        entity: light.kidsroom_wall_aqara_led_bulbs
+        header: 'Бра'
+        consolidate_entities: true
+        shorten_cards: true
+        brightness: true
+        color_temp: true
+        full_width_sliders: true
+        show_slider_percent: true
+        effects_list: false
+  
+  
   - type: vertical-stack
     title: 'Климат'
     cards:      
@@ -133,8 +133,8 @@ cards:
         entities:
           - entity: sensor.kidsroom_average_humidity
             name: 'Влажность'
-
-
+  
+  
   - type: vertical-stack
     title: 'Качество воздуха'
     cards:      

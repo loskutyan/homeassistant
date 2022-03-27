@@ -16,7 +16,7 @@
       - sensor.kidsroom_average_humidity
       - switch.hallway_lights_switch
       - switch.kidsroom_lights_common_switch_left
-      - switch.kidsroom_wall_lights_switch
+      - light.kidsroom_wall_aqara_led_bulbs
       - switch.kitchen_lights_switch_left
       - switch.kitchen_lights_switch_right
       - switch.bedroom_lights_switch_right
@@ -45,7 +45,7 @@
       name: 'Свет'
     switch.kidsroom_lights_common_switch_left:
       name: 'Люстра'
-    switch.kidsroom_wall_lights_switch:
+    light.kidsroom_wall_aqara_led_bulbs:
       name: 'Бра'
     switch.kitchen_lights_switch_left:
       name: 'Бра'

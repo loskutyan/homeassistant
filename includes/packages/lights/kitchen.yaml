@@ -1,0 +1,147 @@
+kitchen:
+  automation:
+    - id: 'Свет при движении на кухне'
+      alias: kitchen_motion_lights_turn_on
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.kitchen_motion_sensor_occupancy
+          to: 'on'
+      condition:
+        - condition: state
+          entity_id: input_boolean.kids_asleep
+          state: 'off'
+        - condition: numeric_state
+          entity_id: sensor.kitchen_motion_sensor_illuminance_lux
+          below: 100
+        - condition: state
+          entity_id: switch.kitchen_lights_switch_left
+          state: 'off'
+        - condition: state
+          entity_id: switch.kitchen_lights_switch_right
+          state: 'off'
+        - condition: time
+          after: '08:00:00'
+          before: '22:45:00'
+      action:
+        - service: switch.turn_on
+          entity_id: switch.kitchen_lights_switch_right
+    
+    - id: 'Свет при движении на кухне ночью'
+      alias: kitchen_motion_lights_night_turn_on
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.kitchen_motion_sensor_occupancy
+          to: 'on'
+      condition:
+        - condition: state
+          entity_id: input_boolean.kids_asleep
+          state: 'off'
+        - condition: numeric_state
+          entity_id: sensor.kitchen_motion_sensor_illuminance_lux
+          below: 100
+        - condition: state
+          entity_id: switch.kitchen_lights_switch_left
+          state: 'off'
+        - condition: state
+          entity_id: switch.kitchen_lights_switch_right
+          state: 'off'
+        - condition: time
+          after: '22:45:00'
+          before: '08:00:00'
+      action:
+        - service: switch.turn_on
+          entity_id: switch.kitchen_lights_switch_left
+    
+    - id: 'Включение таймера выключения света на кухне'
+      alias: kitchen_lights_on_timer_start
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: switch.kitchen_lights_switch_left
+          to: 'on'
+        - platform: state
+          entity_id: switch.kitchen_lights_switch_right
+          to: 'on'
+      action:
+        - service: timer.start
+          entity_id: timer.kitchen_lights_turn_off_without_motion
+    
+    - id: 'Выключение таймера выключения света на кухне'
+      alias: kitchen_lights_off_timer_finish
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: switch.kitchen_lights_switch_left
+          to: 'off'
+        - platform: state
+          entity_id: switch.kitchen_lights_switch_right
+          to: 'off'
+      condition:
+        - condition: state
+          entity_id: switch.kitchen_lights_switch_left
+          state: 'off'
+        - condition: state
+          entity_id: switch.kitchen_lights_switch_right
+          state: 'off'
+      action:
+        - service: timer.finish
+          entity_id: timer.kitchen_lights_turn_off_without_motion
+    
+    - id: 'Сброс таймера выключения света при движении на кухне'
+      alias: kitchen_motion_lights_timer_reset
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.kitchen_motion_sensor_occupancy
+          to: 'on'
+      condition:
+        - condition: state
+          entity_id: timer.kitchen_lights_turn_off_without_motion
+          state: 'active'
+      action:
+        - service: timer.start
+          entity_id: timer.kitchen_lights_turn_off_without_motion
+    
+    - id: 'Сброс таймера выключения света после окончания при движении на кухне'
+      alias: kitchen_motion_timer_finished_lights_timer_reset
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: timer.kitchen_lights_turn_off_without_motion
+          from: 'active'
+          to: 'idle'
+      condition:
+        - condition: state
+          entity_id: binary_sensor.kitchen_motion_sensor_occupancy
+          state: 'on'
+      action:
+        - service: timer.start
+          entity_id: timer.kitchen_lights_turn_off_without_motion
+          
+    - id: 'Выключение света на кухне, если нет движения'
+      alias: kitchen_no_motion_lights_turn_off
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: timer.kitchen_lights_turn_off_without_motion
+          from: 'active'
+          to: 'idle'
+      condition:
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: switch.kitchen_lights_switch_left
+              state: 'on'
+            - condition: state
+              entity_id: switch.kitchen_lights_switch_right
+              state: 'on'
+        - condition: state
+          entity_id: binary_sensor.kitchen_motion_sensor_occupancy
+          state: 'off'
+      action:
+        - service: switch.turn_off
+          entity_id: switch.kitchen_lights_switch_left
+        - service: switch.turn_off
+          entity_id: switch.kitchen_lights_switch_right

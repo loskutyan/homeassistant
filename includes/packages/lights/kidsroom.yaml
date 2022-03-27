@@ -1,0 +1,20 @@
+kidsroom:
+  light:
+    - platform: group
+      name: kidsroom_wall_aqara_led_bulbs
+      entities:
+        - light.kidsroom_aqara_led_bulb_left
+        - light.kidsroom_aqara_led_bulb_right
+  
+  
+  automation:
+    - id: 'Включение/выключение бра в детской'
+      alias: kidsroom_wall_lights_toggle_with_common_switch
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.kidsroom_lights_common_switch_action
+          to: 'single_right'
+      action:
+        - service: light.toggle
+          entity_id: light.kidsroom_wall_aqara_led_bulbs

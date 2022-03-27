@@ -30,6 +30,7 @@ away:
           value_template: >
             {% set lights_entities_ids = [
               'light.bedroom_aqara_led_bulb',
+              'light.kidsroom_wall_aqara_led_bulbs',
             ] %}
             {{ states['light']
               | selectattr('entity_id', 'in', lights_entities_ids)
