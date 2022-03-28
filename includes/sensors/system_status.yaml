@@ -1,3 +1,0 @@
-- platform: version
-  name: current_ha
-  scan_interval: 1800

@@ -81,7 +81,7 @@ kidsroom:
               {{ states('sensor.kidsroom_wall_aqara_led_bulbs_brightness_schedule') }}
             color_temp: >
               {{ states('sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule') }}
-            transition: 2
+            transition: 5
     
     - id: 'Изменение света бра в детской'
       alias: kidsroom_wall_aqara_led_bulbs_control
@@ -106,4 +106,3 @@ kidsroom:
             color_temp: >
               {{ states('sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule') }}
             transition: 5
-
