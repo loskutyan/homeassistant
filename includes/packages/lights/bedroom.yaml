@@ -2,8 +2,8 @@ bedroom:
   sensor:
     - platform: template
       sensors:
-        bedroom_aqara_led_bulb_evening_brightness_schedule:
-          friendly_name: 'Яркость лампы Aqara в спальне вечером'
+        bedroom_aqara_led_bulb_brightness_schedule:
+          friendly_name: 'Яркость лампы Aqara в спальне'
           value_template: >
             {% set hour = now().hour %}
             {% if hour > 6 %}
@@ -14,8 +14,8 @@ bedroom:
               154
             {% endif %}
         
-        bedroom_aqara_led_bulb_evening_color_temp_schedule:
-          friendly_name: 'Температура лампы Aqara в спальне вечером'
+        bedroom_aqara_led_bulb_color_temp_schedule:
+          friendly_name: 'Температура лампы Aqara в спальне'
           value_template: >
             {% set hour = now().hour %}
             {% set min_temp = state_attr('light.bedroom_aqara_led_bulb', 'min_mireds') %}
@@ -31,7 +31,7 @@ bedroom:
   
   automation:
     - id: 'Включение/выключение лампы Aqara в спальне'
-      alias: bedroom_aqara_led_bulb_button_toggle
+      alias: bedroom_aqara_led_bulb_toggle
       initial_state: true
       trigger:
         - platform: state
@@ -43,7 +43,11 @@ bedroom:
       action:
         - service: light.toggle
           entity_id: light.bedroom_aqara_led_bulb
-          data:
+          data_template:
+            brightness: >
+              {{ states('sensor.bedroom_aqara_led_bulb_brightness_schedule') }}
+            color_temp: >
+              {{ states('sensor.bedroom_aqara_led_bulb_color_temp_schedule') }}
             transition: 2
           
     - id: 'Прибавление яркости лампы Aqara в спальне'
@@ -92,19 +96,19 @@ bedroom:
           entity_id: light.bedroom_aqara_led_bulb
           data_template:
             brightness: >
-              {{ states('sensor.bedroom_aqara_led_bulb_evening_brightness_schedule') }}
+              {{ states('sensor.bedroom_aqara_led_bulb_brightness_schedule') }}
             color_temp: >
-              {{ states('sensor.bedroom_aqara_led_bulb_evening_color_temp_schedule') }}
+              {{ states('sensor.bedroom_aqara_led_bulb_color_temp_schedule') }}
             transition: 2
     
-    - id: 'Изменение света лампы Aqara в спальне вечером'
-      alias: bedroom_aqara_led_bulb_evening_control
+    - id: 'Изменение света лампы Aqara в спальне'
+      alias: bedroom_aqara_led_bulb_control
       initial_state: true
       trigger:
         - platform: state
-          entity_id: sensor.bedroom_aqara_led_bulb_evening_brightness_schedule
+          entity_id: sensor.bedroom_aqara_led_bulb_brightness_schedule
         - platform: state
-          entity_id: sensor.bedroom_aqara_led_bulb_evening_color_temp_schedule
+          entity_id: sensor.bedroom_aqara_led_bulb_color_temp_schedule
         - platform: time_pattern
           minutes: '/15'
         - platform: state
@@ -131,7 +135,7 @@ bedroom:
           entity_id: light.bedroom_aqara_led_bulb
           data_template:
             brightness: >
-              {{ states('sensor.bedroom_aqara_led_bulb_evening_brightness_schedule') }}
+              {{ states('sensor.bedroom_aqara_led_bulb_brightness_schedule') }}
             color_temp: >
-              {{ states('sensor.bedroom_aqara_led_bulb_evening_color_temp_schedule') }}
+              {{ states('sensor.bedroom_aqara_led_bulb_color_temp_schedule') }}
             transition: 5

@@ -7,9 +7,47 @@ kidsroom:
         - light.kidsroom_aqara_led_bulb_right
   
   
+  sensor:
+    - platform: template
+      sensors:
+        kidsroom_wall_aqara_led_bulbs_brightness_schedule:
+          friendly_name: 'Яркость ламп Aqara в детской'
+          value_template: >
+            {% set now = now() %}
+            {% set total_minutes = now.hour * 60 + now.minute %}
+            {% if total_minutes > 360 and total_minutes < 1350 %}
+              230
+            {% elif total_minutes >= 1350 and total_minutes < 1380 %}
+              204
+            {% elif total_minutes >= 1380 and total_minutes < 1395 %}
+              178
+            {% elif total_minutes >= 1395 and total_minutes < 1410 %}
+              153
+            {% else %}
+              127
+            {% endif %}
+        
+        kidsroom_wall_aqara_led_bulbs_color_temp_schedule:
+          friendly_name: 'Температура ламп Aqara в детской'
+          value_template: >
+            {% set now = now() %}
+            {% set total_minutes = now.hour * 60 + now.minute %}
+            {% set min_temp = state_attr('light.kidsroom_wall_aqara_led_bulbs', 'min_mireds') %}
+            {% set max_temp = state_attr('light.kidsroom_wall_aqara_led_bulbs', 'max_mireds') %}
+            {% if total_minutes > 360 and total_minutes < 1350 %}
+              {{ 0.7 * (max_temp  - min_temp) + min_temp }}
+            {% elif total_minutes >= 1350 and total_minutes < 1380 %}
+              {{ 0.8 * (max_temp  - min_temp) + min_temp }}
+            {% elif total_minutes >= 1380 and total_minutes < 1395 %}
+              {{ 0.9 * (max_temp  - min_temp) + min_temp }}
+            {% else %}
+              max_temp
+            {% endif %}
+  
+  
   automation:
     - id: 'Включение/выключение бра в детской'
-      alias: kidsroom_wall_lights_toggle_with_common_switch
+      alias: kidsroom_wall_lights_toggle
       initial_state: true
       trigger:
         - platform: state
@@ -18,3 +56,54 @@ kidsroom:
       action:
         - service: light.toggle
           entity_id: light.kidsroom_wall_aqara_led_bulbs
+          data_template:
+            brightness: >
+              {{ states('sensor.kidsroom_wall_aqara_led_bulbs_brightness_schedule') }}
+            color_temp: >
+              {{ states('sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule') }}
+            transition: 2
+    
+    - id: 'Включение бра в детской вечером'
+      alias: kidsroom_wall_aqara_led_bulbs_turn_on
+      initial_state: true
+      trigger:
+        - platform: time
+          at: '22:15'
+      condition:
+        - condition: state
+          entity_id: switch.kidsroom_lights_common_switch_left
+          state: 'on'
+      action:
+        - service: light.turn_on
+          entity_id: light.kidsroom_wall_aqara_led_bulbs
+          data_template:
+            brightness: >
+              {{ states('sensor.kidsroom_wall_aqara_led_bulbs_brightness_schedule') }}
+            color_temp: >
+              {{ states('sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule') }}
+            transition: 2
+    
+    - id: 'Изменение света бра в детской'
+      alias: kidsroom_wall_aqara_led_bulbs_control
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.kidsroom_wall_aqara_led_bulbs_brightness_schedule
+        - platform: state
+          entity_id: sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule
+        - platform: time_pattern
+          minutes: '/15'
+      condition:
+        - condition: state
+          entity_id: light.kidsroom_wall_aqara_led_bulbs
+          state: 'on'
+      action:
+        - service: light.turn_on
+          entity_id: light.kidsroom_wall_aqara_led_bulbs
+          data_template:
+            brightness: >
+              {{ states('sensor.kidsroom_wall_aqara_led_bulbs_brightness_schedule') }}
+            color_temp: >
+              {{ states('sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule') }}
+            transition: 5
+

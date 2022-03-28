@@ -145,18 +145,17 @@ cards:
           entities:
             - type: conditional
               conditions:
-                - entity: binary_sensor.updater
+                - entity: binary_sensor.home_assistant_versions_update_available
                   state: 'on'
               row:
                 type: custom:multiple-entity-row
-                entity: sensor.current_ha
+                entity: sensor.current_version
                 name: 'Версия Home Assistant'
                 show_state: false
                 entities:
-                  - entity: sensor.current_ha
+                  - entity: sensor.current_version
                     name: 'Текущая'
-                  - entity: binary_sensor.updater
-                    attribute: newest_version
+                  - entity: sensor.home_assistant_versions
                     name: 'Последняя'
             - type: conditional
               conditions:

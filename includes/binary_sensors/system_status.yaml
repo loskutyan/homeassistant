@@ -11,6 +11,6 @@
       device_class: update
       value_template: >
         {% set hacs = states('binary_sensor.hacs_updates_available') %}
-        {% set ha = states('binary_sensor.updater') %}
+        {% set ha = states('binary_sensor.home_assistant_versions_update_available') %}
         {{ ha or hacs }}
       icon_template: mdi:package-up
