@@ -11,19 +11,43 @@ system_status:
         unavailable_switches_count:
           friendly_name: 'Всего недоступных переключателей'
           value_template: >
-            {{ states.switch | selectattr ('state', 'equalto', 'unavailable') | list | length }}
+            {{ states.switch
+              | selectattr ('state', 'equalto', 'unavailable')
+              | list
+              | length
+              - states.switch
+              | selectattr ('entity_id', 'match', 'switch.posudo*')
+              | selectattr ('state', 'equalto', 'unavailable')
+              | list
+              | length }}
           icon_template: mdi:counter
         
         unavailable_sensors_count:
           friendly_name: 'Всего недоступных сенсоров'
           value_template: >
-            {{ states.sensor | selectattr ('state', 'equalto', 'unavailable') | list | length - 1 }}
+            {{ states.sensor
+              | selectattr ('state', 'equalto', 'unavailable')
+              | list
+              | length
+              - states.sensor
+              | selectattr ('entity_id', 'match', 'sensor.posudo*|sensor.sun*')
+              | selectattr ('state', 'equalto', 'unavailable')
+              | list
+              | length }}
           icon_template: mdi:counter
           
         unavailable_binary_sensors_count:
           friendly_name: 'Всего недоступных бинарных сенсоров'
           value_template: >
-            {{ states.binary_sensor | selectattr ('state', 'equalto', 'unavailable') | list | length }}
+            {{ states.binary_sensor
+              | selectattr ('state', 'equalto', 'unavailable')
+              | list
+              | length
+              - states.sensor
+              | selectattr ('entity_id', 'match', 'binary_sensor.posudo*')
+              | selectattr ('state', 'equalto', 'unavailable')
+              | list
+              | length }}
           icon_template: mdi:counter
 
 
