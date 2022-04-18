@@ -93,7 +93,7 @@ kidsroom_humidity:
             {% set last_triggered = state_attr('automation.kidsroom_needs_humidification_notify', 'last_triggered') %}
             {% set now = utcnow() %}
             {% set delta_minutes = (now - last_triggered).total_seconds() / 60 if last_triggered != none else 1000 %}
-            {{ delta_minutes > 60 }}
+            {{ delta_minutes > 90 }}
       action:
         - service: notify.tg
           data:
