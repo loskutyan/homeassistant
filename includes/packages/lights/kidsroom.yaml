@@ -73,12 +73,17 @@ kidsroom:
       alias: kidsroom_wall_aqara_led_bulbs_turn_on
       initial_state: true
       trigger:
-        - platform: time
-          at: '22:15'
+        - platform: time_pattern
+          minutes: '/5'
       condition:
+        - condition: time
+          after: '22:10'
+          before: '23:30'
         - condition: state
           entity_id: switch.kidsroom_lights_common_switch_left
           state: 'on'
+          for:
+            minutes: 5
       action:
         - service: light.turn_on
           entity_id: light.kidsroom_wall_aqara_led_bulbs
@@ -112,3 +117,24 @@ kidsroom:
             color_temp: >
               {{ states('sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule') }}
             transition: 5
+    
+    - id: 'Выключение люстры в детской вечером'
+      alias: kidsroom_main_ligths_turn_off
+      initial_state: true
+      trigger:
+        - platform: time_pattern
+          minutes: '/5'
+      condition:
+        - condition: time
+          after: '22:15'
+        - condition: state
+          entity_id: light.kidsroom_wall_aqara_led_bulbs
+          state: 'on'
+          for:
+            minutes: 5
+        - condition: state
+          entity_id: switch.kidsroom_lights_common_switch_left
+          state: 'on'
+      action:
+        - service: switch.turn_off
+          entity_id: light.kidsroom_lights_common_switch_left
