@@ -17,7 +17,7 @@ away:
               'switch.kitchen_lights_switch_right',
               'switch.hallway_lights_switch',
               'switch.bedroom_lights_switch_right',
-              'switch.bathroom_lights_switch_left',
+              'switch.bathroom_lights_switch',
             ] %}
             {{ states.switch
               | selectattr('entity_id', 'in', lights_switches_entities_ids)
@@ -217,6 +217,14 @@ away:
         - platform: state
           entity_id: binary_sensor.hallway_door_sensor_contact
           to: 'on'
+        - platform: state
+          entity_id: binary_sensor.bathroom_door_sensor_contact
+          from:
+            - 'on'
+            - 'off'
+          to:
+            - 'on'
+            - 'off'
         - platform: state
           entity_id: sensor.bedroom_aqara_button_action
           to:
