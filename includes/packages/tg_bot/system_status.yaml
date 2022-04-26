@@ -14,24 +14,21 @@ system_status:
             {{ states.switch
               | selectattr ('state', 'equalto', 'unavailable')
               | list
-              | length
-              - states.switch
-              | selectattr ('entity_id', 'match', 'switch.posudo*')
-              | selectattr ('state', 'equalto', 'unavailable')
-              | list
               | length }}
           icon_template: mdi:counter
         
         unavailable_sensors_count:
           friendly_name: 'Всего недоступных сенсоров'
           value_template: >
+            {% set dishwasher_unavailable_sensors = [
+              'sensor.dishwasher_remaining_program_time',
+              'sensor.dishwasher_program_progress',
+              'sensor.dishwasher_duration'
+            ]%}
             {{ states.sensor
               | selectattr ('state', 'equalto', 'unavailable')
-              | list
-              | length
-              - states.sensor
-              | selectattr ('entity_id', 'match', 'sensor.posudo*|sensor.sun*')
-              | selectattr ('state', 'equalto', 'unavailable')
+              | rejectattr ('entity_id', 'in', dishwasher_unavailable_sensors)
+              | rejectattr ('entity_id', 'match', 'sensor.sun*')
               | list
               | length }}
           icon_template: mdi:counter
@@ -40,11 +37,6 @@ system_status:
           friendly_name: 'Всего недоступных бинарных сенсоров'
           value_template: >
             {{ states.binary_sensor
-              | selectattr ('state', 'equalto', 'unavailable')
-              | list
-              | length
-              - states.sensor
-              | selectattr ('entity_id', 'match', 'binary_sensor.posudo*')
               | selectattr ('state', 'equalto', 'unavailable')
               | list
               | length }}
