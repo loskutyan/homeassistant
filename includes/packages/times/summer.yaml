@@ -1,0 +1,53 @@
+summer_time:
+  input_boolean:
+    warm_season:
+      name: 'Теплое время года'
+  
+  
+  switch:
+    - platform: template
+      switches:
+        warm_season:
+          friendly_name: 'Теплое время года'
+          value_template: >
+            {{ states('input_boolean.warm_season') }}
+          turn_on:
+            service: input_boolean.turn_on
+            data:
+              entity_id: input_boolean.warm_season
+          turn_off:
+            service: input_boolean.turn_off
+            data:
+              entity_id: input_boolean.warm_season
+          icon_template: >
+            {% if is_state('input_boolean.warm_season', 'on') %}
+              mdi:white-balance-sunny
+            {% else %}
+              mdi:snowflake
+            {% endif %}
+  
+  
+  automation:
+    - id: 'Выключение увлажения'
+      alias: summer_humidification_turn_off
+      initial_state: true
+      trigger:
+        - platform: homeassistant
+          event: start
+        - platform: time_pattern
+          hours: '/6'
+        - platform: state
+          entity_id: input_boolean.warm_season
+          to: 'on'
+      condition:
+        - condition: state
+          entity_id: input_boolean.warm_season
+          state: 'on'
+      action:
+        - service: automation.turn_off
+          data_template:
+            entity_id: >-
+              {{ states.automation
+                | selectattr ('entity_id', 'match', 'automation.*humidifier*|automation.*humidification_notify')
+                | map(attribute='entity_id')
+                | list }}
