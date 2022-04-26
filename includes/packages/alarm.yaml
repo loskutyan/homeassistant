@@ -1,14 +1,35 @@
 alarm:
+  sensor:
+    - platform: template
+      sensors:
+        found_water_leaks:
+          friendly_name: 'Найденные протечки'
+          value_template: >
+            {% set leakage_sensors = [
+              'binary_sensor.bathroom_aqara_leak_sensor_water_leak',
+              'binary_sensor.washing_machine_aqara_leak_sensor_water_leak'
+              'binary_sensor.dishwasher_aqara_leak_sensor_water_leak'
+            ] %}
+            {{ states.binary_sensor
+              | selectattr('entity_id','in', leakage_sensors)
+              | selectattr('state', 'eq', 'on')
+              | map(attribute='name')
+              | join(', ')
+              | lower }}
+  
+  
   binary_sensor:
     - platform: template
       sensors:
         water_leak_detected:
           friendly_name: 'Обнаружена протечка'
           value_template: >
-            {% set bathroom = states('binary_sensor.bathroom_aqara_leak_sensor_water_leak') %}
-            {% set washing_machine = states('binary_sensor.washing_machine_aqara_leak_sensor_water_leak') %}
-            {% set dishwasher = states('binary_sensor.dishwasher_aqara_leak_sensor_water_leak') %}
-            {{ bathroom or washing_machine or dishwasher }}
+            {% set found_water_leaks = states('sensor.found_water_leaks') %}
+            {% if found_water_leaks != 'unknown' %}
+              {{ found_water_leaks | length > 0 }}
+            {% else %}
+              false
+            {% endif %}
           device_class: moisture
           icon_template: mdi:water-alert
         
@@ -36,16 +57,7 @@ alarm:
       entity_id: binary_sensor.water_leak_detected
       state: 'on'
       message: >
-        {% set leakage_sensors = [
-          'binary_sensor.bathroom_aqara_leak_sensor_water_leak',
-          'binary_sensor.washing_machine_aqara_leak_sensor_water_leak'
-          'binary_sensor.dishwasher_aqara_leak_sensor_water_leak'
-        ] %}
-        {{ '\U0001F30A' }} Протечка воды: {{ states | selectattr('entity_id','in', leakage_sensors)
-                                                    | selectattr('state', 'eq', 'on')
-                                                    | map(attribute='name')
-                                                    | join(', ')
-                                                    | lower }}
+        {{ '\U0001F30A' }} Протечка воды: {{ states('sensor.found_water_leaks') }}
       done_message: '{{ ''\U0001F3DC'' }} Протечка воды устранена'
       repeat: 5
       can_acknowledge: true
@@ -54,7 +66,7 @@ alarm:
     
     fridge_door_left_opened:
       name: 'Дверь холодильника не закрыта'
-      entity_id: binary_sensor.kholodilno_morozilnaia_kombinatsiia_door
+      entity_id: binary_sensor.fridge_door
       state: 'on'
       repeat: 5
       skip_first: true
