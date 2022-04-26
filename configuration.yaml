@@ -63,6 +63,8 @@ lovelace:
       type: module
     - url: /hacsfiles/mini-humidifier/mini-humidifier-bundle.js
       type: module
+    - url: /hacsfiles/lovelace-xiaomi-vacuum-map-card/xiaomi-vacuum-map-card.js
+      type: module
 
 
 # Text to speech
@@ -84,8 +86,6 @@ home_connect:
 
 notify: !include includes/notify.yaml
 timer: !include includes/timer.yaml
-group: !include includes/groups.yaml
-scene: !include includes/scenes.yaml
 recorder: !include includes/recorder.yaml
 fan: !include includes/fan.yaml
 
