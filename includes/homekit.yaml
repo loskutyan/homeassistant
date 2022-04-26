@@ -28,6 +28,8 @@
       - switch.*_airpurifier_ptc
     exclude_entities:
       - light.miio_gateway
+      - light.kidsroom_aqara_led_bulb_left
+      - light.kidsroom_aqara_led_bulb_right
   entity_config:
     vacuum.roborock_vacuum_s5e:
       name: 'Пылесос'
@@ -56,7 +58,7 @@
     switch.bathroom_lights_switch_left:
       name: 'Свет'
     binary_sensor.bathroom_aqara_leak_sensor_water_leak:
-      name: 'Протечка под душевой кабиной'
+      name: 'Протечка под ванной'
     binary_sensor.washing_machine_aqara_leak_sensor_water_leak:
       name: 'Протечка под стиральной машиной'
     binary_sensor.dishwasher_aqara_leak_sensor_water_leak:
