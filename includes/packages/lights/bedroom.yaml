@@ -1,4 +1,4 @@
-bedroom:
+bedroom_lights:
   sensor:
     - platform: template
       sensors:

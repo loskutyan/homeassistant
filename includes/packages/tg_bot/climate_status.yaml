@@ -1,4 +1,4 @@
-climate_status:
+tg_climate_status:
   script:
     telegram_climate_report:
       alias: 'Отправка отчета о состоянии воздуха'

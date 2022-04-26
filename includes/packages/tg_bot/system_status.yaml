@@ -1,4 +1,4 @@
-system_status:
+tg_system_status:
   sensor:
     - platform: template
       sensors:
@@ -64,7 +64,7 @@ system_status:
       initial_state: true
       trigger:
         - platform: homeassistant
-          event: start          
+          event: start
       action:
         - service: notify.tg
           data:

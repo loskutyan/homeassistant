@@ -1,4 +1,4 @@
-heaters_control:
+tg_heaters_control:
   automation:
     - id: 'Управление обогревателями в боте'
       alias: telegram_heaters_control

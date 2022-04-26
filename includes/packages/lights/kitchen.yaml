@@ -1,4 +1,4 @@
-kitchen:
+kitchen_lights:
   automation:
     - id: 'Свет при движении на кухне'
       alias: kitchen_motion_lights_turn_on

@@ -1,4 +1,4 @@
-common:
+tg_common:
   automation:
     - id: 'Клавиатура бота'
       alias: telegram_keyboard

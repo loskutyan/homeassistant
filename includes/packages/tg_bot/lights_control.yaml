@@ -1,4 +1,4 @@
-lights_control:
+tg_lights_control:
   automation:
     - id: 'Управление светом в боте'
       alias: telegram_lights_control

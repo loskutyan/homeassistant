@@ -1,4 +1,4 @@
-hallway:
+hallway_lights:
   automation:
     - id: 'Дверь в прихожей открылась'
       alias: hallway_door_was_opened

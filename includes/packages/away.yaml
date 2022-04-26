@@ -19,7 +19,7 @@ away:
               'switch.bedroom_lights_switch_right',
               'switch.bathroom_lights_switch_left',
             ] %}
-            {{ states['switch']
+            {{ states.switch
               | selectattr('entity_id', 'in', lights_switches_entities_ids)
               | selectattr('state', '==', 'on')
               | map(attribute='entity_id')
@@ -32,7 +32,7 @@ away:
               'light.bedroom_aqara_led_bulb',
               'light.kidsroom_wall_aqara_led_bulbs',
             ] %}
-            {{ states['light']
+            {{ states.light
               | selectattr('entity_id', 'in', lights_entities_ids)
               | selectattr('state', '==', 'on')
               | map(attribute='entity_id')
@@ -45,15 +45,13 @@ away:
               'switch.bedroom_airpurifier_ptc',
               'switch.kidsroom_airpurifier_ptc',
             ] %}
-            {{ states['switch']
+            {{ states.switch
               | selectattr('entity_id', 'in', heaters_switches_entities_ids)
               | selectattr('state', '==', 'on')
               | map(attribute='entity_id')
               | list }}
-        
-            
-
-
+  
+  
   binary_sensor:
     - platform: template
       sensors:
@@ -106,8 +104,8 @@ away:
             {% else %}
               mdi:home-minus
             {% endif %}
-
-
+  
+  
   script:
     turn_off_all_lights:
       alias: 'Выключение всех светильников'
@@ -142,8 +140,8 @@ away:
                                  'Нагрев выключен - сэкономили кучу денег',
                                  'Обогреватели обесточены... но это неточно'] %}
               {{ '\U0001F525' }} {{ messages | random }}
-
-
+  
+  
   automation:
     - id: 'Все ушли из дома, выключаем свет'
       alias: everyone_left_home_turn_off_lights
@@ -192,7 +190,7 @@ away:
       action:
         - service: timer.start
           entity_id: timer.left_home_by_phone_presence_after_door_closed
-
+    
     - id: 'Телефон вышел из сети после закрытия двери'
       alias: phone_left_home_after_door_was_closed
       trigger:
@@ -209,7 +207,7 @@ away:
           entity_id: input_boolean.somebody_home
         - service: timer.finish
           entity_id: timer.left_home_by_phone_presence_after_door_closed
-
+    
     - id: 'Кто-то дома после закрытия двери'
       alias: somebody_home_after_door_was_closed
       trigger:
@@ -234,7 +232,7 @@ away:
           entity_id: input_boolean.somebody_home
         - service: timer.finish
           entity_id: timer.left_home_by_phone_presence_after_door_closed
-
+    
     - id: 'Кто-то вернулся домой'
       alias: somebody_back_home
       trigger:

@@ -1,4 +1,4 @@
-kidsroom:
+kidsroom_lights:
   light:
     - platform: group
       name: kidsroom_wall_aqara_led_bulbs
