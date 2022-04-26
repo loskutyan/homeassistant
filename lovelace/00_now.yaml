@@ -135,6 +135,7 @@ cards:
         entities:
           - entity: switch.somebody_home
           - entity: switch.kids_asleep
+          - entity: switch.warm_season
       
       - type: conditional
         conditions:
