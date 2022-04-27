@@ -142,6 +142,6 @@ kitchen_lights:
           state: 'off'
       action:
         - service: switch.turn_off
-          entity_id: switch.kitchen_lights_switch_left
-        - service: switch.turn_off
-          entity_id: switch.kitchen_lights_switch_right
+          entity_id:
+            - switch.kitchen_lights_switch_left
+            - switch.kitchen_lights_switch_right

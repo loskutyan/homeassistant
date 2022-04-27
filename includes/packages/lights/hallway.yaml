@@ -108,7 +108,7 @@ hallway_lights:
           entity_id: timer.hallway_lights_turn_off_without_motion
     
     - id: 'Сброс таймера выключения света после окончания при движении в прихожей'
-      alias: kitchen_motion_timer_finished_lights_timer_reset
+      alias: hallway_motion_timer_finished_lights_timer_reset
       initial_state: true
       trigger:
         - platform: state
@@ -141,4 +141,3 @@ hallway_lights:
       action:
         - service: switch.turn_off
           entity_id: switch.hallway_lights_switch
-    

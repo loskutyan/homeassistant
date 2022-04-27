@@ -22,6 +22,10 @@ kitchen_lights_turn_off_without_motion:
   name: 'Свет на кухне погаснет через '
   duration: 1200
 
+bathroom_lights_turn_off_without_motion:
+  name: 'Свет в ванной погаснет через '
+  duration: 1200
+
 hallway_lights_turn_off_without_motion:
   name: 'Свет в прихожей погаснет через '
   duration: 180
