@@ -137,4 +137,4 @@ kidsroom_lights:
           state: 'on'
       action:
         - service: switch.turn_off
-          entity_id: light.kidsroom_lights_common_switch_left
+          entity_id: switch.kidsroom_lights_common_switch_left
