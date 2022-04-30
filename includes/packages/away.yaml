@@ -59,8 +59,13 @@ away:
           friendly_name: 'Движение дома'
           device_class: motion
           value_template: >
-            {{ states('binary_sensor.hallway_motion_sensor_occupancy')
-               or states('binary_sensor.kitchen_motion_sensor_occupancy') }}
+            {% if is_state('binary_sensor.hallway_motion_sensor_occupancy', 'on')
+              or is_state('binary_sensor.kitchen_motion_sensor_occupancy', 'on')
+              or is_state('binary_sensor.bathroom_motion_sensor_occupancy', 'on') %}
+              on
+            {% else %}
+              off
+            {% endif %}
           delay_off:
             minutes: 10
           icon_template: >
