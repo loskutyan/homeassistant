@@ -47,9 +47,9 @@ sleep_time:
               entity_id: input_boolean.bedroom_asleep
           icon_template: >
             {% if is_state('input_boolean.bedroom_asleep', 'on') %}
-              mdi:bed
+              mdi:bed-king
             {% else %}
-              mdi:human-child
+              mdi:human
             {% endif %}
 
 
