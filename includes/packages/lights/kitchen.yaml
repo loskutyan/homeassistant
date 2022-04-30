@@ -9,7 +9,7 @@ kitchen_lights:
           to: 'on'
       condition:
         - condition: state
-          entity_id: input_boolean.kids_asleep
+          entity_id: input_boolean.kidsroom_asleep
           state: 'off'
         - condition: numeric_state
           entity_id: sensor.kitchen_motion_sensor_illuminance_lux
@@ -36,7 +36,7 @@ kitchen_lights:
           to: 'on'
       condition:
         - condition: state
-          entity_id: input_boolean.kids_asleep
+          entity_id: input_boolean.kidsroom_asleep
           state: 'off'
         - condition: numeric_state
           entity_id: sensor.kitchen_motion_sensor_illuminance_lux

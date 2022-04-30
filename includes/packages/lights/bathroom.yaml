@@ -13,7 +13,10 @@ bathroom_lights:
           to: 'on'
       condition:
         - condition: state
-          entity_id: input_boolean.kids_asleep
+          entity_id: input_boolean.kidsroom_asleep
+          state: 'off'
+        - condition: state
+          entity_id: input_boolean.bedroom_asleep
           state: 'off'
         - condition: state
           entity_id: switch.bathroom_lights_switch

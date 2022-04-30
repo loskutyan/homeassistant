@@ -1,27 +1,52 @@
 sleep_time:
   input_boolean:
-    kids_asleep:
-      name: 'Ребенок спит'
+    kidsroom_asleep:
+      name: 'В детской спят'
+      initial: 'off'
+
+    bedroom_asleep:
+      name: 'В спальне спят'
       initial: 'off'
 
 
   switch:
     - platform: template
       switches:
-        kids_asleep:
-          friendly_name: 'Ребенок спит'
+        kidsroom_asleep:
+          friendly_name: 'В детской спят'
           value_template: >
-            {{ states('input_boolean.kids_asleep') }}
+            {{ states('input_boolean.kidsroom_asleep') }}
           turn_on:
             service: input_boolean.turn_on
             data:
-              entity_id: input_boolean.kids_asleep
+              entity_id: input_boolean.kidsroom_asleep
           turn_off:
             service: input_boolean.turn_off
             data:
-              entity_id: input_boolean.kids_asleep
+              entity_id: input_boolean.kidsroom_asleep
           icon_template: >
-            {% if is_state('input_boolean.kids_asleep', 'on') %}
+            {% if is_state('input_boolean.kidsroom_asleep', 'on') %}
+              mdi:bed
+            {% else %}
+              mdi:human-child
+            {% endif %}
+
+    - platform: template
+      switches:
+        bedroom_asleep:
+          friendly_name: 'В спальне спят'
+          value_template: >
+            {{ states('input_boolean.bedroom_asleep') }}
+          turn_on:
+            service: input_boolean.turn_on
+            data:
+              entity_id: input_boolean.bedroom_asleep
+          turn_off:
+            service: input_boolean.turn_off
+            data:
+              entity_id: input_boolean.bedroom_asleep
+          icon_template: >
+            {% if is_state('input_boolean.bedroom_asleep', 'on') %}
               mdi:bed
             {% else %}
               mdi:human-child
@@ -42,7 +67,7 @@ sleep_time:
         - service: light.turn_off
           entity_id: light.kidsroom_wall_aqara_led_bulbs
         - service: input_boolean.turn_on
-          entity_id: input_boolean.kids_asleep
+          entity_id: input_boolean.kidsroom_asleep
         
         - service: input_select.select_option
           entity_id: input_select.kidsroom_airpurifier_mode
@@ -74,7 +99,7 @@ sleep_time:
           above: 0
       action:
         - service: input_boolean.turn_off
-          entity_id: input_boolean.kids_asleep
+          entity_id: input_boolean.kidsroom_asleep
     
     - id: 'Отход ко сну в спальне'
       alias: bedroom_going_to_sleep
@@ -90,6 +115,8 @@ sleep_time:
             transition: 1
         - service: switch.turn_off
           entity_id: switch.bedroom_lights_switch_right
+        - service: input_boolean.turn_on
+          entity_id: input_boolean.bedroom_asleep
         
         - service: input_select.select_option
           entity_id: input_select.bedroom_airpurifier_mode
@@ -108,3 +135,17 @@ sleep_time:
             mode: 'Silent'
         - service: timer.start
           entity_id: timer.bedroom_humidifier_fixed_mode
+
+    - id: 'В спальне уже не спят'
+      alias: bedroom_supposed_to_wake_up
+      initial_state: true
+      trigger:
+        - platform: time
+          at: '09:30'
+        - platform: numeric_state
+          entity_id: sun.sun
+          attribute: elevation
+          above: 0
+      action:
+        - service: input_boolean.turn_off
+          entity_id: input_boolean.bedroom_asleep

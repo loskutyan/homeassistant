@@ -63,12 +63,6 @@ cards:
   - type: vertical-stack
     title: 'Свет'
     cards:
-      - type: entities
-        entities:
-          - entity: switch.kidsroom_lights_common_switch_left
-            name: 'Люстра'
-            icon: mdi:ceiling-light
-      
       - type: custom:light-entity-card
         entity: light.kidsroom_wall_aqara_led_bulbs
         header: 'Бра'
@@ -79,7 +73,13 @@ cards:
         full_width_sliders: true
         show_slider_percent: true
         effects_list: false
-  
+
+      - type: entities
+        entities:
+          - entity: switch.kidsroom_lights_common_switch_left
+            name: 'Люстра'
+            icon: mdi:ceiling-light
+
   
   - type: vertical-stack
     title: 'Климат'
@@ -212,5 +212,3 @@ cards:
         entities:
           - entity: sensor.qingping_air_lite_pm10
             name: 'PM10'
-
-
