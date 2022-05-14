@@ -1,4 +1,97 @@
 weather:
+  sensor:
+    - platform: template
+      sensors:
+        yandex_weather_friendly_rainy_conditions:
+          friendly_name: 'Перевод состояний Яндекс.Погоды - дождь'
+          value_template: >
+            {% set friendly_conditions = {
+              'drizzle': 'Морось',
+              'light-rain': 'Небольшой дождь',
+              'rain': 'Дождь',
+              'moderate-rain': 'Умеренно сильный дождь',
+              'heavy-rain': 'Сильный дождь',
+              'continuous-heavy-rain': 'Длительный сильный дождь',
+              'showers': 'Ливень',
+              'wet-snow': 'Дождь со снегом',
+            } %}
+            {{ friendly_conditions | to_json(ensure_ascii=False) }}
+        
+        yandex_weather_friendly_dry_n_snowy_conditions:
+          friendly_name: 'Перевод состояний Яндекс.Погоды - сухо или снег'
+          value_template: >
+            {% set friendly_conditions = {
+              'clear': 'Ясно',
+              'partly-cloudy': 'Малооблачно',
+              'cloudy': 'Облачно с прояснениями',
+              'overcast': 'Пасмурно',
+              'light-snow': 'Небольшой снег',
+              'snow': 'Снег',
+              'snow-showers': 'Снегопад'
+            } %}
+            {{ friendly_conditions | to_json(ensure_ascii=False) }}
+        
+        yandex_weather_friendly_stormy_conditions:
+          friendly_name: 'Перевод состояний Яндекс.Погоды - гроза'
+          value_template: >
+            {% set friendly_conditions = {
+              'hail': 'Град',
+              'thunderstorm': 'Гроза',
+              'thunderstorm-with-rain': 'Дождь с грозой',
+              'thunderstorm-with-hail': 'Гроза с градом'
+            } %}
+            {{ friendly_conditions | to_json(ensure_ascii=False) }}
+        
+        yandex_weather_rainy_condition_emojis:
+          friendly_name: 'Emoji состояний Яндекс.Погоды - дождь'
+          value_template: >
+            {% set emojis = {
+              'drizzle': '\U0001F327\U0001F302',
+              'light-rain': '\U0001F327\U0001F302',
+              'rain': '\U0001F327',
+              'moderate-rain': '\U0001F327',
+              'heavy-rain': '\U0001F327\U00002614',
+              'continuous-heavy-rain': '\U0001F327\U0001F327',
+              'showers': '\U0001F327\U00002614',
+              'wet-snow': '\U0001F327\U00002744'
+            } %}
+            {{ emojis | to_json(ensure_ascii=False) }}
+        
+        yandex_weather_other_condition_emojis:
+          friendly_name: 'Emoji состояний Яндекс.Погоды - остальное'
+          value_template: >
+            {% set emojis = {
+              'clear': '\U00002600',
+              'partly-cloudy': '\U0001F324',
+              'cloudy': '\U000026C5',
+              'overcast': '\U00002601',
+              'hail': '\U0001F327\U00002614',
+              'thunderstorm': '\U0001F329',
+              'thunderstorm-with-rain': '\U000026C8',
+              'thunderstorm-with-hail': '\U000026C8',
+              'light-snow': '\U0001F328',
+              'snow': '\U0001F328',
+              'snow-showers': '\U0001F328\U0001F328'
+            } %}
+            {{ emojis | to_json(ensure_ascii=False) }}
+        
+        weather_friendly_wind_bearings:
+          friendly_name: 'Расшифровка направлений ветра'
+          value_template: >
+            {% set friendly_wind_bearings = {
+              '0': 'Штиль',
+              '45': 'Северо-восточный',
+              '90': 'Восточный',
+              '135': 'Юго-восточный',
+              '180': 'Южный',
+              '225': 'Юго-западный',
+              '270': 'Западный',
+              '315': 'Серверо-западный',
+              '360': 'Северный'
+            } %}
+            {{ friendly_wind_bearings | to_json(ensure_ascii=False) }}
+  
+  
   automation: 
     - id: 'Прогноз погоды на день'
       alias: morning_weather_forecast
@@ -10,43 +103,64 @@ weather:
         - service: notify.tg
           data:
             message: |
-              {% set emoji = state_attr('weather.yandex_weather', 'weather_condition_emoji') %}
-              {% set wind_bearing = state_attr('weather.yandex_weather', 'wind_bearing_txt').lower() %}
+              {% set condition = states('weather.yandex_weather') %}
+              {% set wind_bearing = state_attr('weather.yandex_weather', 'wind_bearing') %}
+              {% set friendly_conditions_json = states('sensor.yandex_weather_friendly_rainy_conditions')[:-1] ~ ', ' ~ states('sensor.yandex_weather_friendly_dry_n_snowy_conditions')[1:-1] ~ ', ' ~ states('sensor.yandex_weather_friendly_stormy_conditions')[1:] %}
+              {% set friendly_conditions = friendly_conditions_json | from_json %}
+              {% set condition_emojis_json = states('sensor.yandex_weather_rainy_condition_emojis')[:-1] ~ ', ' ~ states('sensor.yandex_weather_other_condition_emojis')[1:] %}
+              {% set condition_emojis = condition_emojis_json | from_json %}
+              {% set friendly_wind_bearings = states('sensor.weather_friendly_wind_bearings') | from_json %}
+              {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
+              {% set condition_emoji = condition_emojis.get(condition, '\U0000274C') %}
+              {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
               {% set messages = ['Итак.',
                                  'Доброе утро!',
                                  'Итак, поехали!'] %}
               {{ messages | random }}
-              {{ emoji }} Сейчас на улице {{ state_attr('weather.yandex_weather', 'weather_condition').lower() }}.
-              Температура {{ state_attr('weather.yandex_weather', 'temperature') }}°C,
-              ощущается как {{ state_attr('weather.yandex_weather', 'feels_like') }}°C.
-              Ветер {{ wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'wind_speed_ms') }} м/с.
+              {{ condition_emoji }} Сейчас на улице {{ friendly_condition.lower() }}.
+              Температура {{ state_attr('weather.yandex_weather', 'temperature') }}°C.
+              Ветер {{ friendly_wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'wind_speed') }} м/с.
         - delay: 00:00:30
         - service: notify.tg
           data:
             message: |
               {% set temp_min = state_attr('weather.yandex_weather', 'forecast')[0]['templow'] %}
               {% set temp_max = state_attr('weather.yandex_weather', 'forecast')[0]['temperature'] %}
-              {% set wind_bearing = state_attr('weather.yandex_weather', 'forecast')[0]['wind_bearing_txt'].lower() %}
-              {% set emoji = state_attr('weather.yandex_weather', 'forecast')[0]['weather_condition_emoji'] %}
+              {% set condition = state_attr('weather.yandex_weather', 'forecast')[0]['condition'] %}
+              {% set wind_bearing = state_attr('weather.yandex_weather', 'forecast')[0]['wind_bearing'] %}
+              {% set friendly_conditions_json = states('sensor.yandex_weather_friendly_rainy_conditions')[:-1] ~ ', ' ~ states('sensor.yandex_weather_friendly_dry_n_snowy_conditions')[1:-1] ~ ', ' ~ states('sensor.yandex_weather_friendly_stormy_conditions')[1:] %}
+              {% set friendly_conditions = friendly_conditions_json | from_json %}
+              {% set condition_emojis_json = states('sensor.yandex_weather_rainy_condition_emojis')[:-1] ~ ', ' ~ states('sensor.yandex_weather_other_condition_emojis')[1:] %}
+              {% set condition_emojis = condition_emojis_json | from_json %}
+              {% set friendly_wind_bearings = states('sensor.weather_friendly_wind_bearings') | from_json %}
+              {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
+              {% set condition_emoji = condition_emojis.get(condition, '\U0000274C') %}
+              {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
               {% set messages = ['Теперь к прогнозам.',
                                  'Далее.'] %}
               {{ messages | random }}
               
-              {{ emoji }} Днем на улице будет {{ state_attr('weather.yandex_weather', 'forecast')[0]['weather_condition'].lower() }}.
-              Температура ожидается около {{ temp_min }} - {{ temp_max }}°C,
-              по ощущениям это примерно {{ state_attr('weather.yandex_weather', 'forecast')[0]['feels_like'] }}°C.
-              Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[0]['precipitation_probability'] }}%.
-              Ветер {{ wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'forecast')[0]['wind_speed_ms'] }} м/с.
+              {{ condition_emoji }} Днем на улице будет {{ friendly_condition.lower() }}.
+              Температура ожидается около {{ temp_min }} - {{ temp_max }}°C.
+              Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[0]['precipitation'] }}%.
+              Ветер {{ friendly_wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'forecast')[0]['wind_speed'] }} м/с.
         - delay: 00:00:30
         - service: notify.tg
           data:
             message: |
               {% set temp_min = state_attr('weather.yandex_weather', 'forecast')[1]['templow'] %}
               {% set temp_max = state_attr('weather.yandex_weather', 'forecast')[1]['temperature'] %}
-              {% set wind_bearing = state_attr('weather.yandex_weather', 'forecast')[1]['wind_bearing_txt'].lower() %}
-              {% set emoji = state_attr('weather.yandex_weather', 'forecast')[1]['weather_condition_emoji'] %}
-              {{ emoji }} Ближе к вечеру будет {{ state_attr('weather.yandex_weather', 'forecast')[1]['weather_condition'].lower() }}.
-              Температура примерно {{ temp_min }} - {{ temp_max }}°C,
-              по ощущениям это около {{ state_attr('weather.yandex_weather', 'forecast')[1]['feels_like'] }}°C.
-              Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[1]['precipitation_probability'] }}%.
-              Ветер {{ wind_bearing }}, скорость {{ state_attr('weather.yandex_weather', 'forecast')[1]['wind_speed_ms'] }} м/с.
+              {% set condition = state_attr('weather.yandex_weather', 'forecast')[1]['condition'] %}
+              {% set wind_bearing = state_attr('weather.yandex_weather', 'forecast')[1]['wind_bearing'] %}
+              {% set friendly_conditions_json = states('sensor.yandex_weather_friendly_rainy_conditions')[:-1] ~ ', ' ~ states('sensor.yandex_weather_friendly_dry_n_snowy_conditions')[1:-1] ~ ', ' ~ states('sensor.yandex_weather_friendly_stormy_conditions')[1:] %}
+              {% set friendly_conditions = friendly_conditions_json | from_json %}
+              {% set condition_emojis_json = states('sensor.yandex_weather_rainy_condition_emojis')[:-1] ~ ', ' ~ states('sensor.yandex_weather_other_condition_emojis')[1:] %}
+              {% set condition_emojis = condition_emojis_json | from_json %}
+              {% set friendly_wind_bearings = states('sensor.weather_friendly_wind_bearings') | from_json %}
+              {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
+              {% set condition_emoji = condition_emojis.get(condition, '\U0000274C') %}
+              {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
+              {{ condition_emoji }} Ближе к вечеру будет {{ friendly_condition.lower() }}.
+              Температура примерно {{ temp_min }} - {{ temp_max }}°C.
+              Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[1]['precipitation'] }}%.
+              Ветер {{ friendly_wind_bearing }}, скорость {{ state_attr('weather.yandex_weather', 'forecast')[1]['wind_speed'] }} м/с.
