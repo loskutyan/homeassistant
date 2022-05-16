@@ -7,10 +7,9 @@ tg_climate_status:
           data:
             message: |
               {% set bedroom_hum_status = states('humidifier.smartmi_humidifier_bedroom') %}
+              {% set bedroom_hum_status_message = 'недоступен' %}
               {% if bedroom_hum_status == 'off' %}
                 {% set bedroom_hum_status_message = 'выключен' %}
-              {% elif bedroom_hum_status == 'unavailable' %}
-                {% set bedroom_hum_status_message = 'недоступен' %}
               {% elif bedroom_hum_status == 'on'%}
                 {% set bedroom_hum_tank_status = states('sensor.smartmi_humidifier_bedroom_water_tank') %}
                 {% if bedroom_hum_tank_status == 'off' %}
@@ -22,10 +21,9 @@ tg_climate_status:
                 {% endif %}
               {% endif %}
               {% set kidsroom_hum_status = states('humidifier.smartmi_humidifier_kidsroom') %}
+              {% set kidsroom_hum_status_message = 'недоступен' %}
               {% if kidsroom_hum_status == 'off' %}
                 {% set kidsroom_hum_status_message = 'выключен' %}
-              {% elif kidsroom_hum_status == 'unavailable' %}
-                {% set kidsroom_hum_status_message = 'недоступен' %}
               {% elif kidsroom_hum_status == 'on'%}
                 {% set kidsroom_hum_tank_status = states('sensor.smartmi_humidifier_kidsroom_water_tank') %}
                 {% if kidsroom_hum_tank_status == 'off' %}

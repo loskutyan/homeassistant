@@ -80,100 +80,99 @@ weather:
   script:
     sending_yandex_weather_forecast:
       alias: 'Отправка прогноза погоды'
-        sequence:
-          - service: notify.tg
-            data:
-              message: |
-                {% set condition = states('weather.yandex_weather') %}
-                {% set wind_bearing = state_attr('weather.yandex_weather', 'wind_bearing') %}
-                {% set friendly_conditions_json = states('sensor.weather_friendly_rainfall_conditions')[:-1] ~ ', ' ~ states('sensor.weather_friendly_dry_conditions')[1:] %}
-                {% set friendly_conditions = friendly_conditions_json | from_json %}
-                {% set conditions_emojis_json = states('sensor.weather_rainfall_conditions_emojis')[:-1] ~ ', ' ~ states('sensor.weather_dry_conditions_emojis')[1:] %}
-                {% set conditions_emojis = conditions_emojis_json | from_json %}
-                {% set friendly_wind_bearings = states('sensor.weather_friendly_wind_bearings') | from_json %}
-                {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
-                {% set condition_emoji = conditions_emojis.get(condition, '\U0000274C') %}
-                {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
-                {% if is_state("sun.sun", "above_horizon") -%}
-                {% set messages = ['Итак.',
-                                   'Здравствуйте!',
-                                   'Итак, поехали!'] %}
-                {% set now_hour = now().hour %}
-                {% if 6 <= now_hour < 12 %}
-                  {% set messages = messages + ['Доброе утро!', 'Утро доброе!'] %}
-                {% elif 12 <= now_hour < 18 %}
-                  {% set messages = messages + ['Добрый день!'] %}
-                {% elif 18 <= now_hour %}
-                  {% set messages = messages + ['Добрый вечер!', 'Вечер в хату!'] %}
-                {% endif %}
-                {{ messages | random }}
-                {{ condition_emoji }} Сейчас на улице {{ friendly_condition.lower() }}.
-                Температура {{ state_attr('weather.yandex_weather', 'temperature') }}°C.
-                Ветер {{ friendly_wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'wind_speed') }} м/с.
-          - delay: 00:00:15
-          - service: notify.tg
-            data:
-              message: |
-                {% set temp_min = state_attr('weather.yandex_weather', 'forecast')[0]['templow'] %}
-                {% set temp_max = state_attr('weather.yandex_weather', 'forecast')[0]['temperature'] %}
-                {% set condition = state_attr('weather.yandex_weather', 'forecast')[0]['condition'] %}
-                {% set wind_bearing = state_attr('weather.yandex_weather', 'forecast')[0]['wind_bearing'] %}
-                {% set friendly_conditions_json = states('sensor.weather_friendly_rainfall_conditions')[:-1] ~ ', ' ~ states('sensor.weather_friendly_dry_conditions')[1:] %}
-                {% set friendly_conditions = friendly_conditions_json | from_json %}
-                {% set conditions_emojis_json = states('sensor.weather_rainfall_conditions_emojis')[:-1] ~ ', ' ~ states('sensor.weather_dry_conditions_emojis')[1:] %}
-                {% set conditions_emojis = conditions_emojis_json | from_json %}
-                {% set friendly_wind_bearings = states('sensor.weather_friendly_wind_bearings') | from_json %}
-                {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
-                {% set condition_emoji = conditions_emojis.get(condition, '\U0000274C') %}
-                {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
-                {% set messages = ['Теперь к прогнозам.',
-                                   'Далее.'] %}
-                {% set now_hour = now().hour %}
-                {% if 0 <= now_hour < 6 %}
-                  {% set day_part = ['Утром'] %}
-                {% elif 6 <= now_hour < 12 %}
-                  {% set day_part = ['Днем', 'В середине дня'] %}
-                {% elif 12 <= now_hour < 18 %}
-                  {% set day_part = ['Вечером', 'К вечеру', 'Ближе к вечеру'] %}
-                {% elif 18 <= now_hour %}
-                  {% set day_part = ['Ночью'] %}
-                {% endif %}
-                {{ messages | random }}
+      sequence:
+        - service: notify.tg
+          data:
+            message: |
+              {% set condition = states('weather.yandex_weather') %}
+              {% set wind_bearing = state_attr('weather.yandex_weather', 'wind_bearing') %}
+              {% set friendly_conditions_json = states('sensor.weather_friendly_rainfall_conditions')[:-1] ~ ', ' ~ states('sensor.weather_friendly_dry_conditions')[1:] %}
+              {% set friendly_conditions = friendly_conditions_json | from_json %}
+              {% set conditions_emojis_json = states('sensor.weather_rainfall_conditions_emojis')[:-1] ~ ', ' ~ states('sensor.weather_dry_conditions_emojis')[1:] %}
+              {% set conditions_emojis = conditions_emojis_json | from_json %}
+              {% set friendly_wind_bearings = states('sensor.weather_friendly_wind_bearings') | from_json %}
+              {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
+              {% set condition_emoji = conditions_emojis.get(condition, '\U0000274C') %}
+              {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
+              {% set messages = ['Итак.',
+                                 'Здравствуйте!',
+                                 'Итак, поехали!'] %}
+              {% set now_hour = now().hour %}
+              {% if 6 <= now_hour < 12 %}
+                {% set messages = messages + ['Доброе утро!', 'Утро доброе!'] %}
+              {% elif 12 <= now_hour < 18 %}
+                {% set messages = messages + ['Добрый день!'] %}
+              {% elif 18 <= now_hour %}
+                {% set messages = messages + ['Добрый вечер!', 'Вечер в хату!'] %}
+              {% endif %}
+              {{ messages | random }}
+              {{ condition_emoji }} Сейчас на улице {{ friendly_condition.lower() }}.
+              Температура {{ state_attr('weather.yandex_weather', 'temperature') }}°C.
+              Ветер {{ friendly_wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'wind_speed') }} м/с.
+        - delay: 00:00:15
+        - service: notify.tg
+          data:
+            message: |
+              {% set temp_min = state_attr('weather.yandex_weather', 'forecast')[0]['templow'] %}
+              {% set temp_max = state_attr('weather.yandex_weather', 'forecast')[0]['temperature'] %}
+              {% set condition = state_attr('weather.yandex_weather', 'forecast')[0]['condition'] %}
+              {% set wind_bearing = state_attr('weather.yandex_weather', 'forecast')[0]['wind_bearing'] %}
+              {% set friendly_conditions_json = states('sensor.weather_friendly_rainfall_conditions')[:-1] ~ ', ' ~ states('sensor.weather_friendly_dry_conditions')[1:] %}
+              {% set friendly_conditions = friendly_conditions_json | from_json %}
+              {% set conditions_emojis_json = states('sensor.weather_rainfall_conditions_emojis')[:-1] ~ ', ' ~ states('sensor.weather_dry_conditions_emojis')[1:] %}
+              {% set conditions_emojis = conditions_emojis_json | from_json %}
+              {% set friendly_wind_bearings = states('sensor.weather_friendly_wind_bearings') | from_json %}
+              {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
+              {% set condition_emoji = conditions_emojis.get(condition, '\U0000274C') %}
+              {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
+              {% set messages = ['Теперь к прогнозам.',
+                                 'Далее.'] %}
+              {% set now_hour = now().hour %}
+              {% if 0 <= now_hour < 6 %}
+                {% set day_part = ['Утром'] %}
+              {% elif 6 <= now_hour < 12 %}
+                {% set day_part = ['Днем', 'В середине дня'] %}
+              {% elif 12 <= now_hour < 18 %}
+                {% set day_part = ['Вечером', 'К вечеру', 'Ближе к вечеру'] %}
+              {% elif 18 <= now_hour %}
+                {% set day_part = ['Ночью'] %}
+              {% endif %}
+              {{ messages | random }}
 
-                {{ condition_emoji }} {{ day_part | random }} на улице будет {{ friendly_condition.lower() }}.
-                Температура ожидается около {{ temp_min }} - {{ temp_max }}°C.
-                Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[0]['precipitation'] }}%.
-                Ветер {{ friendly_wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'forecast')[0]['wind_speed'] }} м/с.
-          - delay: 00:00:15
-          - service: notify.tg
-            data:
-              message: |
-                {% set temp_min = state_attr('weather.yandex_weather', 'forecast')[1]['templow'] %}
-                {% set temp_max = state_attr('weather.yandex_weather', 'forecast')[1]['temperature'] %}
-                {% set condition = state_attr('weather.yandex_weather', 'forecast')[1]['condition'] %}
-                {% set wind_bearing = state_attr('weather.yandex_weather', 'forecast')[1]['wind_bearing'] %}
-                {% set friendly_conditions_json = states('sensor.weather_friendly_rainfall_conditions')[:-1] ~ ', ' ~ states('sensor.weather_friendly_dry_conditions')[1:] %}
-                {% set friendly_conditions = friendly_conditions_json | from_json %}
-                {% set conditions_emojis_json = states('sensor.weather_rainfall_conditions_emojis')[:-1] ~ ', ' ~ states('sensor.weather_dry_conditions_emojis')[1:] %}
-                {% set conditions_emojis = conditions_emojis_json | from_json %}
-                {% set friendly_wind_bearings = states('sensor.weather_friendly_wind_bearings') | from_json %}
-                {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
-                {% set condition_emoji = conditions_emojis.get(condition, '\U0000274C') %}
-                {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
-                {% set now_hour = now().hour %}
-                {% if 18 <= now_hour %}
-                  {% set day_part = ['Утром'] %}
-                {% elif 0 <= now_hour < 6 %}
-                  {% set day_part = ['Днем', 'В середине дня'] %}
-                {% elif 6 <= now_hour < 12 %}
-                  {% set day_part = ['Вечером', 'К вечеру', 'Ближе к вечеру'] %}
-                {% elif 12 <= now_hour < 18 %}
-                  {% set day_part = ['Ночью'] %}
-                {% endif %}
-                {{ condition_emoji }} {{ day_part | random }} будет {{ friendly_condition.lower() }}.
-                Температура примерно {{ temp_min }} - {{ temp_max }}°C.
-                Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[1]['precipitation'] }}%.
-                Ветер {{ friendly_wind_bearing }}, скорость {{ state_attr('weather.yandex_weather', 'forecast')[1]['wind_speed'] }} м/с.
+              {{ condition_emoji }} {{ day_part | random }} на улице будет {{ friendly_condition.lower() }}.
+              Температура ожидается около {{ temp_min }} - {{ temp_max }}°C.
+              Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[0]['precipitation_probability'] }}%.
+              Ветер {{ friendly_wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'forecast')[0]['wind_speed'] }} м/с.
+        - delay: 00:00:15
+        - service: notify.tg
+          data:
+            message: |
+              {% set temp_min = state_attr('weather.yandex_weather', 'forecast')[1]['templow'] %}
+              {% set temp_max = state_attr('weather.yandex_weather', 'forecast')[1]['temperature'] %}
+              {% set condition = state_attr('weather.yandex_weather', 'forecast')[1]['condition'] %}
+              {% set wind_bearing = state_attr('weather.yandex_weather', 'forecast')[1]['wind_bearing'] %}
+              {% set friendly_conditions_json = states('sensor.weather_friendly_rainfall_conditions')[:-1] ~ ', ' ~ states('sensor.weather_friendly_dry_conditions')[1:] %}
+              {% set friendly_conditions = friendly_conditions_json | from_json %}
+              {% set conditions_emojis_json = states('sensor.weather_rainfall_conditions_emojis')[:-1] ~ ', ' ~ states('sensor.weather_dry_conditions_emojis')[1:] %}
+              {% set conditions_emojis = conditions_emojis_json | from_json %}
+              {% set friendly_wind_bearings = states('sensor.weather_friendly_wind_bearings') | from_json %}
+              {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
+              {% set condition_emoji = conditions_emojis.get(condition, '\U0000274C') %}
+              {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
+              {% set now_hour = now().hour %}
+              {% if 18 <= now_hour %}
+                {% set day_part = ['Утром'] %}
+              {% elif 0 <= now_hour < 6 %}
+                {% set day_part = ['Днем', 'В середине дня'] %}
+              {% elif 6 <= now_hour < 12 %}
+                {% set day_part = ['Вечером', 'К вечеру', 'Ближе к вечеру'] %}
+              {% elif 12 <= now_hour < 18 %}
+                {% set day_part = ['Ночью'] %}
+              {% endif %}
+              {{ condition_emoji }} {{ day_part | random }} будет {{ friendly_condition.lower() }}.
+              Температура примерно {{ temp_min }} - {{ temp_max }}°C.
+              Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[1]['precipitation_probability'] }}%.
+              Ветер {{ friendly_wind_bearing }}, скорость {{ state_attr('weather.yandex_weather', 'forecast')[1]['wind_speed'] }} м/с.
   
   
   automation: 
