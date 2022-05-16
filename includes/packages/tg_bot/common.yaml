@@ -22,11 +22,12 @@ tg_common:
             data:
               keyboard:
                 - 'Отчет по системе, Отчет по климату'
+                - 'Прогноз погоды'
                 - 'Управление'
     
     - id: 'Панель управления бота'
       alias: telegram_control_panel
-      initial_state: 'on'
+      initial_state: true
       trigger:
         - platform: event
           event_type: telegram_text
@@ -43,3 +44,15 @@ tg_common:
               inline_keyboard:
                 - 'Свет:/lights, Отопление:/heaters'
                 - 'Статус:/status'
+
+    - id: 'Прогноз погоды в боте'
+      alias: telegram_weather_forecast
+      initial_state: true
+      trigger:
+        - platform: event
+          event_type: telegram_text
+          event_data:
+            text: 'Прогноз погоды'
+      action:
+        - service: script.turn_on
+          entity_id: script.sending_yandex_weather_forecast
