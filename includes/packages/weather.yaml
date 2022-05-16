@@ -83,7 +83,7 @@ weather:
       initial_state: true
       trigger:
         - platform: time
-          at: '09:30:00'          
+          at: '09:30:00'
       action:
         - service: notify.tg
           data:

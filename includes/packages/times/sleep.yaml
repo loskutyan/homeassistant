@@ -3,12 +3,12 @@ sleep_time:
     kidsroom_asleep:
       name: 'В детской спят'
       initial: 'off'
-
+    
     bedroom_asleep:
       name: 'В спальне спят'
       initial: 'off'
-
-
+  
+  
   switch:
     - platform: template
       switches:
@@ -30,7 +30,7 @@ sleep_time:
             {% else %}
               mdi:human-child
             {% endif %}
-
+    
     - platform: template
       switches:
         bedroom_asleep:
@@ -51,8 +51,8 @@ sleep_time:
             {% else %}
               mdi:human
             {% endif %}
-
-
+  
+  
   automation:
     - id: 'Отход ко сну в детской'
       alias: kidsroom_going_to_sleep
@@ -108,6 +108,13 @@ sleep_time:
         - platform: state
           entity_id: sensor.bedroom_aqara_button_action
           to: 'hold'
+        - platform: state
+          entity_id: sensor.bedroom_aqara_cube_action
+          to: 'flip180'
+      condition:
+        - condition: state
+          entity_id: input_boolean.bedroom_asleep
+          state: 'off'
       action:
         - service: light.turn_off
           entity_id: light.bedroom_aqara_led_bulb
@@ -135,7 +142,7 @@ sleep_time:
             mode: 'Silent'
         - service: timer.start
           entity_id: timer.bedroom_humidifier_fixed_mode
-
+    
     - id: 'В спальне уже не спят'
       alias: bedroom_supposed_to_wake_up
       initial_state: true
@@ -146,6 +153,13 @@ sleep_time:
           entity_id: sun.sun
           attribute: elevation
           above: 0
+        - platform: state
+          entity_id: sensor.bedroom_aqara_cube_action
+          to: 'flip180'
+      condition:
+        - condition: state
+          entity_id: input_boolean.bedroom_asleep
+          state: 'on'
       action:
         - service: input_boolean.turn_off
           entity_id: input_boolean.bedroom_asleep

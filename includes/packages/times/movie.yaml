@@ -19,7 +19,7 @@ movie_time:
   
   script:
     bedroom_movie_dimming_lights_on_playing:
-      alias: 'Приглушение света в спальне для фильма'
+      alias: 'Приглушение света в спальне для фильма - проигрывание'
       sequence:
         - service: switch.turn_off
           data_template:
@@ -32,7 +32,7 @@ movie_time:
             transition: 10
     
     bedroom_movie_dimming_lights_on_pause:
-      alias: 'Приглушение света в спальне для фильма'
+      alias: 'Приглушение света в спальне для фильма - пауза'
       sequence:
         - service: light.turn_on
           entity_id: light.bedroom_aqara_led_bulb

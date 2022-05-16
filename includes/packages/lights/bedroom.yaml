@@ -30,6 +30,17 @@ bedroom_lights:
   
   
   automation:
+    - id: 'Включение/выключение люстры в спальне'
+      alias: bedroom_main_lights_toggle
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.bedroom_aqara_cube_action
+          to: 'fall'
+      action:
+        - service: switch.toggle
+          entity_id: switch.bedroom_lights_switch_right
+    
     - id: 'Включение/выключение лампы Aqara в спальне'
       alias: bedroom_aqara_led_bulb_toggle
       initial_state: true
@@ -40,6 +51,9 @@ bedroom_lights:
         - platform: state
           entity_id: sensor.bedroom_lights_switch_action
           to: 'single_left'
+        - platform: state
+          entity_id: sensor.bedroom_aqara_cube_action
+          to: 'flip90'
       action:
         - service: light.toggle
           entity_id: light.bedroom_aqara_led_bulb
