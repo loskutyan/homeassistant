@@ -5,6 +5,7 @@
       - vacuum
       - humidifier
       - light
+      - cover
     include_entities:
       - sensor.cleargrass_air_co2
       - sensor.cleargrass_air_pm25
@@ -16,11 +17,10 @@
       - sensor.kidsroom_average_humidity
       - switch.hallway_lights_switch
       - switch.kidsroom_lights_common_switch_left
-      - light.kidsroom_wall_aqara_led_bulbs
       - switch.kitchen_lights_switch_left
       - switch.kitchen_lights_switch_right
       - switch.bedroom_lights_switch_right
-      - switch.bathroom_lights_switch_left
+      - switch.bathroom_lights_switch
       - switch.cubeserver_vm_windows10
     include_entity_globs:
       - binary_sensor.*_water_leak
@@ -55,7 +55,7 @@
       name: 'Люстра'
     switch.bedroom_lights_switch_right:
       name: 'Люстра'
-    switch.bathroom_lights_switch_left:
+    switch.bathroom_lights_switch:
       name: 'Свет'
     binary_sensor.bathroom_aqara_leak_sensor_water_leak:
       name: 'Протечка под ванной'
@@ -71,3 +71,5 @@
       name: 'Подогрев'
     switch.kidsroom_airpurifier_ptc:
       name: 'Подогрев'
+    cover.kidsroom_curtain:
+      name: 'Штора'
