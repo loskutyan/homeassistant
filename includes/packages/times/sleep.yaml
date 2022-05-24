@@ -61,31 +61,46 @@ sleep_time:
         - platform: state
           entity_id: sensor.kidsroom_lights_common_switch_action
           to: 'double_right'
+      condition:
+        - condition: state
+          entity_id: input_boolean.kidsroom_asleep
+          state: 'off'
       action:
         - service: switch.turn_off
           entity_id: switch.kidsroom_lights_common_switch_left
+          continue_on_error: true
         - service: light.turn_off
           entity_id: light.kidsroom_wall_aqara_led_bulbs
-        - service: input_boolean.turn_on
-          entity_id: input_boolean.kidsroom_asleep
+          continue_on_error: true
         
         - service: input_select.select_option
           entity_id: input_select.kidsroom_airpurifier_mode
           data:
             option: 'Favorite'
+          continue_on_error: true
         - service: timer.start
           entity_id: timer.kidsroom_airpurifier_fixed_speed
         - service: input_number.set_value
           entity_id: input_number.kidsroom_airpurifier_favorite_speed
           data:
             value: 60
+          continue_on_error: true
         
         - service: humidifier.set_mode
           entity_id: humidifier.smartmi_humidifier_kidsroom
           data:
             mode: 'Silent'
+          continue_on_error: true
         - service: timer.start
           entity_id: timer.kidsroom_humidifier_fixed_mode
+          continue_on_error: true
+        
+        - service: cover.close_cover
+          entity_id: cover.kidsroom_curtain
+          continue_on_error: true
+        
+        - service: input_boolean.turn_on
+          entity_id: input_boolean.kidsroom_asleep
     
     - id: 'В детской уже не спят'
       alias: kidsroom_supposed_to_wake_up
@@ -93,13 +108,21 @@ sleep_time:
       trigger:
         - platform: time
           at: '09:30'
-        - platform: numeric_state
-          entity_id: sun.sun
-          attribute: elevation
-          above: 0
+        - platform: state
+          entity_id: sensor.kidsroom_lights_common_switch_action
+          to: 'double_right'
+      condition:
+        - condition: state
+          entity_id: input_boolean.kidsroom_asleep
+          state: 'on'
       action:
         - service: input_boolean.turn_off
           entity_id: input_boolean.kidsroom_asleep
+        - service: cover.stop_cover
+          entity_id: cover.kidsroom_curtain
+        - delay: 00:00:05
+        - service: cover.open_cover
+          entity_id: cover.kidsroom_curtain
     
     - id: 'Отход ко сну в спальне'
       alias: bedroom_going_to_sleep
@@ -120,28 +143,36 @@ sleep_time:
           entity_id: light.bedroom_aqara_led_bulb
           data:
             transition: 1
+          continue_on_error: true
         - service: switch.turn_off
           entity_id: switch.bedroom_lights_switch_right
-        - service: input_boolean.turn_on
-          entity_id: input_boolean.bedroom_asleep
+          continue_on_error: true
         
         - service: input_select.select_option
           entity_id: input_select.bedroom_airpurifier_mode
           data:
             option: 'Favorite'
+          continue_on_error: true
         - service: timer.start
           entity_id: timer.bedroom_airpurifier_fixed_speed
+          continue_on_error: true
         - service: input_number.set_value
           entity_id: input_number.bedroom_airpurifier_favorite_speed
           data:
             value: 60
+          continue_on_error: true
         
         - service: humidifier.set_mode
           entity_id: humidifier.smartmi_humidifier_bedroom
           data:
             mode: 'Silent'
+          continue_on_error: true
         - service: timer.start
           entity_id: timer.bedroom_humidifier_fixed_mode
+          continue_on_error: true
+        
+        - service: input_boolean.turn_on
+          entity_id: input_boolean.bedroom_asleep
     
     - id: 'В спальне уже не спят'
       alias: bedroom_supposed_to_wake_up
@@ -149,10 +180,6 @@ sleep_time:
       trigger:
         - platform: time
           at: '09:30'
-        - platform: numeric_state
-          entity_id: sun.sun
-          attribute: elevation
-          above: 0
         - platform: state
           entity_id: sensor.bedroom_aqara_cube_action
           to: 'flip180'

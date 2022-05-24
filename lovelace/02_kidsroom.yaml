@@ -9,14 +9,14 @@ cards:
         entities:
           - entity: fan.mijia_airpurifier_kidsroom
             name: 'Mi Fresh Air Ventilator A1'
-            
+          
           - entity: switch.kidsroom_airpurifier_forced_ventilation
             name: 'Режим проветривания'
             state_color: true
           
           - entity: input_select.kidsroom_airpurifier_mode
             name: 'Режим работы'
-              
+          
           - type: conditional
             conditions:
               - entity: input_select.kidsroom_airpurifier_mode
@@ -73,13 +73,21 @@ cards:
         full_width_sliders: true
         show_slider_percent: true
         effects_list: false
-
+      
       - type: entities
         entities:
           - entity: switch.kidsroom_lights_common_switch_left
             name: 'Люстра'
             icon: mdi:ceiling-light
-
+      
+      - type: entities
+        entities:
+          - type: custom:slider-entity-row
+            entity: cover.kidsroom_curtain
+            name: 'Римская штора'
+            step: 10
+            hide_state: false
+  
   
   - type: vertical-stack
     title: 'Климат'
@@ -110,7 +118,7 @@ cards:
         entities:
           - entity: sensor.kidsroom_average_temperature
             name: 'Температура'
-            
+        
       - type: custom:mini-graph-card
         color_thresholds:
           - value: 20
