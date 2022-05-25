@@ -46,9 +46,6 @@ bedroom_lights:
       initial_state: true
       trigger:
         - platform: state
-          entity_id: sensor.bedroom_aqara_button_action
-          to: 'single'
-        - platform: state
           entity_id: sensor.bedroom_lights_switch_action
           to: 'single_left'
         - platform: state
@@ -65,12 +62,12 @@ bedroom_lights:
             transition: 2
           
     - id: 'Прибавление яркости лампы Aqara в спальне'
-      alias: bedroom_aqara_led_bulb_button_add_brightness
+      alias: bedroom_aqara_led_bulb_add_brightness
       initial_state: true
       trigger:
         - platform: state
-          entity_id: sensor.bedroom_aqara_button_action
-          to: 'double'
+          entity_id: sensor.bedroom_aqara_cube_action
+          to: 'rotate_right'
       condition:
         - condition: state
           entity_id: light.bedroom_aqara_led_bulb

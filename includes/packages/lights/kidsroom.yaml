@@ -52,6 +52,17 @@ kidsroom_lights:
   
   
   automation:
+    - id: 'Включение/выключение люстры в детской'
+      alias: kidsroom_main_lights_toggle
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.kidsroom_aqara_button_action
+          to: 'double'
+      action:
+        - service: switch.toggle
+          entity_id: switch.kidsroom_lights_common_switch_left
+    
     - id: 'Включение/выключение бра в детской'
       alias: kidsroom_wall_lights_toggle
       initial_state: true
@@ -59,6 +70,9 @@ kidsroom_lights:
         - platform: state
           entity_id: sensor.kidsroom_lights_common_switch_action
           to: 'single_right'
+        - platform: state
+          entity_id: sensor.kidsroom_aqara_button_action
+          to: 'single'
       action:
         - service: light.toggle
           entity_id: light.kidsroom_wall_aqara_led_bulbs

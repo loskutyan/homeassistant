@@ -2,11 +2,9 @@ sleep_time:
   input_boolean:
     kidsroom_asleep:
       name: 'В детской спят'
-      initial: 'off'
     
     bedroom_asleep:
       name: 'В спальне спят'
-      initial: 'off'
   
   
   switch:
@@ -61,6 +59,9 @@ sleep_time:
         - platform: state
           entity_id: sensor.kidsroom_lights_common_switch_action
           to: 'double_right'
+        - platform: state
+          entity_id: sensor.kidsroom_aqara_button_action
+          to: 'hold'
       condition:
         - condition: state
           entity_id: input_boolean.kidsroom_asleep
@@ -111,6 +112,9 @@ sleep_time:
         - platform: state
           entity_id: sensor.kidsroom_lights_common_switch_action
           to: 'double_right'
+        - platform: state
+          entity_id: sensor.kidsroom_aqara_button_action
+          to: 'hold'
       condition:
         - condition: state
           entity_id: input_boolean.kidsroom_asleep
@@ -128,9 +132,6 @@ sleep_time:
       alias: bedroom_going_to_sleep
       initial_state: true
       trigger:
-        - platform: state
-          entity_id: sensor.bedroom_aqara_button_action
-          to: 'hold'
         - platform: state
           entity_id: sensor.bedroom_aqara_cube_action
           to: 'flip180'

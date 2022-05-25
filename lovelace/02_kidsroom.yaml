@@ -118,7 +118,7 @@ cards:
         entities:
           - entity: sensor.kidsroom_average_temperature
             name: 'Температура'
-        
+      
       - type: custom:mini-graph-card
         color_thresholds:
           - value: 20
