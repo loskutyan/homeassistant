@@ -84,6 +84,10 @@ home_connect:
   client_secret: !secret home_connect_client_secret
 
 
+smartir:
+  check_updates: false
+
+
 notify: !include includes/notify.yaml
 timer: !include includes/timer.yaml
 recorder: !include includes/recorder.yaml

@@ -49,6 +49,28 @@ alarm:
             {% else %}
               mdi:battery-charging-100
             {% endif %}
+        
+        bedroom_ac_plug_overload:
+          friendly_name: 'Перегрузка розетки кондиционера в спальне'
+          value_template: >
+            {{ states('sensor.bedroom_ac_plug_power') | float > 1000 }}
+          icon_template: >
+            {% if is_state('binary_sensor.bedroom_ac_plug_overload', 'on') %}
+              mdi:lightning-bolt
+            {% else %}
+              mdi:power-plug
+            {% endif %}
+        
+        kidsroom_ac_plug_overload:
+          friendly_name: 'Перегрузка розетки кондиционера в детской'
+          value_template: >
+            {{ states('sensor.kidsroom_ac_plug_power') | float > 1000 }}
+          icon_template: >
+            {% if is_state('binary_sensor.kidsroom_ac_plug_overload', 'on') %}
+              mdi:lightning-bolt
+            {% else %}
+              mdi:power-plug
+            {% endif %}
   
   
   alert:
@@ -94,6 +116,26 @@ alarm:
         {{ '\U000026A0' }} Пробелма с ИБП, статус {{ states('sensor.ups_status') }}. {{ states('sensor.time_date') }}
       notifiers:
         - tg
+    
+    bedroom_ac_plug_overload:
+      name: 'Перегрузка розетки кондиционера в спальне'
+      entity_id: binary_sensor.bedroom_ac_plug_overload
+      state: 'on'
+      repeat: 5
+      message: >
+        {{ '\U000026A0' }} Перегрузка розетки в спальне, потребление {{ states('sensor.bedroom_ac_plug_power') }}Вт, температура {{ states('sensor.bedroom_ac_plug_device_temperature') }}
+      notifiers:
+        - tg
+    
+    kidsroom_ac_plug_overload:
+      name: 'Перегрузка розетки кондиционера в спальне'
+      entity_id: binary_sensor.kidsroom_ac_plug_overload
+      state: 'on'
+      repeat: 5
+      message: >
+        {{ '\U000026A0' }} Перегрузка розетки в детской, потребление {{ states('sensor.kidsroom_ac_plug_power') }}Вт, температура {{ states('sensor.kidsroom_ac_plug_device_temperature') }}
+      notifiers:
+        - tg
   
   
   automation:
@@ -128,3 +170,31 @@ alarm:
           data:
             message: >
               {{ '\U0001F50C' }} ИБП снова работает от сети! {{ states('sensor.time_date') }}
+    
+    - id: 'Перегрузка розетки кондиционера в спальне'
+      alias: bedroom_ac_plug_overload
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.bedroom_ac_plug_overload
+          to: 'on'
+      action:
+        - service: switch.turn_off
+          entity_id: switch.bedroom_ac_plug
+        - service: notify.tg
+          data:
+            message: >
+              {{ '\U0001F50C' }} Розетка в спальне выключена! {{ states('sensor.time_date') }}
+    
+    - id: 'Перегрузка розетки кондиционера в детской'
+      alias: kidsroom_ac_plug_overload
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.kidsroom_ac_plug_overload
+          to: 'on'
+      action:
+        - service: switch.turn_off
+          entity_id: switch.kidsroom_ac_plug
+        - service: notify.tg
+          data:
+            message: >
+              {{ '\U0001F50C' }} Розетка в детской выключена! {{ states('sensor.time_date') }}

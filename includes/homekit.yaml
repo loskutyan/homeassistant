@@ -6,6 +6,7 @@
       - humidifier
       - light
       - cover
+      - climate
     include_entities:
       - sensor.cleargrass_air_co2
       - sensor.cleargrass_air_pm25
@@ -73,3 +74,5 @@
       name: 'Подогрев'
     cover.kidsroom_curtain:
       name: 'Штора'
+    climate.bedroom_air_conditioner:
+      name: 'Кондиционер'

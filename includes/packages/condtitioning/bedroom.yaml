@@ -1,0 +1,20 @@
+conditioning_bedroom:
+  binary_sensor:
+    - platform: template
+      sensors:
+        bedroom_ac_power:
+          friendly_name: 'Bedroom Air Conditioner power'
+          device_class: power
+          value_template: '{{ states(''sensor.bedroom_ac_plug_power'') | float > 15 }}'
+          availability_template: '{{ states(''switch.bedroom_ac_plug'') in [''on'', ''off''] }}'
+  
+  
+  climate:
+    - platform: smartir
+      name: 'Bedroom Air Conditioner'
+      unique_id: bedroom_ac
+      device_code: 1132
+      controller_data: remote.bedroom_broadlink_rm4mini_remote
+      temperature_sensor: sensor.bedroom_average_temperature
+      humidity_sensor: sensor.bedroom_average_humidity
+      power_sensor: binary_sensor.bedroom_ac_power
