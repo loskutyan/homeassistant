@@ -51,29 +51,8 @@ aqara_hub:
         data_template:
           value: '{{ (state_attr(''media_player.miio_gateway'', ''volume_level'') | float * 100) | int }}'
     
-    - id: 'Звонок в дверь - рингтон'
-      alias: rings_elevator_hall_doorbell_ringtone
-      initial_state: true
-      trigger:
-        - platform: state
-          entity_id: sensor.elevator_hall_aqara_button_action
-          to: 'single'
-        - platform: state
-          entity_id: sensor.elevator_hall_aqara_button_action
-          to: 'double'
-      condition:
-        - condition: time
-          after: '09:00:00'
-          before: '23:00:00'
-      action:
-        - service: media_player.play_media
-          entity_id: media_player.miio_gateway
-          data:
-            media_content_type: 'music'
-            media_content_id: 10
-    
-    - id: 'Звонок в дверь - уведомление'
-      alias: rings_elevator_hall_doorbell_notify
+    - id: 'Звонок в дверь'
+      alias: elevator_hall_doorbell_rings
       initial_state: true
       trigger:
         - platform: state
@@ -90,3 +69,14 @@ aqara_hub:
                                  'Кажется, кто-то пришел и звонит в дверь',
                                  'Билим-билим!'] %}
               {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}
+          continue_on_error: true
+        - if:
+            - condition: time
+              after: '09:00:00'
+              before: '23:00:00'
+          then:
+            - service: media_player.play_media
+              entity_id: media_player.miio_gateway
+              data:
+                media_content_type: 'music'
+                media_content_id: 10

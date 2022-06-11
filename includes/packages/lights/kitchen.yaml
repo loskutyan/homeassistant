@@ -15,44 +15,21 @@ kitchen_lights:
           entity_id: sensor.kitchen_motion_sensor_illuminance_lux
           below: 100
         - condition: state
-          entity_id: switch.kitchen_lights_switch_left
+          entity_id:
+            - switch.kitchen_lights_switch_left
+            - switch.kitchen_lights_switch_right
           state: 'off'
-        - condition: state
-          entity_id: switch.kitchen_lights_switch_right
-          state: 'off'
-        - condition: time
-          after: '08:00:00'
-          before: '22:45:00'
       action:
-        - service: switch.turn_on
-          entity_id: switch.kitchen_lights_switch_right
-    
-    - id: 'Свет при движении на кухне ночью'
-      alias: kitchen_motion_lights_night_turn_on
-      initial_state: true
-      trigger:
-        - platform: state
-          entity_id: binary_sensor.kitchen_motion_sensor_occupancy
-          to: 'on'
-      condition:
-        - condition: state
-          entity_id: input_boolean.kidsroom_asleep
-          state: 'off'
-        - condition: numeric_state
-          entity_id: sensor.kitchen_motion_sensor_illuminance_lux
-          below: 100
-        - condition: state
-          entity_id: switch.kitchen_lights_switch_left
-          state: 'off'
-        - condition: state
-          entity_id: switch.kitchen_lights_switch_right
-          state: 'off'
-        - condition: time
-          after: '22:45:00'
-          before: '08:00:00'
-      action:
-        - service: switch.turn_on
-          entity_id: switch.kitchen_lights_switch_left
+        - if:
+            - condition: time
+              after: '08:00:00'
+              before: '22:45:00'
+          then:
+            - service: switch.turn_on
+              entity_id: switch.kitchen_lights_switch_right
+          else:
+            - service: switch.turn_on
+              entity_id: switch.kitchen_lights_switch_left
     
     - id: 'Включение таймера выключения света на кухне'
       alias: kitchen_lights_on_timer_start
@@ -80,10 +57,9 @@ kitchen_lights:
           to: 'off'
       condition:
         - condition: state
-          entity_id: switch.kitchen_lights_switch_left
-          state: 'off'
-        - condition: state
-          entity_id: switch.kitchen_lights_switch_right
+          entity_id:
+            - switch.kitchen_lights_switch_left
+            - switch.kitchen_lights_switch_right
           state: 'off'
       action:
         - service: timer.finish

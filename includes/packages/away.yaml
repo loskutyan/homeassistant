@@ -172,7 +172,7 @@ away:
           to: 'off'
       condition:
         - condition: state
-          entity_id: binary_sensor.any_header_is_on
+          entity_id: binary_sensor.any_heater_is_on
           state: 'on'
       action:
         - service: script.turn_on
