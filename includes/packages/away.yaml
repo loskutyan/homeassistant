@@ -23,7 +23,8 @@ away:
               | selectattr('entity_id', 'in', lights_switches_entities_ids)
               | selectattr('state', '==', 'on')
               | map(attribute='entity_id')
-              | list }}
+              | list
+              | to_json(ensure_ascii=False) }}
         
         lights_list_turned_on:
           friendly_name: 'Список включенных светильников'
@@ -36,7 +37,8 @@ away:
               | selectattr('entity_id', 'in', lights_entities_ids)
               | selectattr('state', '==', 'on')
               | map(attribute='entity_id')
-              | list }}
+              | list
+              | to_json(ensure_ascii=False) }}
         
         heaters_list_turned_on:
           friendly_name: 'Список включенных нагревателей'
@@ -49,7 +51,8 @@ away:
               | selectattr('entity_id', 'in', heaters_switches_entities_ids)
               | selectattr('state', '==', 'on')
               | map(attribute='entity_id')
-              | list }}
+              | list
+              | to_json(ensure_ascii=False) }}
   
   
   binary_sensor:
@@ -79,13 +82,13 @@ away:
           friendly_name: 'Дома включен свет'
           device_class: light
           value_template: >
-            {{ (states('sensor.lights_switches_list_turned_on') | length + states('sensor.lights_list_turned_on') | length) > 0 }}
+            {{ (states('sensor.lights_switches_list_turned_on') | from_json | length + states('sensor.lights_list_turned_on') | from_json | length) > 0 }}
         
         any_heater_is_on:
           friendly_name: 'Дома включен подогрев воздуха'
           device_class: heat
           value_template: >
-            {{ states('sensor.lights_switches_list_turned_on') | length > 0 }}
+            {{ states('sensor.heaters_list_turned_on') | from_json | length > 0 }}
   
   
   switch:
@@ -118,11 +121,11 @@ away:
         - service: light.turn_off
           data_template:
             entity_id: >-
-              {{ states('sensor.lights_list_turned_on') }}
+              {{ states('sensor.lights_list_turned_on') | from_json }}
         - service: switch.turn_off
           data_template:
             entity_id: >-
-              {{ states('sensor.lights_switches_list_turned_on') }}
+              {{ states('sensor.lights_switches_list_turned_on') | from_json }}
         - service: notify.tg
           data:
             message: >
@@ -136,8 +139,8 @@ away:
       sequence:
         - service: switch.turn_off
           data_template:
-            entity_id: >
-              {{ states('sensor.heaters_list_turned_on') }}
+            entity_id: >-
+              {{ states('sensor.heaters_list_turned_on') | from_json }}
         - service: notify.tg
           data:
             message: >
