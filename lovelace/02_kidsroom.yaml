@@ -50,14 +50,6 @@ cards:
             - entity: binary_sensor.kidsroom_airpurifier_ptc_status
               name: 'Статус'
               icon: true
-          
-          - entity: switch.kidsroom_airpurifier_display
-            name: 'Дисплей'
-            state_color: true
-          
-          - entity: switch.kidsroom_airpurifier_buzzer
-            name: 'Звук'
-            state_color: true
   
   
   - type: vertical-stack

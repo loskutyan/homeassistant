@@ -100,12 +100,10 @@ away:
             {{ states('input_boolean.somebody_home') }}
           turn_on:
             service: input_boolean.turn_on
-            data:
-              entity_id: input_boolean.somebody_home
+            entity_id: input_boolean.somebody_home
           turn_off:
             service: input_boolean.turn_off
-            data:
-              entity_id: input_boolean.somebody_home
+            entity_id: input_boolean.somebody_home
           icon_template: >
             {% if is_state('input_boolean.somebody_home', 'on') %}
               mdi:home-account

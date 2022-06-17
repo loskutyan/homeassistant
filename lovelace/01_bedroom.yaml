@@ -66,15 +66,7 @@ cards:
             - entity: binary_sensor.bedroom_airpurifier_ptc_status
               name: 'Статус'
               icon: true
-          
-          - entity: switch.bedroom_airpurifier_display
-            name: 'Дисплей'
-            state_color: true
-          
-          - entity: switch.bedroom_airpurifier_buzzer
-            name: 'Звук'
-            state_color: true
-
+  
   
   - type: vertical-stack
     title: 'Свет'

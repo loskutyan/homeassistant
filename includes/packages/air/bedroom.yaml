@@ -67,8 +67,8 @@ bedroom_air:
             {% set fixed_speed_timer_off = is_state('timer.bedroom_airpurifier_fixed_speed', 'idle') %}
             {{ favorite_mode and fixed_speed_timer_off }}
           turn_on:
-            service: timer.finish
-            entity_id: timer.bedroom_airpurifier_fixed_speed
+            - service: timer.finish
+              entity_id: timer.bedroom_airpurifier_fixed_speed
           turn_off:
             - service: timer.start
               entity_id: timer.bedroom_airpurifier_fixed_speed
@@ -127,7 +127,8 @@ bedroom_air:
         bedroom_airpurifier_speed_min_co2:
           value_template:  >
             {% set temp_delta = max(0, 22 - states('sensor.bedroom_average_temperature') | float) %}
-            {% set shift_steps = temp_delta * 100 // 10 %}
+            {% set cooling_on = is_state('climate.bedroom_air_conditioner', 'cool') | int %}
+            {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
             {% if states('sensor.bedroom_airpurifier_favorite_speed') | float <= 60 %}
               0
             {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 70 %}
@@ -147,7 +148,8 @@ bedroom_air:
         bedroom_airpurifier_speed_max_co2:
           value_template:  >
             {% set temp_delta = max(0, 22 - states('sensor.bedroom_average_temperature') | float) %}
-            {% set shift_steps = temp_delta * 100 // 10 %}
+            {% set cooling_on = is_state('climate.bedroom_air_conditioner', 'cool') | int %}
+            {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
             {% if states('sensor.bedroom_airpurifier_favorite_speed') | float <= 60 %}
               {{ 600 + 10 * shift_steps }}
             {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 70 %}
@@ -243,8 +245,8 @@ bedroom_air:
     - id: 'Выбор режима работы бризера в спальне'
       alias: select_bedroom_airpurifier_preset_mode
       trigger:
-        entity_id: input_select.bedroom_airpurifier_mode
-        platform: state
+        - entity_id: input_select.bedroom_airpurifier_mode
+          platform: state
       action:
         - service: fan.set_preset_mode
           entity_id: fan.mijia_airpurifier_bedroom
@@ -254,24 +256,24 @@ bedroom_air:
     - id: 'Отслеживание режима работы бризера в спальне'
       alias: tracking_bedroom_airpurifier_preset_mode
       trigger:
-        platform: state
-        entity_id: sensor.bedroom_airpurifier_preset_mode
+        - platform: state
+          entity_id: sensor.bedroom_airpurifier_preset_mode
       action:
-        service: input_select.select_option
-        entity_id: input_select.bedroom_airpurifier_mode
-        data_template:
-          option: >
-            {% if state_attr('fan.mijia_airpurifier_bedroom', 'preset_mode') %}
-              {{ state_attr('fan.mijia_airpurifier_bedroom', 'preset_mode') }}
-            {% else %}
-              Auto
-            {% endif %}
+        - service: input_select.select_option
+          entity_id: input_select.bedroom_airpurifier_mode
+          data_template:
+            option: >
+              {% if state_attr('fan.mijia_airpurifier_bedroom', 'preset_mode') %}
+                {{ state_attr('fan.mijia_airpurifier_bedroom', 'preset_mode') }}
+              {% else %}
+                Auto
+              {% endif %}
     
     - id: 'Выбор скорости потока воздуха для бризера в спальне'
       alias: select_bedroom_airpurifier_speed
       trigger:
-        platform: state
-        entity_id: input_number.bedroom_airpurifier_favorite_speed
+        - platform: state
+          entity_id: input_number.bedroom_airpurifier_favorite_speed
       action:
         - service: xiaomi_miio_airpurifier.fan_set_favorite_speed
           entity_id: fan.mijia_airpurifier_bedroom
@@ -281,20 +283,20 @@ bedroom_air:
     - id: 'Отслеживание скорости потока воздуха для бризера в спальне'
       alias: tracking_bedroom_airpurifier_speed
       trigger:
-        platform: state
-        entity_id: sensor.bedroom_airpurifier_favorite_speed
+        - platform: state
+          entity_id: sensor.bedroom_airpurifier_favorite_speed
       action:
-        service: input_number.set_value
-        entity_id: input_number.bedroom_airpurifier_favorite_speed
-        data_template:
-          value: "{{ state_attr('fan.mijia_airpurifier_bedroom', 'favorite_speed') }}"
+        - service: input_number.set_value
+          entity_id: input_number.bedroom_airpurifier_favorite_speed
+          data_template:
+            value: "{{ state_attr('fan.mijia_airpurifier_bedroom', 'favorite_speed') }}"
     
     - id: 'Умный контроль скорости работы бризера в спальне'
       alias: bedroom_airpurifier_favourite_speed_smart_control
       initial_state: true
       trigger:
-        platform: time_pattern
-        minutes: '/2'
+        - platform: time_pattern
+          minutes: '/2'
       condition:
         - alias: bedroom_airpurifier_favourite_speed_does_need_changes
           condition: not
