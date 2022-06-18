@@ -127,7 +127,7 @@ bedroom_air:
         bedroom_airpurifier_speed_min_co2:
           value_template:  >
             {% set temp_delta = max(0, 22 - states('sensor.bedroom_average_temperature') | float) %}
-            {% set cooling_on = is_state('climate.bedroom_air_conditioner', 'cool') | int %}
+            {% set cooling_on = is_state('climate.bedroom_ac', 'cool') | int %}
             {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
             {% if states('sensor.bedroom_airpurifier_favorite_speed') | float <= 60 %}
               0
@@ -148,7 +148,7 @@ bedroom_air:
         bedroom_airpurifier_speed_max_co2:
           value_template:  >
             {% set temp_delta = max(0, 22 - states('sensor.bedroom_average_temperature') | float) %}
-            {% set cooling_on = is_state('climate.bedroom_air_conditioner', 'cool') | int %}
+            {% set cooling_on = is_state('climate.bedroom_ac', 'cool') | int %}
             {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
             {% if states('sensor.bedroom_airpurifier_favorite_speed') | float <= 60 %}
               {{ 600 + 10 * shift_steps }}

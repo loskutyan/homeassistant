@@ -3,22 +3,6 @@ icon: mdi:bed-king
 
 cards:
   - type: vertical-stack
-    title: 'Aqara Hub'
-    cards:
-      - type: entities
-        entities:
-          - entity: input_number.aqara_hub_volume
-            type: custom:slider-entity-row
-            name: 'Громкость'
-            step: 2
-            hide_state: false
-          - entity: light.miio_gateway
-            type: custom:slider-entity-row
-            name: 'Яркость'
-            step: 1
-  
-  
-  - type: vertical-stack
     title: 'Очиститель воздуха'
     cards:
       - type: entities
@@ -69,6 +53,72 @@ cards:
   
   
   - type: vertical-stack
+    title: 'Кондиционер'
+    cards:
+      - type: entities
+        entities:
+          - type: custom:multiple-entity-row
+            entity: switch.bedroom_ac
+            name: 'Состояние'
+            toggle: true
+            state_color: true
+            entities:
+              - entity: switch.bedroom_ac_plug
+                name: 'Питание'
+                toggle: true
+              - entity: sensor.bedroom_ac_plug_power
+                name: 'Мощность'
+          
+          - entity: input_select.bedroom_ac_mode
+            name: 'Режим'
+          
+          - type: conditional
+            conditions:
+              - entity: input_select.bedroom_ac_mode
+                state: 'cool'
+            row:
+              entity: switch.bedroom_auto_conditioning
+              name: 'Автоматическое охлаждение'
+              state_color: true
+          
+          - type: conditional
+            conditions:
+              - entity: input_boolean.bedroom_auto_conditioning
+                state: 'on'
+              - entity: input_select.bedroom_ac_mode
+                state: 'cool'
+            row:
+              type: custom:slider-entity-row
+              entity: input_number.bedroom_target_cooling_temperature
+              name: 'Температура'
+              hide_state: false
+          
+          - type: conditional
+            conditions:
+              - entity: input_boolean.bedroom_auto_conditioning
+                state: 'off'
+              - entity: input_select.bedroom_ac_mode
+                state: 'cool'
+            row:
+              type: custom:slider-entity-row
+              entity: input_number.bedroom_ac_temperature
+              name: 'Температура'
+              hide_state: false
+          
+          - entity: input_select.bedroom_ac_fan_mode
+            name: 'Скорость обдува'
+          
+          - type: conditional
+            conditions:
+              - entity: input_select.bedroom_ac_mode
+                state: 'fan_only'
+            row:
+              entity: input_select.bedroom_ac_fan_swing_mode
+              name: 'Направление обдува'
+              hide_state: false
+  
+  
+  - type: vertical-stack
     title: 'Свет'
     cards:
       - type: custom:light-entity-card
@@ -86,6 +136,22 @@ cards:
           - entity: switch.bedroom_lights_switch_right
             name: 'Люстра'
             icon: mdi:ceiling-light
+  
+  
+  - type: vertical-stack
+    title: 'Aqara Hub'
+    cards:
+      - type: entities
+        entities:
+          - entity: input_number.aqara_hub_volume
+            type: custom:slider-entity-row
+            name: 'Громкость'
+            step: 2
+            hide_state: false
+          - entity: light.miio_gateway
+            type: custom:slider-entity-row
+            name: 'Яркость'
+            step: 1
   
   
   - type: vertical-stack

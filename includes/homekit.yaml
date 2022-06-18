@@ -74,5 +74,5 @@
       name: 'Подогрев'
     cover.kidsroom_curtain:
       name: 'Штора'
-    climate.bedroom_air_conditioner:
+    climate.bedroom_ac:
       name: 'Кондиционер'

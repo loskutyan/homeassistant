@@ -184,6 +184,9 @@ cards:
         filter:
           include:
             - entity_id: sensor.*_battery
+              options:
+                type: custom:battery-entity-row
+                secondary_info: last-changed
           exclude:
             - state: '> 30'
       
