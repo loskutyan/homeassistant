@@ -25,8 +25,8 @@ conditioning_bedroom:
     
     bedroom_target_cooling_temperature:
       name: 'Целевая температура охлаждения в спальне'
-      min: 22
-      max: 26
+      min: 20
+      max: 31
       step: 1
       icon: mdi:thermometer-auto
   
@@ -91,6 +91,27 @@ conditioning_bedroom:
             service: climate.turn_off
             entity_id: climate.bedroom_ac
           icon_template: mdi:air-conditioner
+        
+        bedroom_cooling:
+          friendly_name: 'Охлаждение воздуха в спальне'
+          value_template: >
+            {% set ac_on = is_state('switch.bedroom_ac', 'on') %}
+            {% set cooling_on = is_state_attr('climate.bedroom_ac', 'last_on_operation', 'cool') %}
+            {% set is_cooling_temp_low = state_attr('climate.bedroom_ac', 'temperature') | int(31) <= 28 %}
+            {{ ac_on and cooling_on and is_cooling_temp_low }}
+          turn_on:
+            service: climate.set_temperature
+            entity_id: climate.bedroom_ac
+            data_template:
+              temperature: '{{ min(states(''input_number.bedroom_ac_temperature'') | int(28), 28) }}'
+              hvac_mode: 'cool'
+          turn_off:
+            service: climate.set_temperature
+            entity_id: climate.bedroom_ac
+            data_template:
+              temperature: '{{ states(''input_number.bedroom_ac_temperature'') | int }}'
+              hvac_mode: 'fan_only'
+          icon_template: mdi:snowflake
         
         bedroom_auto_conditioning:
           friendly_name: 'Автоматическое охлаждение воздуха в спальне'
@@ -219,6 +240,9 @@ conditioning_bedroom:
         - platform: state
           entity_id: switch.bedroom_ac
           to: 'on'
+        - platform: state
+          entity_id: switch.bedroom_auto_conditioning
+          to: 'on'
       condition:
         - condition: state
           entity_id: input_select.bedroom_ac_mode
@@ -228,19 +252,18 @@ conditioning_bedroom:
             - switch.bedroom_ac
             - switch.bedroom_auto_conditioning
           state: 'on'
+        - condition:
       action:
         - service: climate.set_temperature
           entity_id: climate.bedroom_ac
           data_template:
             temperature: >
               {% set target_temp = states('input_number.bedroom_target_cooling_temperature') | int %}
-              {{ target_temp + 1 }}
-            hvac_mode: >
-              {% set target_temp = states('input_number.bedroom_target_cooling_temperature') | int %}
               {% set cur_temp = states('sensor.bedroom_average_temperature') | float %}
               {% set delta = target_temp - cur_temp %}
               {% if delta > 0.5 %}
-                off
+                31
               {% elif delta < -0.5 %}
-                cool
+                {{ target_temp }}
               {% endif %}
+            hvac_mode: 'cool'

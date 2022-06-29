@@ -24,7 +24,7 @@ cards:
               name: 'Время'
   
   - type: vertical-stack
-    title: 'Качество воздуха'
+    title: 'Климат и качество воздуха'
     cards:
       - type: entities
         entities:
@@ -45,6 +45,60 @@ cards:
                 entity: switch.kidsroom_airpurifier_forced_ventilation
                 tap_action:
                   action: toggle
+      
+      - type: conditional
+        conditions:
+          - entity: switch.warm_season
+            state: 'on'
+        card:
+          type: entities
+          entities:
+            - type: custom:multiple-entity-row
+              name: 'Охлаждение'
+              entity: switch.bedroom_cooling
+              show_state: false
+              entities:
+                - icon: mdi:bed-king
+                  state_color: true
+                  name: 'Спальня'
+                  tap_action:
+                    action: toggle
+      
+      - type: conditional
+        conditions:
+          - entity: switch.warm_season
+            state: 'on'
+        card:
+          type: custom:mini-graph-card
+          color_thresholds:
+            - value: 21
+              color: "#00FFFF"
+            - value: 23
+              color: "#00FF00"
+            - value: 25
+              color: "#FFFF00"
+            - value: 27
+              color: "#FFD700"
+            - value: 29
+              color: "#FF0000"
+            - value: 32
+              color: "#800000"
+          animate: true
+          line_width: 2
+          hour24: true
+          points_per_hour: 1
+          group_by: hour
+          lower_bound: 18
+          upper_bound: 30
+          show:
+            legend: false
+          entities:
+            - entity: sensor.bedroom_average_temperature
+              name: 'Температура в спальне'
+              show_legend: false
+            - entity: sensor.kidsroom_average_temperature
+              name: 'Температура в детской'
+              show_legend: false
       
       - type: custom:mini-graph-card
         color_thresholds:
@@ -126,8 +180,8 @@ cards:
             entities:
               - entity: sensor.cleargrass_air_tvoc
                 name: 'tVOC'
-
-
+  
+  
   - type: vertical-stack
     title: 'Статус'
     cards:
@@ -200,82 +254,19 @@ cards:
             - entity_id: sensor.vacuum_filter_left
           exclude:
             - state: '> 25'
-
-
+  
+  
   - type: vertical-stack
-    title: 'cubeserver'
+    title: 'Aqara Hub'
     cards:
       - type: entities
         entities:
-          - entity: switch.cubeserver_vm_windows10
-            name: 'Windows 10 VM'
-  
-  
-  - type: vertical-stack
-    title: 'Raspberry Pi'
-    cards:
-      - type: horizontal-stack
-        cards:
-          - type: gauge
-            name: 'Загрузка CPU'
-            unit: '%'
-            entity: sensor.processor_use_percent
-            severity:
-              green: 0
-              yellow: 60
-              red: 85
-         
-          - type: gauge
-            name: 'Загрузка ОЗУ'
-            unit: '%'
-            entity: sensor.memory_use_percent
-            severity:
-              green: 0
-              yellow: 60
-              red: 85
-              
-      - type: horizontal-stack
-        cards:
-          - type: gauge
-            name: 'Температура CPU'
-            unit: '°C'
-            entity: sensor.cpu_temperature
-            min: 20
-            max: 100
-            severity:
-              green: 0
-              yellow: 50
-              red: 60
-          
-          - type: gauge
-            name: 'Температура GPU'
-            unit: '°C'
-            entity: sensor.gpu_temperature
-            min: 20
-            max: 100
-            severity:
-              green: 0
-              yellow: 50
-              red: 60
-            
-      - type: horizontal-stack
-        cards:
-          - type: gauge
-            name: 'Диск заполнен'
-            unit: '%'
-            entity: sensor.disk_use_percent
-            severity:
-              green: 0
-              yellow: 60
-              red: 85    
-            
-          - type: gauge
-            name: 'Свободное место'
-            unit: 'Гб'
-            entity: sensor.disk_free
-            min: 0
-            max: 458
-            severity:
-              red: 1
-              yellow: 20
-              green: 100
+          - entity: input_number.aqara_hub_volume
+            type: custom:slider-entity-row
+            name: 'Громкость'
+            step: 2
+            hide_state: false
+          - entity: light.miio_gateway
+            type: custom:slider-entity-row
+            name: 'Яркость'
+            step: 1

@@ -1,0 +1,81 @@
+title: 'Серверная'
+icon: mdi:server-network
+
+cards:
+  - type: vertical-stack
+    title: 'cubeserver'
+    cards:
+      - type: entities
+        entities:
+          - entity: switch.cubeserver_vm_windows10
+            name: 'Windows 10 VM'
+  
+  
+  - type: vertical-stack
+    title: 'Raspberry Pi'
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            name: 'Загрузка CPU'
+            unit: '%'
+            entity: sensor.processor_use_percent
+            severity:
+              green: 0
+              yellow: 60
+              red: 85
+         
+          - type: gauge
+            name: 'Загрузка ОЗУ'
+            unit: '%'
+            entity: sensor.memory_use_percent
+            severity:
+              green: 0
+              yellow: 60
+              red: 85
+      
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            name: 'Температура CPU'
+            unit: '°C'
+            entity: sensor.cpu_temperature
+            min: 20
+            max: 100
+            severity:
+              green: 0
+              yellow: 50
+              red: 60
+          
+          - type: gauge
+            name: 'Температура GPU'
+            unit: '°C'
+            entity: sensor.gpu_temperature
+            min: 20
+            max: 100
+            severity:
+              green: 0
+              yellow: 50
+              red: 60
+      
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            name: 'Диск заполнен'
+            unit: '%'
+            entity: sensor.disk_use_percent
+            severity:
+              green: 0
+              yellow: 60
+              red: 85    
+          
+          - type: gauge
+            name: 'Свободное место'
+            unit: 'Гб'
+            entity: sensor.disk_free
+            min: 0
+            max: 458
+            severity:
+              red: 1
+              yellow: 20
+              green: 100
