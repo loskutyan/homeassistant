@@ -9,6 +9,7 @@ hallway_lights:
           to: 'on'
         - platform: state
           entity_id: binary_sensor.hallway_door_sensor_contact
+          from: 'off'
           to: 'on'
       condition:
         - condition: numeric_state

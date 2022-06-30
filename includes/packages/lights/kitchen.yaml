@@ -36,10 +36,9 @@ kitchen_lights:
       initial_state: true
       trigger:
         - platform: state
-          entity_id: switch.kitchen_lights_switch_left
-          to: 'on'
-        - platform: state
-          entity_id: switch.kitchen_lights_switch_right
+          entity_id:
+            - switch.kitchen_lights_switch_left
+            - switch.kitchen_lights_switch_right
           to: 'on'
       action:
         - service: timer.start
@@ -50,10 +49,9 @@ kitchen_lights:
       initial_state: true
       trigger:
         - platform: state
-          entity_id: switch.kitchen_lights_switch_left
-          to: 'off'
-        - platform: state
-          entity_id: switch.kitchen_lights_switch_right
+          entity_id:
+            - switch.kitchen_lights_switch_left
+            - switch.kitchen_lights_switch_right
           to: 'off'
       condition:
         - condition: state

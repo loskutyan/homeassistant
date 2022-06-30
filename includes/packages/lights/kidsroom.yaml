@@ -113,9 +113,9 @@ kidsroom_lights:
       initial_state: true
       trigger:
         - platform: state
-          entity_id: sensor.kidsroom_wall_aqara_led_bulbs_brightness_schedule
-        - platform: state
-          entity_id: sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule
+          entity_id:
+            - sensor.kidsroom_wall_aqara_led_bulbs_brightness_schedule
+            - sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule
         - platform: time_pattern
           minutes: '/15'
       condition:
