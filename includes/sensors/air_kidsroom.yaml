@@ -5,7 +5,7 @@
       device_class: carbon_dioxide
       unit_of_measurement: 'ppm'
       value_template: '{{ state_attr(''sensor.cgllc_cgdn1_a7b6_environment'', ''environment.co2_density'') }}'
-      availability_template: '{{ state_attr(''sensor.cgllc_cgdn1_a7b6_environment'', ''environment.co2_density'') > 100 }}'
+      availability_template: '{{ state_attr(''sensor.cgllc_cgdn1_a7b6_environment'', ''environment.co2_density'') | float(0) > 100 }}'
       icon_template: mdi:molecule-co2
     
     qingping_air_lite_pm25:
@@ -27,7 +27,7 @@
       device_class: temperature
       unit_of_measurement: '°C'
       value_template: '{{ state_attr(''sensor.cgllc_cgdn1_a7b6_environment'', ''environment.temperature'') }}'
-      availability_template: '{{ state_attr(''sensor.cgllc_cgdn1_a7b6_environment'', ''environment.temperature'') > 10 }}'
+      availability_template: '{{ state_attr(''sensor.cgllc_cgdn1_a7b6_environment'', ''environment.temperature'') | float(0) > 10 }}'
       icon_template: mdi:thermometer
     
     qingping_air_lite_humidity:
@@ -35,7 +35,7 @@
       device_class: humidity
       unit_of_measurement: '%'
       value_template: '{{ state_attr(''sensor.cgllc_cgdn1_a7b6_environment'', ''environment.relative_humidity'') }}'
-      availability_template: '{{ state_attr(''sensor.cgllc_cgdn1_a7b6_environment'', ''environment.relative_humidity'') > 5 }}'
+      availability_template: '{{ state_attr(''sensor.cgllc_cgdn1_a7b6_environment'', ''environment.relative_humidity'') | float(0) > 5 }}'
       icon_template: mdi:water-percent
     
     kidsroom_aqara_temperature:
@@ -43,7 +43,7 @@
       device_class: temperature
       unit_of_measurement: '°C'
       value_template: '{{ states(''sensor.kidsroom_aqara_air_sensor_temperature'') }}'
-      availability_template: '{{ states(''sensor.kidsroom_aqara_air_sensor_temperature'') > 10 }}'
+      availability_template: '{{ states(''sensor.kidsroom_aqara_air_sensor_temperature'') | float(0) > 10 }}'
       icon_template: mdi:thermometer
     
     kidsroom_aqara_humidity:
@@ -51,7 +51,7 @@
       device_class: humidity
       unit_of_measurement: '%'
       value_template: '{{ states(''sensor.kidsroom_aqara_air_sensor_humidity'') }}'
-      availability_template: '{{ states(''sensor.kidsroom_aqara_air_sensor_humidity'') > 5 }}'
+      availability_template: '{{ states(''sensor.kidsroom_aqara_air_sensor_humidity'') | float(0) > 5 }}'
       icon_template: mdi:water-percent
     
     kidsroom_average_temperature:
@@ -66,7 +66,7 @@
       availability_template: >
         {% set temps = [states('sensor.qingping_air_lite_temperature'),
                         states('sensor.kidsroom_aqara_temperature')] %}
-        {{ temps | reject('equalto', 'unavailable') | count == 2 }}
+        {{ temps | reject('equalto', 'unavailable') | list | count == 2 }}
       icon_template: mdi:thermometer
     
     kidsroom_average_humidity:
@@ -81,5 +81,5 @@
       availability_template: >
         {% set hums = [states('sensor.qingping_air_lite_humidity'),
                        states('sensor.kidsroom_aqara_humidity')] %}
-        {{ hums | reject('equalto', 'unavailable') | count == 2 }}
+        {{ hums | reject('equalto', 'unavailable') | list | count == 2 }}
       icon_template: mdi:water-percent

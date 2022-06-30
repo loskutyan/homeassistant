@@ -22,16 +22,22 @@ cards:
               - entity: input_select.kidsroom_airpurifier_mode
                 state: 'Favorite'
             row:
+              type: custom:multiple-entity-row
               entity: switch.kidsroom_airpurifier_favourite_speed_smart_control
               name: 'Умное управление скоростью'
+              toggle: true
               state_color: true
+              entities:
+              - entity: switch.kidsroom_airpurifier_favourite_speed_temporary_fixed
+                name: 'Фикс. скорость'
+                toggle: true
           
           - type: conditional
             conditions:
               - entity: input_select.kidsroom_airpurifier_mode
                 state: 'Favorite'
-              - entity: switch.kidsroom_airpurifier_favourite_speed_smart_control
-                state: 'off'
+              - entity: binary_sensor.kidsroom_airpurifier_favourite_speed_fixed
+                state: 'on'
             row:
               type: custom:slider-entity-row
               entity: input_number.kidsroom_airpurifier_favorite_speed

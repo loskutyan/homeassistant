@@ -1,9 +1,13 @@
 bedroom_air:
+  input_boolean:
+    bedroom_airpurifier_favourite_speed_smart_control:
+      name: 'Умное управление скоростью бризера в спальне'
+    
   switch:
     - platform: template
       switches:
         bedroom_airpurifier_display:
-          friendly_name: 'Mi Fresh Air Bedroom Дисплей'
+          friendly_name: 'Дисплей бризера в спальне'
           value_template: "{{ is_state_attr('fan.mijia_airpurifier_bedroom', 'display', True) }}"
           turn_on:
             service: xiaomi_miio_airpurifier.fan_set_display_on
@@ -14,7 +18,7 @@ bedroom_air:
           icon_template: mdi:lightbulb-outline
         
         bedroom_airpurifier_buzzer:
-          friendly_name: 'Mi Fresh Air Bedroom Звук'
+          friendly_name: 'Звук бризера в спальне'
           value_template: "{{ is_state_attr('fan.mijia_airpurifier_bedroom', 'buzzer', True) }}"
           turn_on:
             service: xiaomi_miio_airpurifier.fan_set_buzzer_on
@@ -25,7 +29,7 @@ bedroom_air:
           icon_template: mdi:volume-high
         
         bedroom_airpurifier_ptc:
-          friendly_name: 'Mi Fresh Air Bedroom Нагреватель'
+          friendly_name: 'Нагреватель бризера в спальне'
           value_template: "{{ is_state_attr('fan.mijia_airpurifier_bedroom', 'ptc', True) }}"
           turn_on:
             service: xiaomi_miio_airpurifier.fan_set_ptc_on
@@ -36,7 +40,7 @@ bedroom_air:
           icon_template: mdi:fire
         
         bedroom_airpurifier_forced_ventilation:
-          friendly_name: 'Mi Fresh Air Bedroom Проветривание'
+          friendly_name: 'Проветривание в спальне'
           value_template: >
             {% set favorite_mode = is_state_attr('fan.mijia_airpurifier_bedroom', 'preset_mode', 'Favorite') %}
             {% set max_speed_flag = states('sensor.bedroom_airpurifier_favorite_speed') | int == 150 %}
@@ -61,16 +65,31 @@ bedroom_air:
           icon_template: mdi:weather-windy
         
         bedroom_airpurifier_favourite_speed_smart_control:
-          friendly_name: 'Mi Fresh Air Bedroom Умное управление скоростью'
+          friendly_name: 'Умное управление скоростью бризера в спальне'
           value_template: >
             {% set favorite_mode = is_state_attr('fan.mijia_airpurifier_bedroom', 'preset_mode', 'Favorite') %}
-            {% set fixed_speed_timer_off = is_state('timer.bedroom_airpurifier_fixed_speed', 'idle') %}
-            {{ favorite_mode and fixed_speed_timer_off }}
+            {% set smart_control = is_state('input_boolean.bedroom_airpurifier_favourite_speed_smart_control', 'on') %}
+            {{ favorite_mode and smart_control }}
           turn_on:
-            - service: timer.finish
+            - service: input_boolean.turn_on
+              entity_id: input_boolean.bedroom_airpurifier_favourite_speed_smart_control
+          turn_off:
+            - service: input_boolean.turn_off
+              entity_id: input_boolean.bedroom_airpurifier_favourite_speed_smart_control
+          icon_template: mdi:speedometer
+        
+        bedroom_airpurifier_favourite_speed_temporary_fixed:
+          friendly_name: 'Фиксированная скорость бризера в спальне'
+          value_template: >
+            {% set favorite_mode = is_state_attr('fan.mijia_airpurifier_bedroom', 'preset_mode', 'Favorite') %}
+            {% set smart_control = is_state('switch.bedroom_airpurifier_favourite_speed_smart_control', 'on') %}
+            {% set fixed_speed_timer_on = is_state('timer.bedroom_airpurifier_fixed_speed', 'active') %}
+            {{ favorite_mode and smart_control and fixed_speed_timer_on }}
+          turn_on:
+            - service: timer.start
               entity_id: timer.bedroom_airpurifier_fixed_speed
           turn_off:
-            - service: timer.start
+            - service: timer.finish
               entity_id: timer.bedroom_airpurifier_fixed_speed
           icon_template: mdi:speedometer
   
@@ -218,14 +237,21 @@ bedroom_air:
     - platform: template
       sensors:
         bedroom_airpurifier_ptc_status:
-          friendly_name: 'Mi Fresh Air Bedroom Статус нагревателя'
+          friendly_name: 'Статус нагревателя бризера в спальне'
           device_class: heat
-          value_template: "{{ is_state_attr('fan.mijia_airpurifier_bedroom', 'ptc_status', True) }}"
+          value_template: '{{ is_state_attr(''fan.mijia_airpurifier_bedroom'', ''ptc_status'', True) }}'
+        
+        bedroom_airpurifier_favourite_speed_fixed:
+          friendly_name: 'Фиксированная скорость бризера в спальне'
+          value_template: >
+            {% set smart_control_off = is_state('switch.bedroom_airpurifier_favourite_speed_smart_control', 'off') %}
+            {% set tmp_fixed_speed = is_state('switch.bedroom_airpurifier_favourite_speed_temporary_fixed', 'on') %}
+            {{ smart_control_off or tmp_fixed_speed }}
   
   
   input_number:
     bedroom_airpurifier_favorite_speed:
-      name: 'Mi Fresh Air Bedroom Установленная скорость'
+      name: 'Установленная скорость бризера в спальне'
       min: 60
       max: 150
       step: 1
@@ -234,7 +260,7 @@ bedroom_air:
   
   input_select:
     bedroom_airpurifier_mode:
-      name: 'Mi Fresh Air Bedroom Режим работы'
+      name: 'Режим работы бризера в спальне'
       options:
         - Auto
         - Sleep
@@ -305,11 +331,11 @@ bedroom_air:
               entity_id: sensor.bedroom_airpurifier_favourite_speed_needs_changes
               state: 'keep'
         - condition: state
-          entity_id: input_select.bedroom_airpurifier_mode
-          state: 'Favorite'
+          entity_id: switch.bedroom_airpurifier_favourite_speed_smart_control
+          state: 'on'
         - condition: state
-          entity_id: timer.bedroom_airpurifier_fixed_speed
-          state: 'idle'
+          entity_id: switch.bedroom_airpurifier_favourite_speed_temporary_fixed
+          state: 'off'
       action:
         - service: input_number.set_value
           entity_id: input_number.bedroom_airpurifier_favorite_speed
