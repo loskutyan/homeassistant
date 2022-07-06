@@ -6,4 +6,5 @@ views:
   - !include lovelace/03_kitchen.yaml
   - !include lovelace/09_server_room.yaml
   - !include lovelace/10_climate_sensors.yaml
+  - !include lovelace/20_ha_state.yaml
   - !include lovelace/90_weather.yaml

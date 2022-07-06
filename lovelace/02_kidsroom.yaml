@@ -8,7 +8,7 @@ cards:
       - type: entities
         entities:
           - entity: fan.mijia_airpurifier_kidsroom
-            name: 'Mi Fresh Air Ventilator A1'
+            name: 'Состояние'
           
           - entity: switch.kidsroom_airpurifier_forced_ventilation
             name: 'Режим проветривания'

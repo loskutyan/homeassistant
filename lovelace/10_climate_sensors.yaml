@@ -1,6 +1,6 @@
 title: 'Датчики климата'
 icon: mdi:home-thermometer
-cards: 
+cards:
   - type: vertical-stack
     title: 'Спальня'
     cards:

@@ -1,0 +1,269 @@
+title: 'Состояние HA'
+icon: mdi:keyboard
+cards:
+  - type: vertical-stack
+    title: 'Счетчики и недоступные сущности'
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: sensor.automations_count
+                type: custom:multiple-entity-row
+                name: 'Автоматизации'
+                state_header: 'Всего'
+                entities:
+                  - entity: sensor.automations_on_count
+                    name: 'Активно'
+                  - entity: sensor.automations_off_count
+                    name: 'Отключено'
+                  - entity: sensor.automations_unavailable_count
+                    name: 'Недоступно'
+          
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
+                - domain: automation
+                  state: 'unavailable'
+                  options:
+                    secondary_info: last-changed
+          
+          - type: entities         
+            show_header_toggle: false
+            entities:
+              - entity: sensor.scripts_count
+                type: custom:multiple-entity-row
+                name: 'Скрипты'
+                state_header: 'Всего'
+                entities:
+                  - entity: sensor.scripts_on_count
+                    name: 'Активно'
+                  - entity: sensor.scripts_off_count
+                    name: 'Отключено'
+                  - entity: sensor.scripts_unavailable_count
+                    name: 'Недоступно'
+          
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
+                - domain: script
+                  state: 'unavailable'
+                  options:
+                    secondary_info: last-changed
+          
+          - type: entities         
+            show_header_toggle: false
+            entities:
+            - entity: sensor.lights_count
+              type: custom:multiple-entity-row
+              name: 'Светильники'
+              state_header: 'Всего'
+              entities:
+                - entity: sensor.lights_on_count
+                  name: 'Активно'
+                - entity: sensor.lights_off_count
+                  name: 'Отключено'
+                - entity: sensor.lights_unavailable_count
+                  name: 'Недоступно'
+          
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
+                - domain: light
+                  state: 'unavailable'
+                  options:
+                    secondary_info: last-changed
+          
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: sensor.switches_count
+                type: custom:multiple-entity-row
+                name: 'Переключатели'
+                state_header: 'Всего'
+                entities:
+                  - entity: sensor.switches_on_count
+                    name: 'Активно'
+                  - entity: sensor.switches_off_count
+                    name: 'Отключено'
+                  - entity: sensor.switches_unavailable_count
+                    name: 'Недоступно'
+          
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
+                - domain: switch
+                  state: 'unavailable'
+                  options:
+                    secondary_info: last-changed
+          
+          - type: entities      
+            show_header_toggle: false
+            entities:
+              - entity: sensor.sensors_unavailable_count
+          
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
+                - domain: sensor
+                  state: 'unavailable'
+                  options:
+                    secondary_info: last-changed
+              exclude:
+                - entity_id: 'sensor.sun*'
+          
+          - type: entities      
+            show_header_toggle: false
+            entities:
+              - entity: sensor.binary_sensors_unavailable_count
+          
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
+                - domain: binary_sensor
+                  state: 'unavailable'
+                  options:
+                    secondary_info: last-changed
+  
+  
+  - type: vertical-stack
+    title: 'Свет'
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              template: '{{ states(''sensor.lights_switches_list_turned_on'') | from_json }}'
+          
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              template: '{{ states(''sensor.lights_list_turned_on'') | from_json }}'
+              options:
+                type: custom:multiple-entity-row
+                toggle: true
+                secondary_info: last-changed
+                entities:
+                  - attribute: brightness
+                    name: 'Яркость'
+                  - attribute: color_temp
+                    name: 'Температура'
+  
+  
+  - type: vertical-stack
+    title: 'Таймеры'
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
+                - domain: timer
+                  state: 'active'
+                  options:
+                    secondary_info: last-changed
+  
+  
+  - type: vertical-stack
+    title: 'Аварийные датчики'
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
+                - domain: binary_sensor
+                  state: 'on'
+                  attributes:
+                    device_class: 'moisture'
+                  options:
+                      secondary_info: last-changed
+                - domain: binary_sensor
+                  state: 'on'
+                  attributes:
+                    device_class: 'smoke'
+                  options:
+                      secondary_info: last-changed
+  
+  
+  - type: vertical-stack
+    title: 'Движение и присутствие'
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
+                - domain: binary_sensor
+                  state: 'on'
+                  attributes:
+                    device_class: 'motion'
+                  options:
+                    secondary_info: last-changed
+                - domain: binary_sensor
+                  state: 'on'
+                  attributes:
+                    device_class: 'presence'
+                  options:
+                    secondary_info: last-changed
+          
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
+                - domain: binary_sensor
+                  state: 'on'
+                  attributes:
+                    device_class: 'door'
+                  options:
+                    secondary_info: last-changed

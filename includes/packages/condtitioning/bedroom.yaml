@@ -164,10 +164,10 @@ conditioning_bedroom:
     - id: 'Выбор режима работы кондиционера в спальне'
       alias: select_bedroom_ac_mode
       trigger:
-        - entity_id: input_select.bedroom_ac_mode
-          platform: state
-        - entity_id: input_number.bedroom_ac_temperature
-          platform: state
+        - platform: state
+          entity_id:
+            - input_select.bedroom_ac_mode
+            - input_number.bedroom_ac_temperature
       condition:
         - condition: state
           entity_id: switch.bedroom_ac
@@ -182,8 +182,8 @@ conditioning_bedroom:
     - id: 'Выбор скорости обдува кондиционера в спальне'
       alias: select_bedroom_ac_fan_mode
       trigger:
-        - entity_id: input_select.bedroom_ac_fan_mode
-          platform: state
+        - platform: state
+          entity_id: input_select.bedroom_ac_fan_mode
       action:
         - service: climate.set_fan_mode
           entity_id: climate.bedroom_ac
@@ -238,10 +238,9 @@ conditioning_bedroom:
         - platform: state
           entity_id: input_number.bedroom_target_cooling_temperature
         - platform: state
-          entity_id: switch.bedroom_ac
-          to: 'on'
-        - platform: state
-          entity_id: switch.bedroom_auto_conditioning
+          entity_id:
+            - switch.bedroom_ac
+            - switch.bedroom_auto_conditioning
           to: 'on'
       condition:
         - condition: state
@@ -252,7 +251,6 @@ conditioning_bedroom:
             - switch.bedroom_ac
             - switch.bedroom_auto_conditioning
           state: 'on'
-        - condition:
       action:
         - service: climate.set_temperature
           entity_id: climate.bedroom_ac
