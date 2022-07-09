@@ -63,13 +63,29 @@ conditioning_bedroom:
         bedroom_ac_power:
           friendly_name: 'Кондиционер в спальне включен'
           device_class: power
-          value_template: '{{ states(''sensor.bedroom_ac_plug_power'') | float > 15 }}'
-          availability_template: '{{ states(''switch.bedroom_ac_plug'') in [''on'', ''off''] }}'
+          value_template: '{{ states(''sensor.bedroom_ac_plug_power'') | float(0) > 15 }}'
+          availability_template: >
+            {% set status =  states('switch.bedroom_ac_plug') %}
+            {% if status == 'off' %}
+              True
+            {% elif status == 'on' %}
+              {{ states('sensor.bedroom_ac_plug_power') | float(-1) >= 0 }}
+            {% else %}
+              False
+            {% endif %}
         
         bedroom_ac_is_cooling:
           friendly_name: 'Кондиционер в спальне охлаждает или сушит воздух'
           value_template: '{{ states(''sensor.bedroom_ac_plug_power'') | float > 100 }}'
-          availability_template: '{{ states(''switch.bedroom_ac_plug'') in [''on'', ''off''] }}'
+          availability_template: >
+            {% set status =  states('switch.bedroom_ac_plug') %}
+            {% if status == 'off' %}
+              True
+            {% elif status == 'on' %}
+              {{ states('sensor.bedroom_ac_plug_power') | float(-1) >= 0 }}
+            {% else %}
+              False
+            {% endif %}
   
   
   switch:
@@ -199,6 +215,9 @@ conditioning_bedroom:
             - 'off'
             - 'unknown'
             - 'unavailable'
+      condition:
+        - condition: template
+          value_template: '{{ state_attr(''climate.bedroom_ac'', ''last_on_operation'') | bool(False) }}'
       action:
         - service: input_select.select_option
           entity_id: input_select.bedroom_ac_mode
@@ -211,6 +230,9 @@ conditioning_bedroom:
         - platform: state
           entity_id: climate.bedroom_ac
           attribute: temperature
+      condition:
+        - condition: template
+          value_template: '{{ state_attr(''climate.bedroom_ac'', ''temperature'') | int(0) > 0 }}'
       action:
         - service: input_number.set_value
           entity_id: input_number.bedroom_ac_temperature
@@ -223,6 +245,9 @@ conditioning_bedroom:
         - platform: state
           entity_id: climate.bedroom_ac
           attribute: fan_mode
+      condition:
+        - condition: template
+          value_template: '{{ state_attr(''climate.bedroom_ac'', ''fan_mode'') | bool(False) }}'
       action:
         - service: input_select.select_option
           entity_id: input_select.bedroom_ac_fan_mode
@@ -251,6 +276,8 @@ conditioning_bedroom:
             - switch.bedroom_ac
             - switch.bedroom_auto_conditioning
           state: 'on'
+        - condition: template
+          value_template: '{{ states(''sensor.bedroom_average_temperature'') | float(0) > 0 }}'
       action:
         - service: climate.set_temperature
           entity_id: climate.bedroom_ac

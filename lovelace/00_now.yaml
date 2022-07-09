@@ -150,17 +150,17 @@ cards:
           type: custom:mini-graph-card
           color_thresholds:
             - value: 21
-              color: "#00FFFF"
+              color: '#00FFFF'
             - value: 23
-              color: "#00FF00"
+              color: '#00FF00'
             - value: 25
-              color: "#FFFF00"
+              color: '#FFFF00'
             - value: 27
-              color: "#FFD700"
+              color: '#FFD700'
             - value: 29
-              color: "#FF0000"
+              color: '#FF0000'
             - value: 32
-              color: "#800000"
+              color: '#800000'
           animate: true
           line_width: 2
           hour24: true
@@ -181,17 +181,17 @@ cards:
       - type: custom:mini-graph-card
         color_thresholds:
           - value: 450
-            color: "#00FFFF"
+            color: '#00FFFF'
           - value: 600
-            color: "#00FF00"
+            color: '#00FF00'
           - value: 800
-            color: "#FFFF00"
+            color: '#FFFF00'
           - value: 1000
-            color: "#FFD700"
+            color: '#FFD700'
           - value: 1200
-            color: "#FF0000"
+            color: '#FF0000'
           - value: 9999
-            color: "#800000"
+            color: '#800000'
         animate: true
         line_width: 2
         hour24: true
@@ -212,17 +212,17 @@ cards:
           - type: custom:mini-graph-card
             color_thresholds:
               - value: 1
-                color: "#00FFFF"
+                color: '#00FFFF'
               - value: 3
-                color: "#00FF00"
+                color: '#00FF00'
               - value: 10
-                color: "#FFFF00"
+                color: '#FFFF00'
               - value: 25
-                color: "#FFD700"
+                color: '#FFD700'
               - value: 75
-                color: "#FF0000"
+                color: '#FF0000'
               - value: 999
-                color: "#800000"
+                color: '#800000'
             animate: true
             line_width: 2
             hour24: true
@@ -241,13 +241,13 @@ cards:
           - type: custom:mini-graph-card
             color_thresholds:
               - value: 60
-                color: "#00FFFF"
+                color: '#00FFFF'
               - value: 100
-                color: "#00FF00"
+                color: '#00FF00'
               - value: 200
-                color: "#FFFF00"
+                color: '#FFFF00'
               - value: 500
-                color: "#FF0000"
+                color: '#FF0000'
             animate: true
             line_width: 2
             hour24: true

@@ -1,4 +1,14 @@
 alarm:
+  timer:
+    hallway_door_left_opened:
+      name: 'Проверить, открыта ли дверь в прихожей, через '
+      duration: 300
+
+    hallway_door_time_to_close:
+      name: 'Надежно закрыть дверь через '
+      duration: 20
+
+
   sensor:
     - platform: template
       sensors:
@@ -54,6 +64,15 @@ alarm:
           friendly_name: 'Перегрузка розетки кондиционера в спальне'
           value_template: >
             {{ states('sensor.bedroom_ac_plug_power') | float > 1000 }}
+          availability_template: >
+            {% set status =  states('switch.bedroom_ac_plug') %}
+            {% if status == 'off' %}
+              True
+            {% elif status == 'on' %}
+              {{ states('sensor.bedroom_ac_plug_power') | float(-1) >= 0 }}
+            {% else %}
+              False
+            {% endif %}
           icon_template: >
             {% if is_state('binary_sensor.bedroom_ac_plug_overload', 'on') %}
               mdi:lightning-bolt
@@ -65,6 +84,15 @@ alarm:
           friendly_name: 'Перегрузка розетки кондиционера в детской'
           value_template: >
             {{ states('sensor.kidsroom_ac_plug_power') | float > 1000 }}
+          availability_template: >
+            {% set status =  states('switch.kidsroom_ac_plug') %}
+            {% if status == 'off' %}
+              True
+            {% elif status == 'on' %}
+              {{ states('sensor.kidsroom_ac_plug_power') | float(-1) >= 0 }}
+            {% else %}
+              False
+            {% endif %}
           icon_template: >
             {% if is_state('binary_sensor.kidsroom_ac_plug_overload', 'on') %}
               mdi:lightning-bolt

@@ -3,6 +3,12 @@ away:
     somebody_home:
       name: 'Дома'
       initial: 'on'
+
+
+  timer:
+    left_home_by_phone_presence_after_door_closed:
+      name: 'Проверка присутствия телефона в сети в течение '
+      duration: 1800
   
   
   sensor:

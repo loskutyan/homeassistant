@@ -1,4 +1,10 @@
 hallway_lights:
+  timer:
+    hallway_lights_turn_off_without_motion:
+      name: 'Свет в прихожей погаснет через '
+      duration: 180
+
+
   automation:
     - id: 'Свет при движении в прихожей'
       alias: hallway_motion_lights_turn_on

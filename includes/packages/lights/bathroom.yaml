@@ -1,4 +1,10 @@
 bathroom_lights:
+  timer:
+    bathroom_lights_turn_off_without_motion:
+      name: 'Свет в ванной погаснет через '
+      duration: 1200
+
+
   automation:
     - id: 'Свет при движении в ванной'
       alias: bathroom_motion_lights_turn_on

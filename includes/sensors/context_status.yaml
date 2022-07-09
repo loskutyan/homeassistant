@@ -9,7 +9,7 @@
     sun_next_rising:
       friendly_name: 'Подъем солнца'
       value_template: >
-        {% if state_attr('sun.sun', 'elevation') | float < 0 %}
+        {% if state_attr('sun.sun', 'elevation') | float(0) < 0 %}
           {{ state_attr('sun.sun', 'next_rising') }}
         {% else %}
           unavailable
@@ -18,7 +18,7 @@
     sun_next_setting:
       friendly_name: 'Заход солнца'
       value_template: >
-        {% if state_attr('sun.sun', 'elevation') | float >= 0 %}
+        {% if state_attr('sun.sun', 'elevation') | float(-1) >= 0 %}
           {{ state_attr('sun.sun', 'next_setting') }}
         {% else %}
           unavailable

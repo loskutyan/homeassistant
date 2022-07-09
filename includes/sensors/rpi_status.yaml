@@ -21,11 +21,3 @@
   command: '/opt/vc/bin/vcgencmd measure_temp | cut -c6- | rev | cut -c3- | rev'
   # If errors occur, make sure configuration file is encoded as UTF-8
   value_template: '{{ value }}'
-
-- platform: sql
-  db_url: mysql://homeassistant:homeassistant@core-mariadb/homeassistant?charset=utf8
-  queries:
-    - name: Maria DB size
-      query: 'SELECT table_schema "database", Round(Sum(data_length + index_length) / 1048576, 2) "value" FROM information_schema.tables WHERE table_schema="homeassistant" GROUP BY table_schema;'
-      column: 'value'
-      unit_of_measurement: MB

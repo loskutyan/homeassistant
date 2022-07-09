@@ -13,7 +13,7 @@
       device_class: volatile_organic_compounds
       unit_of_measurement: 'ppb'
       value_template: '{{ state_attr(''air_quality.cgllc_airmonitor_s1'', ''total_volatile_organic_compounds'') }}'
-      availability_template: '{{ state_attr(''air_quality.cgllc_airmonitor_s1'', ''total_volatile_organic_compounds'') | float(0) > 1 }}'
+      availability_template: '{{ state_attr(''air_quality.cgllc_airmonitor_s1'', ''total_volatile_organic_compounds'') | float(0) > 0 }}'
       icon_template: mdi:atom
     
     cleargrass_air_pm25:

@@ -219,3 +219,27 @@ cubeserver:
                 {% set message = 'Parity-Check завершен' %}
               {% endif %}
               {{ '\U0001F4BF' }} {{ message }} {{ states('sensor.time_date') }}
+
+    - id: 'Началась загрузка торрента'
+      alias: torrent_downloading_started
+      initial_state: true
+      trigger:
+        - platform: event
+          event_type: transmission_started_torrent
+      action:
+        - service: notify.tg
+          data:
+            message: >
+              {{ '\U00002B07' }} Началась загрузка торрента {{ trigger.event.data.name }}
+
+    - id: 'Загрузка торрента завершена'
+      alias: torrent_downloading_completed
+      initial_state: true
+      trigger:
+        - platform: event
+          event_type: transmission_downloaded_torrent
+      action:
+        - service: notify.tg
+          data:
+            message: >
+              {{ '\U00002705' }} Завершена загрузка торрента {{ trigger.event.data.name }}

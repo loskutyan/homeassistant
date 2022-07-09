@@ -1,4 +1,10 @@
 kitchen_lights:
+  timer:
+    kitchen_lights_turn_off_without_motion:
+      name: 'Свет на кухне погаснет через '
+      duration: 1200
+
+
   automation:
     - id: 'Свет при движении на кухне'
       alias: kitchen_motion_lights_turn_on

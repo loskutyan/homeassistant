@@ -81,7 +81,7 @@ tts:
 
 influxdb:
   exclude:
-    entity_globs: "*"
+    entity_globs: '*'
 
 
 telegram_bot:
@@ -101,12 +101,8 @@ smartir:
 
 
 notify: !include includes/notify.yaml
-timer: !include includes/timer.yaml
 recorder: !include includes/recorder.yaml
 fan: !include includes/fan.yaml
 
-automation:  !include_dir_merge_list includes/automations
 binary_sensor: !include_dir_merge_list includes/binary_sensors
-script: !include_dir_merge_named includes/scripts
 sensor: !include_dir_merge_list includes/sensors
-switch: !include_dir_merge_list includes/switches

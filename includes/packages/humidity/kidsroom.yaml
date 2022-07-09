@@ -5,11 +5,10 @@ kidsroom_humidity:
         kidsroom_needs_humidification:
           friendly_name: 'Нужно увлажнить воздух в детской'
           value_template: >
-            {% set humidifier_state = states('humidifier.smartmi_humidifier_kidsroom') %}
-            {% set humidifier_state_bool = humidifier_state if humidifier_state != 'unavailable' else False %}
+            {% set humidifier_state_on = states('humidifier.smartmi_humidifier_kidsroom') | bool(False) %}
             {% set humidifier_speed = states('sensor.smartmi_humidifier_bedroom_motor_speed') %}
-            {% set low_hum = states('sensor.kidsroom_average_humidity') | float < 35 %}
-            {{ (not humidifier_state_bool or humidifier_speed == 0) and low_hum }}
+            {% set low_hum = states('sensor.kidsroom_average_humidity') | float(100) < 35 %}
+            {{ (not humidifier_state_on or humidifier_speed == 0) and low_hum }}
   
   
   sensor:
@@ -18,8 +17,8 @@ kidsroom_humidity:
         kidsroom_humidifier_mode_needs_changes:
           value_template: >
             {% set current_mode = state_attr('humidifier.smartmi_humidifier_kidsroom', 'mode') %}
-            {% set current_humidity = states('sensor.kidsroom_average_humidity') | float %}
-            {% if current_humidity < 45 and current_mode != 'High'%}
+            {% set current_humidity = states('sensor.kidsroom_average_humidity') | float(0) %}
+            {% if 0 < current_humidity < 45 and current_mode != 'High'%}
               High
             {% elif 50 <= current_humidity < 55 and current_mode != 'Medium'%}
               Medium
