@@ -246,7 +246,7 @@ kidsroom_air:
             {% else %}
               150
             {% endif %}
-          availability_template: 'states(''sensor.kidsroom_airpurifier_favorite_speed'') | float(0) >= 60'
+          availability_template: '{{ states(''sensor.kidsroom_airpurifier_favorite_speed'') | float(0) >= 60 }}'
         
         kidsroom_airpurifier_previous_speed:
           value_template:  >
@@ -263,7 +263,7 @@ kidsroom_air:
             {% else %}
               120
             {% endif %}
-          availability_template: 'states(''sensor.kidsroom_airpurifier_favorite_speed'') | float(0) >= 60'
+          availability_template: '{{ states(''sensor.kidsroom_airpurifier_favorite_speed'') | float(0) >= 60 }}'
         
         kidsroom_airpurifier_favourite_speed_needs_changes:
           value_template: >
