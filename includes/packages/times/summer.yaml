@@ -46,6 +46,6 @@ summer_time:
           data_template:
             entity_id: >-
               {{ states.automation
-                | selectattr ('entity_id', 'match', 'automation.*humidifier*|automation.*humidification_notify')
+                | selectattr ('entity_id', 'match', 'automation.*humidifier*|automation.telegram_*humidification')
                 | map(attribute='entity_id')
                 | list }}

@@ -70,7 +70,7 @@ kidsroom_humidity:
               {{ states('sensor.kidsroom_humidifier_mode_needs_changes') }}
       
     - id: 'Нужно увлажнить воздух в детской - уведомление'
-      alias: kidsroom_needs_humidification_notify
+      alias: telegram_kidsroom_needs_humidification
       initial_state: true
       trigger:
         - platform: time_pattern
@@ -89,7 +89,7 @@ kidsroom_humidity:
             minutes: 20
         - condition: template
           value_template: >
-            {% set last_triggered = state_attr('automation.kidsroom_needs_humidification_notify', 'last_triggered') %}
+            {% set last_triggered = state_attr('automation.telegram_kidsroom_needs_humidification', 'last_triggered') %}
             {% set now = utcnow() %}
             {% set delta_minutes = (now - last_triggered).total_seconds() / 60 if last_triggered != none else 1000 %}
             {{ delta_minutes > 90 }}
@@ -103,7 +103,7 @@ kidsroom_humidity:
               {{ '\U0001F6B1' }} {{ messages | random }} {{ states('sensor.time_date') }}
     
     - id: 'Кончается вода в увлажнителе в детской - уведомление'
-      alias: kidsroom_humidifier_low_water_level_notify
+      alias: telegram_kidsroom_humidifier_low_water_level
       initial_state: true
       trigger:
         - platform: numeric_state
@@ -120,7 +120,7 @@ kidsroom_humidity:
           above: 1
         - condition: template
           value_template: >
-            {% set last_triggered = state_attr('automation.kidsroom_humidifier_low_water_level_notify', 'last_triggered') %}
+            {% set last_triggered = state_attr('automation.telegram_kidsroom_humidifier_low_water_level', 'last_triggered') %}
             {% set now = utcnow() %}
             {% set delta_hours = (now - last_triggered).total_seconds() / 3600 if last_triggered != none else 1000 %}
             {{ delta_hours > 8 }}

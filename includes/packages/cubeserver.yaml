@@ -2,7 +2,7 @@ cubeserver:
   sensor:
     - platform: command_line
       unique_id: cubeserver_parity_common_size_raw
-      name: 'Cubeserver Parity Size Raw'
+      name: 'Cubeserver Parity Common Size Raw'
       command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} /root/mdcmd status | sed -n ''s/mdResyncSize=//p'''
 
     - platform: command_line
@@ -58,7 +58,10 @@ cubeserver:
             {% else %}
               {{ (parity_db / parity_dt * 1024 / 1e6) | round(1) }}
             {% endif %}
-          availability_template: '{{ states(''sensor.cubeserver_parity_dt_raw'') | int(-1) >= 0 }}'
+          availability_template: >
+            {% set valid_parity_db = states('sensor.cubeserver_parity_db_raw') | int(-1) >= 0 %}
+            {% set valid_parity_dt = states('sensor.cubeserver_parity_dt_raw') | int(-1) >= 0 %}
+            {{ valid_parity_db and valid_parity_dt }}
 
         cubeserver_parity_finish_seconds:
           unit_of_measurement: 's'
@@ -68,7 +71,7 @@ cubeserver:
             {% set parity_dt = states('sensor.cubeserver_parity_dt_raw') | float %}
             {% set parity_size = states('sensor.cubeserver_parity_size_raw') | float %}
             {% set parity_pos = states('sensor.cubeserver_parity_pos_raw') | float %}
-            {% if parity_size > 0 %}
+            {% if parity_size == 0 or parity_db == 0 %}
               0
             {% else %}
               {{ ((parity_size - parity_pos) * parity_dt / parity_db) | round(0) }}
@@ -182,7 +185,19 @@ cubeserver:
         cubeserver_parity_check_in_progress:
           friendly_name: 'Parity-Check in progress'
           device_class: running
-          value_template: '{{ states(''sensor.cubeserver_parity_progress'') | float > 0 }}'
+          value_template: >
+            {% set parity_progress = states(''sensor.cubeserver_parity_progress'') | float %}
+            {{ 0 < parity_progress < 100 }}
+          availability_template: '{{ states(''sensor.cubeserver_parity_progress'') | float(0) > 0 }}'
+
+        cubeserver_parity_check_paused:
+          friendly_name: 'Parity-Check paused'
+          device_class: running
+          value_template: >
+            {% set parity_in_progress = is_state('sensor.cubeserver_parity_check_in_progress', 'on') %}
+            {% set parity_pos = states('sensor.cubeserver_parity_pos_raw') | int > 0 %}
+            {{ parity_in_progress and parity_pos }}
+          availability_template: '{{ states(''sensor.cubeserver_parity_pos_raw'') | int(-1) >= 0 }}'
         
         cubeserver_disk_parity_is_hot:
           friendly_name: 'Parity Disk горячий'
@@ -222,10 +237,11 @@ cubeserver:
           turn_off:
             service: shell_command.shutdown_cubeserver_vm_windows10
           icon_template: mdi:desktop-classic
-  
+
+
   automation:
-    - id: 'Уведомление о Parity-Check'
-      alias: cubeserver_parity_check_status
+    - id: 'Начало/окончание Parity-Check - уведомление'
+      alias: telegram_cubeserver_parity_check_start_finished
       initial_state: true
       trigger:
         - platform: state
@@ -236,6 +252,7 @@ cubeserver:
           to:
             - 'off'
             - 'on'
+          for: '00:00:10'
       action:
         - service: notify.tg
           data:
@@ -248,8 +265,34 @@ cubeserver:
               {% endif %}
               {{ '\U0001F4BF' }} {{ message }} {{ states('sensor.time_date') }}
 
-    - id: 'Началась загрузка торрента'
-      alias: torrent_downloading_started
+    - id: 'Пауза Parity-Check - уведомление'
+      alias: telegram_cubeserver_parity_check_pause
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.cubeserver_parity_check_paused
+          from:
+            - 'off'
+            - 'on'
+          to:
+            - 'off'
+            - 'on'
+          for: '00:00:10'
+      action:
+        - service: notify.tg
+          data:
+            message: >
+              {% set paused = is_state('binary_sensor.cubeserver_parity_check_paused', 'on') %}
+              {% set progress = states('sensor.cubeserver_parity_progress') %}
+              {% if paused %}
+                {% set message = 'Parity-Check поставлен на паузу, завершено ' + progress | round(2) + '%' %}
+              {% else %}
+                {% set message = 'Parity-Check возобновлен' %}
+              {% endif %}
+              {{ '\U0001F4C0' }} {{ message }} {{ states('sensor.time_date') }}
+
+    - id: 'Началась загрузка торрента - уведомление'
+      alias: telegram_torrent_downloading_started
       initial_state: true
       trigger:
         - platform: event
@@ -260,8 +303,8 @@ cubeserver:
             message: >
               {{ '\U00002B07' }} Началась загрузка торрента {{ trigger.event.data.name }}
 
-    - id: 'Загрузка торрента завершена'
-      alias: torrent_downloading_completed
+    - id: 'Загрузка торрента завершена - уведомление'
+      alias: telegram_torrent_downloading_completed
       initial_state: true
       trigger:
         - platform: event
