@@ -5,6 +5,134 @@ cubeserver:
         cubeserver_ip:
           friendly_name: 'Cubeserver IP'
           value_template: !secret cubeserver_ip
+        
+        cubeserver_parity_gbsize:
+          unit_of_measurement: 'GB'
+          value_template: '{{ (states(''sensor.cubeserver_parity_size_raw'') | int * 1024 | int / 1_000_000_000) | round (0) }}'
+        cubeserver_parity_gbpos:
+          unit_of_measurement: 'GB'
+          value_template: '{{ (states(''sensor.cubeserver_parity_pos_raw'') | int * 1024 | int / 1_000_000_000) | round(0) }}'
+        cubeserver_parity_progress:
+          unit_of_measurement: '%'
+          value_template: '{{ (states(''sensor.cubeserver_parity_pos_raw'') | int / states(''sensor.cubeserver_parity_size_raw'') | int * 100) | round(1) }}'
+        cubeserver_parity_speed:
+          unit_of_measurement: 'MB/sec'
+          value_template: '{{ (states(''sensor.cubeserver_parity_db_raw'') | int / states(''sensor.cubeserver_parity_dt_raw'') | int * 1024 | int / 1_000_000) | round(1) }}'
+        cubeserver_parity_finish_hours:
+          unit_of_measurement: 'hours'
+          value_template: '{{ ((states(''sensor.cubeserver_parity_dt_raw'') | int ) * (((states(''sensor.cubeserver_parity_size_raw'') | float ) - (states(''sensor.cubeserver_parity_pos_raw'') | float )) / (states(''sensor.cubeserver_parity_db_raw'') | float /100 | float + 1)) / 100 / 60 / 60) | round(1) }}'
+        cubeserver_parity_finish_mins:
+          unit_of_measurement: 'minutes'
+          value_template: '{{ ((states(''sensor.cubeserver_parity_dt_raw'') | int ) * (((states(''sensor.cubeserver_parity_size_raw'') | float ) - (states(''sensor.cubeserver_parity_pos_raw'') | float )) / (states(''sensor.cubeserver_parity_db_raw'') | float /100 | float + 1)) / 100 / 60 ) | round(0) }}'
+        cubeserver_parity_finish:
+          friendly_name: 'Окончание'
+          value_template: >
+            {% set xtime = states('sensor.cubeserver_parity_finish_mins') | int %}
+            {% set minutes = (xtime % 60)  %}
+            {% set hours = ((xtime % 1440) / 60) | int %}
+            {% set days = (xtime / 1440) | int %}
+              {% if minutes < 1 and hours < 1 %}
+                Меньше минуты
+              {% else %}
+                {% if days > 0 %}
+                  {{ days }} д.
+                {% endif %}
+                {% if hours > 0 %}
+                  {% if days > 0 %}
+                    {{ ' ' }}
+                  {% endif %}
+                  {{ hours }} ч.
+                {% endif %}
+                {% if minutes > 0 %}
+                  {% if days > 0 or hours > 0 %}
+                    {{ ' ' }}
+                  {% endif %}
+                  {{ minutes }} мин.
+                {% endif %}
+              {% endif %}
+    
+    - platform: influxdb
+      host: !secret cubeserver_influxdb_host
+      port: !secret cubeserver_influxdb_port
+      queries:
+        - name: 'Cubeserver CPU package temperature'
+          unit_of_measurement: '°C'
+          value_template: '{{ value | round(1) }}'
+          group_function: last
+          where: '"feature" = ''package_id_0'' AND "host" = ''cubeserver'''
+          measurement: '"sensors"'
+          field: 'temp_input'
+          database: 'cubeserver_telegraf'
+          
+        - name: 'Cubeserver Parity Disk temperature'
+          unit_of_measurement: '°C'
+          value_template: '{{ value | round(2) }}'
+          group_function: last
+          where: '"serial_no" = ''VRG12HJK'' AND "host" = ''cubeserver'''
+          measurement: '"smart_device"'
+          field: 'temp_c'
+          database: 'cubeserver_telegraf'
+          
+        - name: 'Cubeserver Disk 1 temperature'
+          unit_of_measurement: '°C'
+          value_template: '{{ value | round(2) }}'
+          group_function: last
+          where: '"serial_no" = ''VRG9GDBK'' AND "host" = ''cubeserver'''
+          measurement: '"smart_device"'
+          field: 'temp_c'
+          database: 'cubeserver_telegraf'
+          
+        - name: 'Cubeserver Cache 1 temperature'
+          unit_of_measurement: '°C'
+          value_template: '{{ value | round(2) }}'
+          group_function: last
+          where: '"serial_no" = ''S3YBNS0N503747B'' AND "host" = ''cubeserver'''
+          measurement: '"smart_device"'
+          field: 'temp_c'
+          database: 'cubeserver_telegraf'
+          
+        - name: 'Cubeserver Cache 2 temperature'
+          unit_of_measurement: '°C'
+          value_template: '{{ value | round(2) }}'
+          group_function: last
+          where: '"serial_no" = ''S3Z8NB0K728998H'' AND "host" = ''cubeserver'''
+          measurement: '"smart_device"'
+          field: 'temp_c'
+          database: 'cubeserver_telegraf'
+          
+        - name: 'Cubeserver VM Disk temperature'
+          unit_of_measurement: '°C'
+          value_template: '{{ value | round(2) }}'
+          group_function: last
+          where: '"serial_no" = ''S413NB0K214724L'' AND "host" = ''cubeserver'''
+          measurement: '"smart_device"'
+          field: 'temp_c'
+          database: 'cubeserver_telegraf'
+          
+    - platform: command_line
+      unique_id: cubeserver_parity_status
+      name: 'Cubeserver Parity status'
+      command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} /root/mdcmd status | sed -n ''s/mdState=//p'''
+    
+    - platform: command_line
+      unique_id: cubeserver_parity_size_raw
+      name: 'Cubeserver Parity Size Raw'
+      command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} /root/mdcmd status | sed -n ''s/mdResync=//p'''
+    
+    - platform: command_line
+      unique_id: cubeserver_parity_pos_row
+      name: 'Cubeserver Parity Pos Raw'
+      command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} /root/mdcmd status | sed -n ''s/mdResyncPos=//p'''
+    
+    - platform: command_line
+      unique_id: cubeserver_parity_dt_raw
+      name: 'Cubeserver Parity Dt Raw'
+      command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} /root/mdcmd status | sed -n ''s/mdResyncDt=//p'''
+    
+    - platform: command_line 
+      unique_id: cubeserver_parity_db_raw
+      name: 'Cubeserver Parity Db Raw'
+      command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} /root/mdcmd status | sed -n ''s/mdResyncDb=//p'''
   
   
   binary_sensor:
@@ -20,6 +148,23 @@ cubeserver:
       device_class: connectivity
       payload_on: 'running'
       payload_off: 'not running'
+    
+    - platform: template
+      sensors:
+        cubeserver_parity_check_in_progress:
+          friendly_name: 'Parity-Check in progress'
+          device_class: running
+          value_template: '{{ states(''sensor.cubeserver_parity_progress'') | float > 0 }}'
+        
+        cubeserver_disk_parity_is_hot:
+          friendly_name: 'Parity Disk горячий'
+          device_class: heat
+          value_template: '{{ states(''sensor.cubeserver_parity_disk_temperature'') | float > 44 }}'
+            
+        cubeserver_disk_1_is_hot:
+          friendly_name: 'Disk 1 горячий'
+          device_class: heat
+          value_template: '{{ states(''sensor.cubeserver_disk_1_temperature'') | float > 44 }}'
   
   
   shell_command:
@@ -49,3 +194,28 @@ cubeserver:
           turn_off:
             service: shell_command.shutdown_cubeserver_vm_windows10
           icon_template: mdi:desktop-classic
+  
+  automation:
+    - id: 'Уведомление о Parity-Check'
+      alias: cubeserver_parity_check_status
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.cubeserver_parity_check_in_progress
+          from:
+            - 'off'
+            - 'on'
+          to:
+            - 'off'
+            - 'on'
+      action:
+        - service: notify.tg
+          data:
+            message: >
+              {% set started = is_state('binary_sensor.cubeserver_parity_check_in_progress', 'on') %}
+              {% if started %}
+                {% set message = 'Запущен Parity-Check' %}
+              {% else %}
+                {% set message = 'Parity-Check завершен' %}
+              {% endif %}
+              {{ '\U0001F4BF' }} {{ message }} {{ states('sensor.time_date') }}

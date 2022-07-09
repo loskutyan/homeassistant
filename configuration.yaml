@@ -4,7 +4,10 @@ homeassistant:
   longitude: !secret longitude_coord
   elevation: 190
   unit_system: metric
-  time_zone: Europe/Moscow
+  time_zone: 'Europe/Moscow'
+  currency: RUB
+  internal_url: !secret internal_url
+  external_url: !secret external_url
   
   customize: !include customize.yaml
   packages: !include_dir_merge_named includes/packages
@@ -74,6 +77,11 @@ lovelace:
 # Text to speech
 tts:
   - platform: google_translate
+
+
+influxdb:
+  exclude:
+    entity_globs: "*"
 
 
 telegram_bot:
