@@ -3,15 +3,6 @@ icon: mdi:server-network
 
 cards:
   - type: vertical-stack
-    title: 'cubeserver'
-    cards:
-      - type: entities
-        entities:
-          - entity: switch.cubeserver_vm_windows10
-            name: 'Windows 10 VM'
-  
-  
-  - type: vertical-stack
     title: 'Raspberry Pi'
     cards:
       - type: horizontal-stack
@@ -24,7 +15,7 @@ cards:
               green: 0
               yellow: 60
               red: 85
-         
+
           - type: gauge
             name: 'Загрузка ОЗУ'
             unit: '%'
@@ -33,7 +24,7 @@ cards:
               green: 0
               yellow: 60
               red: 85
-      
+
       - type: horizontal-stack
         cards:
           - type: gauge
@@ -46,7 +37,7 @@ cards:
               green: 0
               yellow: 50
               red: 60
-          
+
           - type: gauge
             name: 'Температура GPU'
             unit: '°C'
@@ -57,7 +48,7 @@ cards:
               green: 0
               yellow: 50
               red: 60
-      
+
       - type: horizontal-stack
         cards:
           - type: gauge
@@ -79,3 +70,107 @@ cards:
               red: 1
               yellow: 20
               green: 100
+
+
+  - type: vertical-stack
+    title: 'Cubeserver'
+    cards:
+      - type: entities
+        entities:
+          - entity: switch.cubeserver_vm_windows10
+            name: 'Windows 10 VM'
+
+      - type: entities
+        entities:
+          - type: custom:multiple-entity-row
+            entity: sensor.cubeserver_parity_status
+            name: 'Parity-Check'
+            entities:
+              - attribute: last-changed
+              - entity: sensor.cubeserver_parity_finish_timestamp
+                name: 'До завершения'
+                format: relative
+                hide_unavailable: true
+              - entity: sensor.cubeserver_parity_speed
+                name: 'Скорость'
+                hide_if: 0
+              - entity: sensor.cubeserver_parity_progress
+                name: 'Завершено'
+                format: precision2
+                hide_if: 100
+
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.cubeserver_parity_disk_temperature
+            name: 'Parity Disk'
+        color_thresholds:
+          - value: 35
+            color: '#00FFFF'
+          - value: 40
+            color: '#00FF00'
+          - value: 43
+            color: '#FFFF00'
+          - value: 45
+            color: '#FFD700'
+          - value: 47
+            color: '#FF0000'
+          - value: 50
+            color: '#800000'
+        animate: true
+        line_width: 2
+        hour24: true
+        points_per_hour: 3
+        group_by: interval
+        lower_bound: 25
+        upper_bound: 55
+
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.cubeserver_disk_1_temperature
+            name: 'Disk 1'
+        color_thresholds:
+          - value: 35
+            color: '#00FFFF'
+          - value: 40
+            color: '#00FF00'
+          - value: 43
+            color: '#FFFF00'
+          - value: 45
+            color: '#FFD700'
+          - value: 47
+            color: '#FF0000'
+          - value: 50
+            color: '#800000'
+        animate: true
+        line_width: 2
+        hour24: true
+        points_per_hour: 3
+        group_by: interval
+        lower_bound: 25
+        upper_bound: 55
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.cubeserver_cache_1_temperature
+                name: 'Cache 1'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.cubeserver_cache_2_temperature
+                name: 'Cache 2'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center

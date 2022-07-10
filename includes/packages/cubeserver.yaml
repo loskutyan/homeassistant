@@ -63,50 +63,41 @@ cubeserver:
             {% set valid_parity_dt = states('sensor.cubeserver_parity_dt_raw') | int(-1) >= 0 %}
             {{ valid_parity_db and valid_parity_dt }}
 
-        cubeserver_parity_finish_seconds:
-          unit_of_measurement: 's'
-          device_class: duration
+        cubeserver_parity_finish_timestamp:
+          device_class: timestamp
           value_template: >
             {% set parity_db = states('sensor.cubeserver_parity_db_raw') | float %}
             {% set parity_dt = states('sensor.cubeserver_parity_dt_raw') | float %}
             {% set parity_size = states('sensor.cubeserver_parity_size_raw') | float %}
             {% set parity_pos = states('sensor.cubeserver_parity_pos_raw') | float %}
-            {% if parity_size == 0 or parity_db == 0 %}
-              0
-            {% else %}
-              {{ ((parity_size - parity_pos) * parity_dt / parity_db) | round(0) }}
-            {% endif %}
-          availability_template: '{{ states(''sensor.cubeserver_parity_db_raw'') | int(-1) >= 0 }}'
+            {% set seconds = ((parity_size - parity_pos) * parity_dt / parity_db) | round(0) %}
+            {{ now() + timedelta(seconds=seconds) }}
+          availability_template: >
+            {% set parity_db = states('sensor.cubeserver_parity_db_raw') | int(0) > 0 %}
+            {% set parity_size = states('sensor.cubeserver_parity_size_raw') | int(0) > 0 %}
+            {{ parity_db and parity_size }}
 
-        cubeserver_parity_finish:
-          friendly_name: 'Окончание Parity-Check через '
+        cubeserver_parity_status:
           value_template: >
-            {% set total_seconds = states('sensor.cubeserver_parity_finish_seconds') | int(0) %}
-            {% set total_minutes = total_seconds / 60 | round(0)  %}
-            {% set minutes = (total_minutes % 60)  %}
-            {% set hours = total_minutes % 1440 // 60 %}
-            {% set days = total_minutes // 1440 %}
-              {% if minutes < 1 and hours < 1 %}
-                Меньше минуты
-              {% else %}
-                {% if days > 0 %}
-                  {{ days }} д.
-                {% endif %}
-                {% if hours > 0 %}
-                  {% if days > 0 %}
-                    {{ ' ' }}
-                  {% endif %}
-                  {{ hours }} ч.
-                {% endif %}
-                {% if minutes > 0 %}
-                  {% if days > 0 or hours > 0 %}
-                    {{ ' ' }}
-                  {% endif %}
-                  {{ minutes }} мин.
-                {% endif %}
-              {% endif %}
-          availability_template: '{{ states(''sensor.cubeserver_parity_finish_seconds'') | int(-1) >= 0 }}'
-    
+            {% set in_progress = is_state('binary_sensor.cubeserver_parity_check_in_progress', 'on') %}
+            {% set paused = is_state('binary_sensor.cubeserver_parity_check_paused', 'on') %}
+            {% if paused %}
+              Пауза
+            {% elif in_progress %}
+              Выполняется
+            {% else %}
+              Завершено
+            {% endif %}
+          icon_template: >
+            {% set status = states('sensor.cubeserver_parity_status') %}
+            {% if status == 'Пауза' %}
+              mdi:pause
+            {% elif status == 'Выполняется' %}
+              mdi:play
+            {% else %}
+              mdi:stop
+            {% endif %}
+
     - platform: influxdb
       host: !secret cubeserver_influxdb_host
       port: !secret cubeserver_influxdb_port
@@ -119,7 +110,7 @@ cubeserver:
           measurement: '"sensors"'
           field: 'temp_input'
           database: 'cubeserver_telegraf'
-          
+
         - name: 'Cubeserver Parity Disk temperature'
           unit_of_measurement: '°C'
           value_template: '{{ value | round(2) }}'
@@ -128,7 +119,7 @@ cubeserver:
           measurement: '"smart_device"'
           field: 'temp_c'
           database: 'cubeserver_telegraf'
-          
+
         - name: 'Cubeserver Disk 1 temperature'
           unit_of_measurement: '°C'
           value_template: '{{ value | round(2) }}'
@@ -137,7 +128,7 @@ cubeserver:
           measurement: '"smart_device"'
           field: 'temp_c'
           database: 'cubeserver_telegraf'
-          
+
         - name: 'Cubeserver Cache 1 temperature'
           unit_of_measurement: '°C'
           value_template: '{{ value | round(2) }}'
@@ -146,7 +137,7 @@ cubeserver:
           measurement: '"smart_device"'
           field: 'temp_c'
           database: 'cubeserver_telegraf'
-          
+
         - name: 'Cubeserver Cache 2 temperature'
           unit_of_measurement: '°C'
           value_template: '{{ value | round(2) }}'
@@ -155,7 +146,7 @@ cubeserver:
           measurement: '"smart_device"'
           field: 'temp_c'
           database: 'cubeserver_telegraf'
-          
+
         - name: 'Cubeserver VM Disk temperature'
           unit_of_measurement: '°C'
           value_template: '{{ value | round(2) }}'
@@ -164,65 +155,72 @@ cubeserver:
           measurement: '"smart_device"'
           field: 'temp_c'
           database: 'cubeserver_telegraf'
-  
-  
+
+
   binary_sensor:
     - platform: ping
       name: cubeserver_vm_windows10_ping
       host: !secret cubeserver_windows10_vm_ip
       scan_interval: 20
       count: 2
-    
+
     - platform: command_line
       name: cubeserver_vm_windows10_virsh_status
       command: 'if test $(ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} virsh list --all | grep ''Windows 10'' | awk ''{print $4}'') == running; then echo running; else echo ''not running''; fi'
       device_class: connectivity
       payload_on: 'running'
       payload_off: 'not running'
-    
+
     - platform: template
       sensors:
         cubeserver_parity_check_in_progress:
           friendly_name: 'Parity-Check in progress'
           device_class: running
           value_template: >
-            {% set parity_progress = states(''sensor.cubeserver_parity_progress'') | float %}
-            {{ 0 < parity_progress < 100 }}
+            {% set progress = states('sensor.cubeserver_parity_progress') | float %}
+            {{ 0 < progress < 100 }}
           availability_template: '{{ states(''sensor.cubeserver_parity_progress'') | float(0) > 0 }}'
 
         cubeserver_parity_check_paused:
           friendly_name: 'Parity-Check paused'
-          device_class: running
           value_template: >
-            {% set parity_in_progress = is_state('sensor.cubeserver_parity_check_in_progress', 'on') %}
-            {% set parity_pos = states('sensor.cubeserver_parity_pos_raw') | int > 0 %}
-            {{ parity_in_progress and parity_pos }}
+            {% set in_progress = is_state('binary_sensor.cubeserver_parity_check_in_progress', 'on') %}
+            {% set pos = states('sensor.cubeserver_parity_pos_raw') | int > 0 %}
+            {{ in_progress and pos }}
           availability_template: '{{ states(''sensor.cubeserver_parity_pos_raw'') | int(-1) >= 0 }}'
-        
-        cubeserver_disk_parity_is_hot:
-          friendly_name: 'Parity Disk горячий'
+
+        cubeserver_parity_disk_overheat:
+          friendly_name: 'Перегрев Parity Disk'
           device_class: heat
           value_template: '{{ states(''sensor.cubeserver_parity_disk_temperature'') | float > 44 }}'
-            
-        cubeserver_disk_1_is_hot:
-          friendly_name: 'Disk 1 горячий'
+
+        cubeserver_disk_1_overheat:
+          friendly_name: 'Перегрев Disk 1'
           device_class: heat
           value_template: '{{ states(''sensor.cubeserver_disk_1_temperature'') | float > 44 }}'
-  
-  
+
+        cubeserver_disks_overheat:
+          friendly_name: 'Перегрев дисков'
+          device_class: heat
+          value_template: >
+            {% set parity = is_state('binary_sensor.cubeserver_parity_disk_overheat', 'on') %}
+            {% set disk1 = is_state('binary_sensor.cubeserver_disk_1_overheat', 'on') %}
+            {{ parity or disk1 }}
+
+
   shell_command:
     run_cubeserver_vm_windows10: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} virsh start ''Windows\ 10'''
     shutdown_cubeserver_vm_windows10: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} virsh shutdown ''Windows\ 10'''
-  
-  
+
+
   script:
     shutdown_cubeserver_vm_windows10:
       alias: 'cubeserver: выключение VM Windows 10'
       sequence:
         service:
           shell_command.shutdown_cubeserver_vm_windows10
-  
-  
+
+
   switch:
     - platform: template
       switches:
@@ -240,8 +238,43 @@ cubeserver:
 
 
   automation:
+    - id: 'Перегрев дисков - уведомление'
+      alias: telegram_cubeserver_disks_overheat
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.cubeserver_disks_overheat
+          from:
+            - 'off'
+            - 'on'
+          to:
+            - 'off'
+            - 'on'
+          for: '00:01:00'
+      action:
+        - service: notify.tg
+          data:
+            message: |
+              {% set overheat = is_state('binary_sensor.cubeserver_disks_overheat', 'on') %}
+              {% set parity_temp = states('sensor.cubeserver_parity_disk_temperature') %}
+              {% set disk1_temp = states('sensor.cubeserver_disk_1_temperature') %}
+              {% if overheat %}
+                {% set messages = ['диски перегреты.',
+                                   'дискам жарко!',
+                                   'обнаружен перегрев дисков.'] %}
+                {% set emoji = '\U0001F4C0' %}
+              {% else %}
+                {% set messages = ['диски остыли.',
+                                   'диски вернулись к нормальным температурам.'] %}
+                {% set emoji = '\U00002744' %}
+              {% endif %}
+              {{ emoji }} Cubeserver: {{ messages | random }} {{ states('sensor.time_date') }}
+              {{ '\U0001F321' }} Температуры дисков:
+              Parity: {{ parity_temp }}°C
+              Disk 1: {{ disk1_temp }}°C
+
     - id: 'Начало/окончание Parity-Check - уведомление'
-      alias: telegram_cubeserver_parity_check_start_finished
+      alias: telegram_cubeserver_parity_check_start_finish
       initial_state: true
       trigger:
         - platform: state
@@ -257,13 +290,13 @@ cubeserver:
         - service: notify.tg
           data:
             message: >
-              {% set started = is_state('binary_sensor.cubeserver_parity_check_in_progress', 'on') %}
-              {% if started %}
+              {% set in_progress = is_state('binary_sensor.cubeserver_parity_check_in_progress', 'on') %}
+              {% if in_progress %}
                 {% set message = 'Запущен Parity-Check' %}
               {% else %}
                 {% set message = 'Parity-Check завершен' %}
               {% endif %}
-              {{ '\U0001F4BF' }} {{ message }} {{ states('sensor.time_date') }}
+              {{ '\U0001F4BF' }} Cubeserver: {{ message }} {{ states('sensor.time_date') }}
 
     - id: 'Пауза Parity-Check - уведомление'
       alias: telegram_cubeserver_parity_check_pause
@@ -289,7 +322,7 @@ cubeserver:
               {% else %}
                 {% set message = 'Parity-Check возобновлен' %}
               {% endif %}
-              {{ '\U0001F4C0' }} {{ message }} {{ states('sensor.time_date') }}
+              {{ '\U0001F4C0' }} Cubeserver: {{ message }} {{ states('sensor.time_date') }}
 
     - id: 'Началась загрузка торрента - уведомление'
       alias: telegram_torrent_downloading_started
@@ -301,7 +334,7 @@ cubeserver:
         - service: notify.tg
           data:
             message: >
-              {{ '\U00002B07' }} Началась загрузка торрента {{ trigger.event.data.name }}
+              {{ '\U00002B07' }} Cubeserver: Началась загрузка торрента {{ trigger.event.data.name }}
 
     - id: 'Загрузка торрента завершена - уведомление'
       alias: telegram_torrent_downloading_completed
@@ -313,4 +346,4 @@ cubeserver:
         - service: notify.tg
           data:
             message: >
-              {{ '\U00002705' }} Завершена загрузка торрента {{ trigger.event.data.name }}
+              {{ '\U00002705' }} Cubeserver: Завершена загрузка торрента {{ trigger.event.data.name }}

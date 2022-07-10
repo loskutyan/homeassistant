@@ -77,6 +77,9 @@ bathroom_lights:
         - condition: state
           entity_id: binary_sensor.bathroom_motion_sensor_occupancy
           state: 'on'
+        - condition: state
+          entity_id: switch.bathroom_lights_switch
+          state: 'on'
       action:
         - service: timer.start
           entity_id: timer.bathroom_lights_turn_off_without_motion

@@ -21,7 +21,7 @@ cards:
                     name: 'Отключено'
                   - entity: sensor.automations_unavailable_count
                     name: 'Недоступно'
-          
+
           - type: custom:auto-entities
             show_empty: false
             card:
@@ -33,7 +33,7 @@ cards:
                   state: 'unavailable'
                   options:
                     secondary_info: last-changed
-          
+
           - type: entities         
             show_header_toggle: false
             entities:
@@ -48,7 +48,7 @@ cards:
                     name: 'Отключено'
                   - entity: sensor.scripts_unavailable_count
                     name: 'Недоступно'
-          
+
           - type: custom:auto-entities
             show_empty: false
             card:
@@ -60,7 +60,7 @@ cards:
                   state: 'unavailable'
                   options:
                     secondary_info: last-changed
-          
+
           - type: entities         
             show_header_toggle: false
             entities:
@@ -75,7 +75,7 @@ cards:
                   name: 'Отключено'
                 - entity: sensor.lights_unavailable_count
                   name: 'Недоступно'
-          
+
           - type: custom:auto-entities
             show_empty: false
             card:
@@ -87,7 +87,7 @@ cards:
                   state: 'unavailable'
                   options:
                     secondary_info: last-changed
-          
+
           - type: entities
             show_header_toggle: false
             entities:
@@ -102,7 +102,7 @@ cards:
                     name: 'Отключено'
                   - entity: sensor.switches_unavailable_count
                     name: 'Недоступно'
-          
+
           - type: custom:auto-entities
             show_empty: false
             card:
@@ -114,12 +114,12 @@ cards:
                   state: 'unavailable'
                   options:
                     secondary_info: last-changed
-          
+
           - type: entities      
             show_header_toggle: false
             entities:
               - entity: sensor.sensors_unavailable_count
-          
+
           - type: custom:auto-entities
             show_empty: false
             card:
@@ -133,12 +133,15 @@ cards:
                     secondary_info: last-changed
               exclude:
                 - entity_id: 'sensor.sun*'
-          
+                - entity_id: 'sensor.dishwasher_remaining_program_time'
+                - entity_id: 'sensor.dishwasher_program_progress'
+                - entity_id: 'sensor.dishwasher_duration'
+
           - type: entities      
             show_header_toggle: false
             entities:
               - entity: sensor.binary_sensors_unavailable_count
-          
+
           - type: custom:auto-entities
             show_empty: false
             card:
@@ -150,8 +153,8 @@ cards:
                   state: 'unavailable'
                   options:
                     secondary_info: last-changed
-  
-  
+
+
   - type: vertical-stack
     title: 'Свет'
     cards:
@@ -165,7 +168,7 @@ cards:
               show_header_toggle: false
             filter:
               template: '{{ states(''sensor.lights_switches_list_turned_on'') | from_json }}'
-          
+
           - type: custom:auto-entities
             show_empty: false
             card:
@@ -182,8 +185,8 @@ cards:
                     name: 'Яркость'
                   - attribute: color_temp
                     name: 'Температура'
-  
-  
+
+
   - type: vertical-stack
     title: 'Таймеры'
     cards:
@@ -201,8 +204,8 @@ cards:
                   state: 'active'
                   options:
                     secondary_info: last-changed
-  
-  
+
+
   - type: vertical-stack
     title: 'Аварийные датчики'
     cards:
@@ -228,8 +231,8 @@ cards:
                     device_class: 'smoke'
                   options:
                       secondary_info: last-changed
-  
-  
+
+
   - type: vertical-stack
     title: 'Движение и присутствие'
     cards:
@@ -254,7 +257,7 @@ cards:
                     device_class: 'presence'
                   options:
                     secondary_info: last-changed
-          
+
           - type: custom:auto-entities
             card:
               type: entities

@@ -22,8 +22,8 @@ cards:
               hide_unavailable: true
             - entity: sensor.time
               name: 'Время'
-  
-  
+
+
   - type: vertical-stack
     title: 'Статус'
     cards:
@@ -33,7 +33,7 @@ cards:
           - entity: switch.bedroom_asleep
           - entity: switch.kidsroom_asleep
           - entity: switch.warm_season
-      
+
       - type: conditional
         conditions:
           - entity: binary_sensor.any_software_updates_available
@@ -62,7 +62,7 @@ cards:
               row:
                 entity: sensor.hacs
                 name: 'Обновления HACS'
-      
+
       - type: custom:auto-entities
         card:
           type: entities
@@ -72,7 +72,7 @@ cards:
             - entity_id: sensor.*_filter_life_remaining_days
           exclude:
             - state: '> 30'
-      
+
       - type: custom:auto-entities
         card:
           type: entities
@@ -85,7 +85,7 @@ cards:
                 secondary_info: last-changed
           exclude:
             - state: '> 30'
-      
+
       - type: custom:auto-entities
         card:
           type: entities
@@ -96,8 +96,8 @@ cards:
             - entity_id: sensor.vacuum_filter_left
           exclude:
             - state: '> 25'
-  
-  
+
+
   - type: vertical-stack
     title: 'Климат и качество воздуха'
     cards:
@@ -141,13 +141,22 @@ cards:
                       name: 'Спальня'
                       tap_action:
                         action: toggle
-      
+
       - type: conditional
         conditions:
           - entity: switch.warm_season
             state: 'on'
         card:
           type: custom:mini-graph-card
+          entities:
+            - entity: sensor.bedroom_average_temperature
+              name: 'Температура в спальне'
+              show_legend: false
+            - entity: sensor.kidsroom_average_temperature
+              name: 'Температура в детской'
+              show_legend: false
+          lower_bound: 18
+          upper_bound: 32
           color_thresholds:
             - value: 21
               color: '#00FFFF'
@@ -159,26 +168,24 @@ cards:
               color: '#FFD700'
             - value: 29
               color: '#FF0000'
-            - value: 32
+            - value: 35
               color: '#800000'
           animate: true
           line_width: 2
           hour24: true
           points_per_hour: 1
           group_by: hour
-          lower_bound: 18
-          upper_bound: 30
-          show:
-            legend: false
-          entities:
-            - entity: sensor.bedroom_average_temperature
-              name: 'Температура в спальне'
-              show_legend: false
-            - entity: sensor.kidsroom_average_temperature
-              name: 'Температура в детской'
-              show_legend: false
-      
+
       - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.cleargrass_air_co2
+            name: 'CO² Спальня'
+            show_legend: false
+          - entity: sensor.qingping_air_lite_co2
+            name: 'CO² Детская'
+            show_legend: false
+        lower_bound: 400
+        upper_bound: 1200
         color_thresholds:
           - value: 450
             color: '#00FFFF'
@@ -197,19 +204,19 @@ cards:
         hour24: true
         points_per_hour: 1
         group_by: hour
-        lower_bound: 400
-        upper_bound: 1200
-        entities:
-          - entity: sensor.cleargrass_air_co2
-            name: 'CO² Спальня'
-            show_legend: false
-          - entity: sensor.qingping_air_lite_co2
-            name: 'CO² Детская'
-            show_legend: false
-      
+
       - type: horizontal-stack
         cards:
           - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.cleargrass_air_pm25
+                name: 'PM2.5 Спальня'
+                show_legend: false
+              - entity: sensor.qingping_air_lite_pm25
+                name: 'PM2.5 Детская'
+                show_legend: false
+            lower_bound: 0.0
+            upper_bound: 20.0
             color_thresholds:
               - value: 1
                 color: '#00FFFF'
@@ -228,17 +235,13 @@ cards:
             hour24: true
             points_per_hour: 1
             group_by: hour
-            lower_bound: 0.0
-            upper_bound: 20.0
-            entities:
-              - entity: sensor.cleargrass_air_pm25
-                name: 'PM2.5 Спальня'
-                show_legend: false
-              - entity: sensor.qingping_air_lite_pm25
-                name: 'PM2.5 Детская'
-                show_legend: false
-          
+
           - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.cleargrass_air_tvoc
+                name: 'tVOC'
+            lower_bound: 0
+            upper_bound: 500
             color_thresholds:
               - value: 60
                 color: '#00FFFF'
@@ -253,13 +256,8 @@ cards:
             hour24: true
             points_per_hour: 1
             group_by: hour
-            lower_bound: 0
-            upper_bound: 500
-            entities:
-              - entity: sensor.cleargrass_air_tvoc
-                name: 'tVOC'
-  
-  
+
+
   - type: vertical-stack
     title: 'Aqara Hub'
     cards:

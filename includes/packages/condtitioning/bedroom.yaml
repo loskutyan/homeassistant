@@ -8,13 +8,13 @@ conditioning_bedroom:
       temperature_sensor: sensor.bedroom_average_temperature
       humidity_sensor: sensor.bedroom_average_humidity
       power_sensor: binary_sensor.bedroom_ac_power
-  
-  
+
+
   input_boolean:
     bedroom_auto_conditioning:
       name: 'Автоматическое охлаждение воздуха в спальне'
-  
-  
+
+
   input_number:
     bedroom_ac_temperature:
       name: 'Установленная температура кондиционера в спальне'
@@ -22,15 +22,15 @@ conditioning_bedroom:
       max: 31
       step: 1
       icon: mdi:thermometer-low
-    
+
     bedroom_target_cooling_temperature:
       name: 'Целевая температура охлаждения в спальне'
       min: 20
       max: 31
       step: 1
       icon: mdi:thermometer-auto
-  
-  
+
+
   input_select:
     bedroom_ac_mode:
       name: 'Режим работы кондиционера в спальне'
@@ -39,7 +39,7 @@ conditioning_bedroom:
         - cool
         - fan_only
         - dry
-    
+
     bedroom_ac_fan_mode:
       name: 'Скорость обдува кондиционера в спальне'
       options:
@@ -48,15 +48,15 @@ conditioning_bedroom:
         - mid
         - high
       icon: mdi:fan
-    
+
     bedroom_ac_fan_swing_mode:
       name: 'Направление обдува кондиционера в спальне (только вентилятор)'
       options:
         - auto
         - swing
       icon: mdi:weather-windy
-  
-  
+
+
   binary_sensor:
     - platform: template
       sensors:
@@ -73,7 +73,7 @@ conditioning_bedroom:
             {% else %}
               False
             {% endif %}
-        
+
         bedroom_ac_is_cooling:
           friendly_name: 'Кондиционер в спальне охлаждает или сушит воздух'
           value_template: '{{ states(''sensor.bedroom_ac_plug_power'') | float > 100 }}'
@@ -86,8 +86,8 @@ conditioning_bedroom:
             {% else %}
               False
             {% endif %}
-  
-  
+
+
   switch:
     - platform: template
       switches:
@@ -107,7 +107,7 @@ conditioning_bedroom:
             service: climate.turn_off
             entity_id: climate.bedroom_ac
           icon_template: mdi:air-conditioner
-        
+
         bedroom_cooling:
           friendly_name: 'Охлаждение воздуха в спальне'
           value_template: >
@@ -128,7 +128,7 @@ conditioning_bedroom:
               temperature: '{{ states(''input_number.bedroom_ac_temperature'') | int }}'
               hvac_mode: 'fan_only'
           icon_template: mdi:snowflake
-        
+
         bedroom_auto_conditioning:
           friendly_name: 'Автоматическое охлаждение воздуха в спальне'
           value_template: >
@@ -140,8 +140,8 @@ conditioning_bedroom:
             service: input_boolean.turn_off
             entity_id: input_boolean.bedroom_auto_conditioning
           icon_template: mdi:snowflake-thermometer
-  
-  
+
+
   script:
     bedroom_ac_self_dry:
       alias: 'Просушка кондиционера в спальне'
@@ -174,8 +174,8 @@ conditioning_bedroom:
           data:
             message: >
               {{'\U00002600'}} Осушение кондиционера в спальне закончено!
-  
-  
+
+
   automation:
     - id: 'Выбор режима работы кондиционера в спальне'
       alias: select_bedroom_ac_mode
@@ -194,7 +194,7 @@ conditioning_bedroom:
           data_template:
             temperature: '{{ states(''input_number.bedroom_ac_temperature'') | int }}'
             hvac_mode: '{{ states(''input_select.bedroom_ac_mode'') }}'
-    
+
     - id: 'Выбор скорости обдува кондиционера в спальне'
       alias: select_bedroom_ac_fan_mode
       trigger:
@@ -205,7 +205,7 @@ conditioning_bedroom:
           entity_id: climate.bedroom_ac
           data_template:
             fan_mode: '{{ states(''input_select.bedroom_ac_fan_mode'') }}'
-    
+
     - id: 'Отслеживание режима работы кондиционера в спальне'
       alias: tracking_bedroom_ac_mode
       trigger:
@@ -223,7 +223,7 @@ conditioning_bedroom:
           entity_id: input_select.bedroom_ac_mode
           data_template:
             option: '{{ state_attr(''climate.bedroom_ac'', ''last_on_operation'') }}'
-    
+
     - id: 'Отслеживание температуры кондиционера в спальне'
       alias: tracking_bedroom_ac_temperature
       trigger:
@@ -238,7 +238,7 @@ conditioning_bedroom:
           entity_id: input_number.bedroom_ac_temperature
           data_template:
             value: '{{ state_attr(''climate.bedroom_ac'', ''temperature'') | int }}'
-    
+
     - id: 'Отслеживание скорости обдува кондиционера в спальне'
       alias: tracking_bedroom_ac_fan_mode
       trigger:
@@ -253,7 +253,7 @@ conditioning_bedroom:
           entity_id: input_select.bedroom_ac_fan_mode
           data_template:
             option: '{{ state_attr(''climate.bedroom_ac'', ''fan_mode'') }}'
-    
+
     - id: 'Умный контроль кондиционера в спальне'
       alias: bedroom_ac_smart_control
       initial_state: true

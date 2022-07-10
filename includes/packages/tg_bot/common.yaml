@@ -23,7 +23,7 @@ tg_common:
               keyboard:
                 - 'Отчет по системе, Отчет по климату'
                 - 'Прогноз погоды, Управление'
-    
+
     - id: 'Панель управления бота'
       alias: telegram_control_panel
       initial_state: true

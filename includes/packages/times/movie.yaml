@@ -16,7 +16,7 @@ movie_time:
             {% else %}
               off
             {% endif %}
-  
+
   script:
     bedroom_movie_dimming_lights_on_playing:
       alias: 'Приглушение света в спальне для фильма - проигрывание'
@@ -30,7 +30,7 @@ movie_time:
             brightness: 38
             color_temp: 350
             transition: 10
-    
+
     bedroom_movie_dimming_lights_on_pause:
       alias: 'Приглушение света в спальне для фильма - пауза'
       sequence:
@@ -40,7 +40,7 @@ movie_time:
             brightness: 127
             color_temp: 325
             transition: 6
-  
+
   automation:
     - id: 'Включен фильм в спальне, приглушаем свет'
       alias: bedroom_movie_playing_dimming_lights
@@ -57,7 +57,7 @@ movie_time:
       action:
         - service: script.turn_on
           entity_id: script.bedroom_movie_dimming_lights_on_playing
-    
+
     - id: 'Фильм на паузе в спальне, приглушаем свет'
       alias: bedroom_movie_paused_dimming_lights
       initial_state: true

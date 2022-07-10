@@ -9,8 +9,8 @@ away:
     left_home_by_phone_presence_after_door_closed:
       name: 'Проверка присутствия телефона в сети в течение '
       duration: 1800
-  
-  
+
+
   sensor:
     - platform: template
       sensors:
@@ -31,7 +31,7 @@ away:
               | map(attribute='entity_id')
               | list
               | to_json(ensure_ascii=False) }}
-        
+
         lights_list_turned_on:
           friendly_name: 'Список включенных светильников'
           value_template: >
@@ -45,7 +45,7 @@ away:
               | map(attribute='entity_id')
               | list
               | to_json(ensure_ascii=False) }}
-        
+
         heaters_list_turned_on:
           friendly_name: 'Список включенных нагревателей'
           value_template: >
@@ -59,8 +59,8 @@ away:
               | map(attribute='entity_id')
               | list
               | to_json(ensure_ascii=False) }}
-  
-  
+
+
   binary_sensor:
     - platform: template
       sensors:
@@ -91,20 +91,20 @@ away:
             {% else %}
               mdi:motion-sensor-off
             {% endif %}
-        
+
         any_light_is_on:
           friendly_name: 'Дома включен свет'
           device_class: light
           value_template: >
             {{ (states('sensor.lights_switches_list_turned_on') | from_json | length + states('sensor.lights_list_turned_on') | from_json | length) > 0 }}
-        
+
         any_heater_is_on:
           friendly_name: 'Дома включен подогрев воздуха'
           device_class: heat
           value_template: >
             {{ states('sensor.heaters_list_turned_on') | from_json | length > 0 }}
-  
-  
+
+
   switch:
     - platform: template
       switches:
@@ -124,8 +124,8 @@ away:
             {% else %}
               mdi:home-minus
             {% endif %}
-  
-  
+
+
   script:
     turn_off_all_lights:
       alias: 'Выключение всех светильников'
@@ -145,7 +145,7 @@ away:
                                  'Свет выключен - сэкономили кучу денег',
                                  'Светильники обесточены... но это неточно'] %}
               {{ '\U0001F4A1' }} {{ messages | random }}
-    
+
     turn_off_all_heaters:
       alias: 'Выключение всех обогревателей'
       sequence:
@@ -160,8 +160,8 @@ away:
                                  'Нагрев выключен - сэкономили кучу денег',
                                  'Обогреватели обесточены... но это неточно'] %}
               {{ '\U0001F525' }} {{ messages | random }}
-  
-  
+
+
   automation:
     - id: 'Все ушли из дома, выключаем свет'
       alias: everyone_left_home_turn_off_lights
@@ -177,7 +177,7 @@ away:
       action:
         - service: script.turn_on
           entity_id: script.turn_off_all_lights
-    
+
     - id: 'Все ушли из дома, выключаем нагреватели'
       alias: everyone_left_home_turn_off_heaters
       trigger:
@@ -192,7 +192,7 @@ away:
       action:
         - service: script.turn_on
           entity_id: script.turn_off_all_heaters
-    
+
     - id: 'Входная дверь закрылась, запуск таймера проверки отсутствия'
       alias: left_home_check_timer_start
       trigger:
@@ -210,7 +210,7 @@ away:
       action:
         - service: timer.start
           entity_id: timer.left_home_by_phone_presence_after_door_closed
-    
+
     - id: 'Телефон вышел из сети после закрытия двери'
       alias: phone_left_home_after_door_was_closed
       trigger:
@@ -227,7 +227,7 @@ away:
           entity_id: input_boolean.somebody_home
         - service: timer.finish
           entity_id: timer.left_home_by_phone_presence_after_door_closed
-    
+
     - id: 'Кто-то дома после закрытия двери'
       alias: somebody_home_after_door_was_closed
       trigger:
@@ -260,7 +260,7 @@ away:
           entity_id: input_boolean.somebody_home
         - service: timer.finish
           entity_id: timer.left_home_by_phone_presence_after_door_closed
-    
+
     - id: 'Кто-то вернулся домой'
       alias: somebody_back_home
       trigger:

@@ -116,4 +116,3 @@ tg_climate_status:
         - service: script.turn_on
           entity_id: 
             - script.telegram_climate_report
-

@@ -14,7 +14,7 @@
         {% else %}
           unavailable
         {% endif %}
-    
+
     sun_next_setting:
       friendly_name: 'Заход солнца'
       value_template: >

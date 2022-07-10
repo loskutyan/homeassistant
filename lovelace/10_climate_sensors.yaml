@@ -17,7 +17,7 @@ cards:
               extrema: true
               fill: false
             align_state: center
-          
+
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.bedroom_aqara_temperature
@@ -29,7 +29,7 @@ cards:
               extrema: true
               fill: false
             align_state: center
-          
+
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.bedroom_airpurifier_temperature
@@ -41,7 +41,7 @@ cards:
               extrema: true
               fill: false
             align_state: center
-      
+
       - type: horizontal-stack
         cards:
           - type: custom:mini-graph-card
@@ -55,7 +55,7 @@ cards:
               extrema: true
               fill: false
             align_state: center
-          
+
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.bedroom_aqara_humidity
@@ -67,7 +67,7 @@ cards:
               extrema: true
               fill: false
             align_state: center
-      
+
       - type: horizontal-stack
         cards:
           - type: custom:mini-graph-card
@@ -81,7 +81,7 @@ cards:
               extrema: true
               fill: false
             align_state: center
-          
+
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.bedroom_airpurifier_co2
@@ -93,8 +93,8 @@ cards:
               extrema: true
               fill: false
             align_state: center
-  
-  
+
+
   - type: vertical-stack
     title: 'Детская'
     cards:
@@ -111,7 +111,7 @@ cards:
               extrema: true
               fill: false
             align_state: center
-          
+
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.kidsroom_aqara_temperature
@@ -123,7 +123,7 @@ cards:
               extrema: true
               fill: false
             align_state: center
-          
+
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.kidsroom_airpurifier_temperature
@@ -135,7 +135,7 @@ cards:
               extrema: true
               fill: false
             align_state: center
-      
+
       - type: horizontal-stack
         cards:
           - type: custom:mini-graph-card
@@ -149,7 +149,7 @@ cards:
               extrema: true
               fill: false
             align_state: center
-          
+
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.kidsroom_aqara_humidity
@@ -161,7 +161,7 @@ cards:
               extrema: true
               fill: false
             align_state: center
-      
+
       - type: horizontal-stack
         cards:
           - type: custom:mini-graph-card
@@ -175,7 +175,7 @@ cards:
               extrema: true
               fill: false
             align_state: center
-          
+
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.kidsroom_airpurifier_co2

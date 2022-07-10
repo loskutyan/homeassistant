@@ -5,8 +5,8 @@ kidsroom_lights:
       entities:
         - light.kidsroom_aqara_led_bulb_left
         - light.kidsroom_aqara_led_bulb_right
-  
-  
+
+
   sensor:
     - platform: template
       sensors:
@@ -32,7 +32,7 @@ kidsroom_lights:
             {% else %}
               51
             {% endif %}
-        
+
         kidsroom_wall_aqara_led_bulbs_color_temp_schedule:
           friendly_name: 'Температура ламп Aqara в детской'
           value_template: >
@@ -49,8 +49,8 @@ kidsroom_lights:
             {% else %}
               {{ max_temp }}
             {% endif %}
-  
-  
+
+
   automation:
     - id: 'Включение/выключение люстры в детской'
       alias: kidsroom_main_lights_toggle
@@ -62,7 +62,7 @@ kidsroom_lights:
       action:
         - service: switch.toggle
           entity_id: switch.kidsroom_lights_common_switch_left
-    
+
     - id: 'Включение/выключение бра в детской'
       alias: kidsroom_wall_lights_toggle
       initial_state: true
@@ -82,7 +82,7 @@ kidsroom_lights:
             color_temp: >
               {{ states('sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule') }}
             transition: 2
-    
+
     - id: 'Включение бра в детской вечером'
       alias: kidsroom_wall_aqara_led_bulbs_turn_on
       initial_state: true
@@ -107,7 +107,7 @@ kidsroom_lights:
             color_temp: >
               {{ states('sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule') }}
             transition: 5
-    
+
     - id: 'Изменение света бра в детской'
       alias: kidsroom_wall_aqara_led_bulbs_control
       initial_state: true

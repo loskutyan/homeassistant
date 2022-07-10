@@ -30,7 +30,7 @@ tg_system_status:
         - delay: 00:01:10
         - service: script.turn_on
           entity_id: script.telegram_system_report
-    
+
     - id: 'Отчет о состоянии системы в боте'
       alias: telegram_system_report
       initial_state: true

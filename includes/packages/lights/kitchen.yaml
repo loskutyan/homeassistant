@@ -36,7 +36,7 @@ kitchen_lights:
           else:
             - service: switch.turn_on
               entity_id: switch.kitchen_lights_switch_left
-    
+
     - id: 'Включение таймера выключения света на кухне'
       alias: kitchen_lights_on_timer_start
       initial_state: true
@@ -49,7 +49,7 @@ kitchen_lights:
       action:
         - service: timer.start
           entity_id: timer.kitchen_lights_turn_off_without_motion
-    
+
     - id: 'Выключение таймера выключения света на кухне'
       alias: kitchen_lights_off_timer_finish
       initial_state: true
@@ -68,7 +68,7 @@ kitchen_lights:
       action:
         - service: timer.finish
           entity_id: timer.kitchen_lights_turn_off_without_motion
-    
+
     - id: 'Сброс таймера выключения света при движении на кухне'
       alias: kitchen_motion_lights_timer_reset
       initial_state: true
@@ -83,7 +83,7 @@ kitchen_lights:
       action:
         - service: timer.start
           entity_id: timer.kitchen_lights_turn_off_without_motion
-    
+
     - id: 'Сброс таймера выключения света после окончания при движении на кухне'
       alias: kitchen_motion_timer_finished_lights_timer_reset
       initial_state: true
@@ -96,10 +96,17 @@ kitchen_lights:
         - condition: state
           entity_id: binary_sensor.kitchen_motion_sensor_occupancy
           state: 'on'
+        - or:
+            - condition: state
+              entity_id: switch.kitchen_lights_switch_left
+              state: 'on'
+            - condition: state
+              entity_id: switch.kitchen_lights_switch_right
+              state: 'on'
       action:
         - service: timer.start
           entity_id: timer.kitchen_lights_turn_off_without_motion
-          
+
     - id: 'Выключение света на кухне, если нет движения'
       alias: kitchen_no_motion_lights_turn_off
       initial_state: true
@@ -109,8 +116,7 @@ kitchen_lights:
           from: 'active'
           to: 'idle'
       condition:
-        - condition: or
-          conditions:
+        - or: 
             - condition: state
               entity_id: switch.kitchen_lights_switch_left
               state: 'on'

@@ -4,8 +4,9 @@
       friendly_name: 'Доступны обновления HACS'
       device_class: update
       value_template: '{{ states(''sensor.hacs'') | int > 0 }}'
+      availability_template: '{{ states(''sensor.hacs'') | int(-1) >= 0 }}'
       icon_template: hacs:hacs
-    
+
     any_software_updates_available:
       friendly_name: 'Доступны софтверные обновления'
       device_class: update

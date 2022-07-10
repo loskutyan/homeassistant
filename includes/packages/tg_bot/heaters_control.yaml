@@ -19,7 +19,7 @@ tg_heaters_control:
             data:
               inline_keyboard:
                 - 'Выключить все обогреватели:/all_heaters_off'
-    
+
     - id: 'Выключить все обогреватели через бот'
       alias: telegram_all_heaters_turn_off
       initial_state: true

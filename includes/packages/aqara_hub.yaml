@@ -6,8 +6,8 @@ aqara_hub:
       max: 100
       step: 1
       icon: mdi:volume-high
-  
-  
+
+
   sensor:
     - platform: template
       sensors:
@@ -27,8 +27,8 @@ aqara_hub:
             {% else %}
               mdi: volume-mute
             {% endif %}
-  
-  
+
+
   automation:
     - id: 'Выбор громкости хаба Aqara'
       alias: select_aqara_hub_volume
@@ -40,7 +40,7 @@ aqara_hub:
           entity_id: media_player.miio_gateway
           data_template:
             volume_level: '{{ min(max(states(''input_number.aqara_hub_volume'') | float / 100, 0), 1) }}'
-  
+
     - id: 'Отслеживание громкости хаба Aqara'
       alias: tracking_aqara_hub_volume
       trigger:
@@ -54,7 +54,7 @@ aqara_hub:
           entity_id: input_number.aqara_hub_volume
           data_template:
             value: '{{ (state_attr(''media_player.miio_gateway'', ''volume_level'') | float * 100) | int }}'
-    
+
     - id: 'Звонок в дверь'
       alias: elevator_hall_doorbell_rings
       initial_state: true

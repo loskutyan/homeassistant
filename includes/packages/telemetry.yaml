@@ -6,82 +6,82 @@ telemetry:
           friendly_name: 'Автомазаций всего'
           value_template: '{{ states.automation | list | length }}'
           icon_template: mdi:head
-        
+
         automations_on_count:
           friendly_name: 'Автомазаций включено'
           value_template: '{{ states.automation | selectattr (''state'', ''equalto'', ''on'') | list | length }}'
           icon_template: mdi:head-check
-        
+
         automations_off_count:
           friendly_name: 'Автомазаций выключено'
           value_template: '{{ states.automation | selectattr (''state'', ''equalto'', ''off'') | list | length }}'
           icon_template: mdi:head-remove
-        
+
         automations_unavailable_count:
           friendly_name: 'Автомазаций недоступно'
           value_template: '{{ states.automation | selectattr (''state'', ''equalto'', ''unavailable'') | list | length }}'
           icon_template: mdi:head-question
-        
+
         scripts_count:
           friendly_name: 'Скриптов всего'
           value_template: '{{ states.script | list | length }}'
           icon_template: mdi:file
-        
+
         scripts_on_count:
           friendly_name: 'Скриптов включено'
           value_template: '{{ states.script | selectattr (''state'', ''equalto'', ''on'') | list | length }}'
           icon_template: mdi:file-check
-        
+
         scripts_off_count:
           friendly_name: 'Скриптов выключено'
           value_template: '{{ states.script | selectattr (''state'', ''equalto'', ''off'') | list | length }}'
           icon_template: mdi:file-remove
-        
+
         scripts_unavailable_count:
           friendly_name: 'Скриптов недоступно'
           value_template: '{{ states.script | selectattr (''state'', ''equalto'', ''unavailable'') | list | length }}'
           icon_template: mdi:file-question
-        
+
         lights_count:
           friendly_name: 'Светильников всего'
           value_template: '{{ states.light | list | length }}'
           icon_template: mdi:lightbulb-group
-        
+
         lights_on_count:
           friendly_name: 'Светильников включено'
           value_template: '{{ states.light | selectattr (''state'', ''equalto'', ''on'') | list | length }}'
           icon_template: mdi:lightbulb-on
-        
+
         lights_off_count:
           friendly_name: 'Светильников выключено'
           value_template: '{{ states.light | selectattr (''state'', ''equalto'', ''off'') | list | length }}'
           icon_template: mdi:lightbulb
-        
+
         lights_unavailable_count:
           friendly_name: 'Светильников недоступно'
           value_template: '{{ states.light | selectattr (''state'', ''equalto'', ''unavailable'') | list | length }}'
           icon_template: mdi:lightbulb-question
-        
+
         switches_count:
           friendly_name: 'Переключателей всего'
           value_template: '{{ states.switch | list | length }}'
           icon_template: mdi:toggle-switch
-        
+
         switches_on_count:
           friendly_name: 'Переключателей включено'
           value_template: '{{ states.switch | selectattr (''state'', ''equalto'', ''on'') | list | length }}'
           icon_template: mdi:toggle-switch-variant
-        
+
         switches_off_count:
           friendly_name: 'Переключателей выключено'
           value_template: '{{ states.switch | selectattr (''state'', ''equalto'', ''off'') | list | length }}'
           icon_template: mdi:toggle-switch-variant-off
-        
+
         switches_unavailable_count:
           friendly_name: 'Переключателей недоступно'
           value_template: '{{ states.switch | selectattr (''state'', ''equalto'', ''unavailable'') | list | length }}'
           icon_template: mdi:toggle-switch-outline
-        
+
         sensors_unavailable_count:
           friendly_name: 'Сенсоров недоступно'
           value_template: >
@@ -97,7 +97,7 @@ telemetry:
               | list
               | length }}
           icon_template: mdi:eye-off
-        
+
         binary_sensors_unavailable_count:
           friendly_name: 'Бинарных сенсоров недоступно'
           value_template: '{{ states.binary_sensor | selectattr (''state'', ''equalto'', ''unavailable'') | list | length }}'

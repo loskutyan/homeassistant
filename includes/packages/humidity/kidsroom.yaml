@@ -9,8 +9,8 @@ kidsroom_humidity:
             {% set humidifier_speed = states('sensor.smartmi_humidifier_bedroom_motor_speed') %}
             {% set low_hum = states('sensor.kidsroom_average_humidity') | float(100) < 35 %}
             {{ (not humidifier_state_on or humidifier_speed == 0) and low_hum }}
-  
-  
+
+
   sensor:
     - platform: template
       sensors:
@@ -27,8 +27,8 @@ kidsroom_humidity:
             {% else %}
               keep
             {% endif %}
-  
-  
+
+
   automation:
     - id: 'Выключение звука увлажнителя в детской'
       alias: kidsroom_humidifier_buzzer_turn_off
@@ -42,7 +42,7 @@ kidsroom_humidity:
       action:
         - service: switch.turn_off
           entity_id: switch.smartmi_humidifier_kidsroom_buzzer
-    
+
     - id: 'Контроль режима увлажнителя в детской'
       alias: kidsroom_humidifier_mode_control
       initial_state: true
@@ -68,7 +68,7 @@ kidsroom_humidity:
           data_template:
             mode: >
               {{ states('sensor.kidsroom_humidifier_mode_needs_changes') }}
-      
+
     - id: 'Нужно увлажнить воздух в детской - уведомление'
       alias: telegram_kidsroom_needs_humidification
       initial_state: true
@@ -101,7 +101,7 @@ kidsroom_humidity:
                                  'Нужно увлажнить воздух в детской.',
                                  'Беги скорее увлажнитель в детской включай! СКОРЕЕ!'] %}
               {{ '\U0001F6B1' }} {{ messages | random }} {{ states('sensor.time_date') }}
-    
+
     - id: 'Кончается вода в увлажнителе в детской - уведомление'
       alias: telegram_kidsroom_humidifier_low_water_level
       initial_state: true

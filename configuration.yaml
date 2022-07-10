@@ -8,10 +8,10 @@ homeassistant:
   currency: RUB
   internal_url: !secret internal_url
   external_url: !secret external_url
-  
+
   customize: !include customize.yaml
   packages: !include_dir_merge_named includes/packages
-  
+
 
 logger:
   default: info

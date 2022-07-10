@@ -13,7 +13,7 @@ bedroom_lights:
             {% else %}
               154
             {% endif %}
-        
+
         bedroom_aqara_led_bulb_color_temp_schedule:
           friendly_name: 'Температура лампы Aqara в спальне'
           value_template: >
@@ -27,8 +27,8 @@ bedroom_lights:
             {% else %}
               {{ 0.9 * (max_temp  - min_temp) + min_temp }}
             {% endif %}
-  
-  
+
+
   automation:
     - id: 'Включение/выключение люстры в спальне'
       alias: bedroom_main_lights_toggle
@@ -40,7 +40,7 @@ bedroom_lights:
       action:
         - service: switch.toggle
           entity_id: switch.bedroom_lights_switch_right
-    
+
     - id: 'Включение/выключение лампы Aqara в спальне'
       alias: bedroom_aqara_led_bulb_toggle
       initial_state: true
@@ -60,7 +60,7 @@ bedroom_lights:
             color_temp: >
               {{ states('sensor.bedroom_aqara_led_bulb_color_temp_schedule') }}
             transition: 2
-          
+
     - id: 'Прибавление яркости лампы Aqara в спальне'
       alias: bedroom_aqara_led_bulb_add_brightness
       initial_state: true
@@ -79,7 +79,7 @@ bedroom_lights:
             brightness: >
               {{ min(state_attr('light.bedroom_aqara_led_bulb', 'brightness') + 51, 255) }}
             transition: 1
-    
+
     - id: 'Включение лампы Aqara в спальне вечером'
       alias: bedroom_aqara_led_bulb_evening_turn_on
       initial_state: true
@@ -111,7 +111,7 @@ bedroom_lights:
             color_temp: >
               {{ states('sensor.bedroom_aqara_led_bulb_color_temp_schedule') }}
             transition: 2
-    
+
     - id: 'Изменение света лампы Aqara в спальне'
       alias: bedroom_aqara_led_bulb_control
       initial_state: true

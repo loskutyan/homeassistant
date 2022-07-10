@@ -26,8 +26,8 @@ alarm:
               | map(attribute='name')
               | join(', ')
               | lower }}
-  
-  
+
+
   binary_sensor:
     - platform: template
       sensors:
@@ -42,13 +42,13 @@ alarm:
             {% endif %}
           device_class: moisture
           icon_template: mdi:water-alert
-        
+
         ups_not_fine:
           friendly_name: 'Проблема с ИБП'
           value_template: >
             {{ states('sensor.ups_status') not in ['ONLINE', 'CHARGING', 'ONBATT'] }}
           device_class: problem
-        
+
         ups_powered_by_battery:
           friendly_name: 'ИБП работает от аккумулятора'
           value_template: >
@@ -59,7 +59,7 @@ alarm:
             {% else %}
               mdi:battery-charging-100
             {% endif %}
-        
+
         bedroom_ac_plug_overload:
           friendly_name: 'Перегрузка розетки кондиционера в спальне'
           value_template: >
@@ -79,7 +79,7 @@ alarm:
             {% else %}
               mdi:power-plug
             {% endif %}
-        
+
         kidsroom_ac_plug_overload:
           friendly_name: 'Перегрузка розетки кондиционера в детской'
           value_template: >
@@ -99,8 +99,8 @@ alarm:
             {% else %}
               mdi:power-plug
             {% endif %}
-  
-  
+
+
   alert:
     water_leak_detected:
       name: 'Протечка воды'
@@ -113,7 +113,7 @@ alarm:
       can_acknowledge: true
       notifiers:
         - tg
-    
+
     fridge_door_left_opened:
       name: 'Дверь холодильника не закрыта'
       entity_id: binary_sensor.fridge_door
@@ -124,7 +124,7 @@ alarm:
         {{ '\U00002744' }} Дверь холодильника не закрыта!
       notifiers:
         - tg
-    
+
     ups_power_went_down:
       name: 'ИБП работает от аккумулятора'
       entity_id: binary_sensor.ups_powered_by_battery
@@ -134,7 +134,7 @@ alarm:
         {{ '\U0001F50B' }} ИБП работает от аккумулятора! {{ states('sensor.time_date') }}
       notifiers:
         - tg
-    
+
     ups_is_not_fine:
       name: 'Проблема с ИБП'
       entity_id: binary_sensor.ups_not_fine
@@ -144,7 +144,7 @@ alarm:
         {{ '\U000026A0' }} Пробелма с ИБП, статус {{ states('sensor.ups_status') }}. {{ states('sensor.time_date') }}
       notifiers:
         - tg
-    
+
     bedroom_ac_plug_overload:
       name: 'Перегрузка розетки кондиционера в спальне'
       entity_id: binary_sensor.bedroom_ac_plug_overload
@@ -154,7 +154,7 @@ alarm:
         {{ '\U000026A0' }} Перегрузка розетки в спальне, потребление {{ states('sensor.bedroom_ac_plug_power') }}Вт, температура {{ states('sensor.bedroom_ac_plug_device_temperature') }}
       notifiers:
         - tg
-    
+
     kidsroom_ac_plug_overload:
       name: 'Перегрузка розетки кондиционера в спальне'
       entity_id: binary_sensor.kidsroom_ac_plug_overload
@@ -164,8 +164,8 @@ alarm:
         {{ '\U000026A0' }} Перегрузка розетки в детской, потребление {{ states('sensor.kidsroom_ac_plug_power') }}Вт, температура {{ states('sensor.kidsroom_ac_plug_device_temperature') }}
       notifiers:
         - tg
-  
-  
+
+
   automation:
     - id: 'Протечка воды'
       alias: water_leak_detected_alarm
@@ -182,7 +182,7 @@ alarm:
       action:
         - service: alarm_control_panel.alarm_trigger
           entity_id: alarm_control_panel.miio_gateway
-    
+
     - id: 'ИБП снова работает от сети'
       alias: ups_power_is_up_again
       trigger:
@@ -198,7 +198,7 @@ alarm:
           data:
             message: >
               {{ '\U0001F50C' }} ИБП снова работает от сети! {{ states('sensor.time_date') }}
-    
+
     - id: 'Перегрузка розетки кондиционера в спальне'
       alias: bedroom_ac_plug_overload
       trigger:
@@ -212,7 +212,7 @@ alarm:
           data:
             message: >
               {{ '\U0001F50C' }} Розетка в спальне выключена! {{ states('sensor.time_date') }}
-    
+
     - id: 'Перегрузка розетки кондиционера в детской'
       alias: kidsroom_ac_plug_overload
       trigger:
@@ -226,7 +226,7 @@ alarm:
           data:
             message: >
               {{ '\U0001F50C' }} Розетка в детской выключена! {{ states('sensor.time_date') }}
-    
+
     - id: 'Дверь в прихожей открылась'
       alias: hallway_door_was_opened
       initial_state: true
@@ -250,7 +250,7 @@ alarm:
           entity_id: timer.hallway_door_left_opened
         - service: timer.start
           entity_id: timer.hallway_door_time_to_close
-          
+
     - id: 'Проверка закрытия двери'
       alias: hallway_door_was_closed_check
       initial_state: true

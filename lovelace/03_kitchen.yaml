@@ -14,7 +14,7 @@ cards:
             icon: mdi:ceiling-light
             tap_action:
               action: toggle
-              
+
           - entity: switch.kitchen_lights_switch_left
             name: 'Бра'
             show_last_changed: true

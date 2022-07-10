@@ -2,11 +2,11 @@ sleep_time:
   input_boolean:
     kidsroom_asleep:
       name: 'В детской спят'
-    
+
     bedroom_asleep:
       name: 'В спальне спят'
-  
-  
+
+
   switch:
     - platform: template
       switches:
@@ -26,7 +26,7 @@ sleep_time:
             {% else %}
               mdi:human-child
             {% endif %}
-    
+
     - platform: template
       switches:
         bedroom_asleep:
@@ -45,8 +45,8 @@ sleep_time:
             {% else %}
               mdi:human
             {% endif %}
-  
-  
+
+
   automation:
     - id: 'Отход ко сну в детской'
       alias: kidsroom_going_to_sleep
@@ -82,7 +82,7 @@ sleep_time:
           data:
             value: 60
           continue_on_error: true
-        
+
         - service: humidifier.set_mode
           entity_id: humidifier.smartmi_humidifier_kidsroom
           data:
@@ -91,14 +91,14 @@ sleep_time:
         - service: timer.start
           entity_id: timer.kidsroom_humidifier_fixed_mode
           continue_on_error: true
-        
+
         - service: cover.close_cover
           entity_id: cover.kidsroom_curtain
           continue_on_error: true
-        
+
         - service: input_boolean.turn_on
           entity_id: input_boolean.kidsroom_asleep
-    
+
     - id: 'В детской уже не спят'
       alias: kidsroom_supposed_to_wake_up
       initial_state: true
@@ -123,7 +123,7 @@ sleep_time:
         - delay: 00:00:05
         - service: cover.open_cover
           entity_id: cover.kidsroom_curtain
-    
+
     - id: 'Отход ко сну в спальне'
       alias: bedroom_going_to_sleep
       initial_state: true
@@ -144,7 +144,7 @@ sleep_time:
         - service: switch.turn_off
           entity_id: switch.bedroom_lights_switch_right
           continue_on_error: true
-        
+
         - service: input_select.select_option
           entity_id: input_select.bedroom_airpurifier_mode
           data:
@@ -158,7 +158,7 @@ sleep_time:
           data:
             value: 60
           continue_on_error: true
-        
+
         - service: humidifier.set_mode
           entity_id: humidifier.smartmi_humidifier_bedroom
           data:
@@ -167,10 +167,10 @@ sleep_time:
         - service: timer.start
           entity_id: timer.bedroom_humidifier_fixed_mode
           continue_on_error: true
-        
+
         - service: input_boolean.turn_on
           entity_id: input_boolean.bedroom_asleep
-    
+
     - id: 'В спальне уже не спят'
       alias: bedroom_supposed_to_wake_up
       initial_state: true

@@ -2,8 +2,8 @@ summer_time:
   input_boolean:
     warm_season:
       name: 'Теплое время года'
-  
-  
+
+
   switch:
     - platform: template
       switches:
@@ -23,8 +23,8 @@ summer_time:
             {% else %}
               mdi:snowflake
             {% endif %}
-  
-  
+
+
   automation:
     - id: 'Выключение увлажения'
       alias: summer_humidification_turn_off

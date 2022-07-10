@@ -9,14 +9,14 @@ cards:
         entities:
           - entity: fan.mijia_airpurifier_bedroom
             name: 'Состояние'
-            
+
           - entity: switch.bedroom_airpurifier_forced_ventilation
             name: 'Режим проветривания'
             state_color: true
-          
+
           - entity: input_select.bedroom_airpurifier_mode
             name: 'Режим работы'
-          
+
           - type: conditional
             conditions:
               - entity: input_select.bedroom_airpurifier_mode
@@ -31,7 +31,7 @@ cards:
               - entity: switch.bedroom_airpurifier_favourite_speed_temporary_fixed
                 name: 'Фикс. скорость'
                 toggle: true
-          
+
           - type: conditional
             conditions:
               - entity: input_select.bedroom_airpurifier_mode
@@ -43,10 +43,10 @@ cards:
               entity: input_number.bedroom_airpurifier_favorite_speed
               name: 'Заданная скорость'
               hide_state: false
-          
+
           - entity: sensor.bedroom_airpurifier_current_speed
             name: 'Текущая скорость'
-          
+
           - type: custom:multiple-entity-row
             entity: switch.bedroom_airpurifier_ptc
             name: 'Нагреватель'
@@ -56,8 +56,8 @@ cards:
             - entity: binary_sensor.bedroom_airpurifier_ptc_status
               name: 'Статус'
               icon: true
-  
-  
+
+
   - type: vertical-stack
     title: 'Кондиционер'
     cards:
@@ -74,10 +74,10 @@ cards:
                 toggle: true
               - entity: sensor.bedroom_ac_plug_power
                 name: 'Мощность'
-          
+
           - entity: input_select.bedroom_ac_mode
             name: 'Режим'
-          
+
           - type: conditional
             conditions:
               - entity: input_select.bedroom_ac_mode
@@ -86,7 +86,7 @@ cards:
               entity: switch.bedroom_auto_conditioning
               name: 'Автоматическое охлаждение'
               state_color: true
-          
+
           - type: conditional
             conditions:
               - entity: input_boolean.bedroom_auto_conditioning
@@ -98,7 +98,7 @@ cards:
               entity: input_number.bedroom_target_cooling_temperature
               name: 'Температура'
               hide_state: false
-          
+
           - type: conditional
             conditions:
               - entity: input_boolean.bedroom_auto_conditioning
@@ -110,10 +110,10 @@ cards:
               entity: input_number.bedroom_ac_temperature
               name: 'Температура'
               hide_state: false
-          
+
           - entity: input_select.bedroom_ac_fan_mode
             name: 'Скорость обдува'
-          
+
           - type: conditional
             conditions:
               - entity: input_select.bedroom_ac_mode
@@ -122,8 +122,8 @@ cards:
               entity: input_select.bedroom_ac_fan_swing_mode
               name: 'Направление обдува'
               hide_state: false
-  
-  
+
+
   - type: vertical-stack
     title: 'Свет'
     cards:
@@ -136,45 +136,49 @@ cards:
         full_width_sliders: true
         show_slider_percent: true
         effects_list: false
-      
+
       - type: entities
         entities:
           - entity: switch.bedroom_lights_switch_right
             name: 'Люстра'
             icon: mdi:ceiling-light
-  
-  
+
+
   - type: vertical-stack
     title: 'Климат'
     cards:      
       - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.bedroom_average_temperature
+            name: 'Температура'
+        lower_bound: 18
+        upper_bound: 32
         color_thresholds:
-          - value: 21
-            color: '#00FFFF'
-          - value: 23
-            color: '#00FF00'
-          - value: 25
-            color: '#FFFF00'
-          - value: 27
-            color: '#FFD700'
-          - value: 29
-            color: '#FF0000'
-          - value: 32
-            color: '#800000'
+            - value: 21
+              color: '#00FFFF'
+            - value: 23
+              color: '#00FF00'
+            - value: 25
+              color: '#FFFF00'
+            - value: 27
+              color: '#FFD700'
+            - value: 29
+              color: '#FF0000'
+            - value: 35
+              color: '#800000'
         animate: true
         line_width: 2
         hour24: true
         points_per_hour: 1
         group_by: hour
-        lower_bound: 18
-        upper_bound: 30
-        show:
-          legend: false
-        entities:
-          - entity: sensor.bedroom_average_temperature
-            name: 'Температура'
-            
+
+
       - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.bedroom_average_humidity
+            name: 'Влажность'
+        lower_bound: 15
+        upper_bound: 75
         color_thresholds:
           - value: 20
             color: '#FF0000'
@@ -191,17 +195,17 @@ cards:
         hour24: true
         points_per_hour: 1
         group_by: hour
-        lower_bound: 15
-        upper_bound: 75
-        entities:
-          - entity: sensor.bedroom_average_humidity
-            name: 'Влажность'
 
 
   - type: vertical-stack
     title: 'Качество воздуха'
     cards:      
       - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.cleargrass_air_co2
+            name: 'CO²'
+        lower_bound: 400
+        upper_bound: 1200
         color_thresholds:
           - value: 450
             color: '#00FFFF'
@@ -220,13 +224,13 @@ cards:
         hour24: true
         points_per_hour: 1
         group_by: hour
-        lower_bound: 400
-        upper_bound: 1200
-        entities:
-          - entity: sensor.cleargrass_air_co2
-            name: 'CO²'
-      
+
       - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.cleargrass_air_pm25
+            name: 'PM2.5'
+        lower_bound: 0.0
+        upper_bound: 20.0
         color_thresholds:
           - value: 1
             color: '#00FFFF'
@@ -245,13 +249,13 @@ cards:
         hour24: true
         points_per_hour: 1
         group_by: hour
-        lower_bound: 0.0
-        upper_bound: 20.0
-        entities:
-          - entity: sensor.cleargrass_air_pm25
-            name: 'PM2.5'
-      
+
       - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.cleargrass_air_tvoc
+            name: 'tVOC'
+        lower_bound: 0
+        upper_bound: 500
         color_thresholds:
           - value: 60
             color: '#00FFFF'
@@ -266,8 +270,3 @@ cards:
         hour24: true
         points_per_hour: 1
         group_by: hour
-        lower_bound: 0
-        upper_bound: 500
-        entities:
-          - entity: sensor.cleargrass_air_tvoc
-            name: 'tVOC'

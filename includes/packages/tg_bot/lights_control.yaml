@@ -19,7 +19,7 @@ tg_lights_control:
             data:
               inline_keyboard:
                 - 'Выключить весь свет:/all_lights_off'
-    
+
     - id: 'Выключить весь свет через бот'
       alias: telegram_all_lights_turn_off
       initial_state: true
