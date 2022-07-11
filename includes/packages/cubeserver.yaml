@@ -189,12 +189,12 @@ cubeserver:
           friendly_name: 'Parity-Check paused'
           value_template: >
             {% set in_progress = is_state('binary_sensor.cubeserver_parity_check_in_progress', 'on') %}
-            {% set pos = states('sensor.cubeserver_parity_pos_raw') | int > 0 %}
-            {{ in_progress and pos }}
+            {% set in_progress_size = states('sensor.cubeserver_parity_size_raw') | int == 0 %}
+            {{ in_progress_size and in_progress }}
           availability_template: >
-            {% set valid_parity_pos = states('sensor.cubeserver_parity_pos_raw') | int(-1) >= 0 %}
+            {% set valid_size = states('sensor.cubeserver_parity_size_raw') | int(-1) >= 0 %}
             {% set valid_in_progress = states('binary_sensor.cubeserver_parity_check_in_progress') in ['on', 'off'] %}
-            {{ valid_in_progress and valid_parity_pos }}
+            {{ valid_size and valid_in_progress }}
 
         cubeserver_parity_disk_overheat:
           friendly_name: 'Перегрев Parity Disk'

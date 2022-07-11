@@ -86,9 +86,8 @@ cards:
             entity: sensor.cubeserver_parity_status
             name: 'Parity-Check'
             entities:
-              - attribute: last-changed
               - entity: sensor.cubeserver_parity_finish_timestamp
-                name: 'До завершения'
+                name: 'Завершение'
                 format: relative
                 hide_unavailable: true
               - entity: sensor.cubeserver_parity_speed
