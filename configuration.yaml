@@ -80,6 +80,8 @@ tts:
 
 
 influxdb:
+  host: !secret cubeserver_influxdb_host
+  port: !secret cubeserver_influxdb_port
   exclude:
     entity_globs: '*'
 
