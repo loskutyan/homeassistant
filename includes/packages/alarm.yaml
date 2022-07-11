@@ -171,13 +171,10 @@ alarm:
       alias: water_leak_detected_alarm
       trigger:
         - platform: state
-          entity_id: binary_sensor.bathroom_aqara_leak_sensor_water_leak
-          to: 'on'
-        - platform: state
-          entity_id: binary_sensor.washing_machine_aqara_leak_sensor_water_leak
-          to: 'on'
-        - platform: state
-          entity_id: binary_sensor.dishwasher_aqara_leak_sensor_water_leak
+          entity_id:
+            - binary_sensor.bathroom_aqara_leak_sensor_water_leak
+            - binary_sensor.washing_machine_aqara_leak_sensor_water_leak
+            - binary_sensor.dishwasher_aqara_leak_sensor_water_leak
           to: 'on'
       action:
         - service: alarm_control_panel.alarm_trigger
@@ -247,9 +244,9 @@ alarm:
                                  'Кто-то открыл входную дверь в'] %}
               {{ '\U0001F6AA' }} {{ messages | random }} {{ states('sensor.time_date') }}
         - service: timer.start
-          entity_id: timer.hallway_door_left_opened
-        - service: timer.start
-          entity_id: timer.hallway_door_time_to_close
+          entity_id:
+            - timer.hallway_door_left_opened
+            - timer.hallway_door_time_to_close
 
     - id: 'Проверка закрытия двери'
       alias: hallway_door_was_closed_check

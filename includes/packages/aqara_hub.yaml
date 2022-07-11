@@ -39,7 +39,7 @@ aqara_hub:
         - service: media_player.volume_set
           entity_id: media_player.miio_gateway
           data_template:
-            volume_level: '{{ min(max(states(''input_number.aqara_hub_volume'') | float / 100, 0), 1) }}'
+            volume_level: '{{ min(max(trigger.to_state.state | float / 100, 0), 1) }}'
 
     - id: 'Отслеживание громкости хаба Aqara'
       alias: tracking_aqara_hub_volume
@@ -61,10 +61,9 @@ aqara_hub:
       trigger:
         - platform: state
           entity_id: sensor.elevator_hall_aqara_button_action
-          to: 'single'
-        - platform: state
-          entity_id: sensor.elevator_hall_aqara_button_action
-          to: 'double'
+          to:
+            - 'single'
+            - 'double'
       action:
         - service: notify.tg
           data:

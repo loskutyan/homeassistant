@@ -232,10 +232,9 @@ away:
       alias: somebody_home_after_door_was_closed
       trigger:
         - platform: state
-          entity_id: binary_sensor.some_motion_at_home
-          to: 'on'
-        - platform: state
-          entity_id: binary_sensor.hallway_door_sensor_contact
+          entity_id:
+            - binary_sensor.some_motion_at_home
+            - binary_sensor.hallway_door_sensor_contact
           to: 'on'
         - platform: state
           entity_id: binary_sensor.bathroom_door_sensor_contact

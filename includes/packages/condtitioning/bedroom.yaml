@@ -204,7 +204,7 @@ conditioning_bedroom:
         - service: climate.set_fan_mode
           entity_id: climate.bedroom_ac
           data_template:
-            fan_mode: '{{ states(''input_select.bedroom_ac_fan_mode'') }}'
+            fan_mode: '{{ trigger.to_state.state }}'
 
     - id: 'Отслеживание режима работы кондиционера в спальне'
       alias: tracking_bedroom_ac_mode
