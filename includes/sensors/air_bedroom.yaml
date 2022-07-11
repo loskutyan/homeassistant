@@ -6,6 +6,7 @@
       unit_of_measurement: 'ppm'
       value_template: '{{ state_attr(''air_quality.cgllc_airmonitor_s1'', ''carbon_dioxide'') }}'
       availability_template: '{{ state_attr(''air_quality.cgllc_airmonitor_s1'', ''carbon_dioxide'') | float(0) > 100 }}'
+      icon_template: mdi:molecule-co2
 
     cleargrass_air_tvoc:
       friendly_name: 'Cleargrass air tVOC'
@@ -13,12 +14,14 @@
       unit_of_measurement: 'ppb'
       value_template: '{{ state_attr(''air_quality.cgllc_airmonitor_s1'', ''total_volatile_organic_compounds'') }}'
       availability_template: '{{ state_attr(''air_quality.cgllc_airmonitor_s1'', ''total_volatile_organic_compounds'') | float(0) > 0 }}'
+      icon_template: mdi:atom
 
     cleargrass_air_pm25:
       friendly_name: 'Cleargrass air PM2.5'
       device_class: pm25
       unit_of_measurement: 'ppm'
       value_template: '{{ state_attr(''air_quality.cgllc_airmonitor_s1'', ''particulate_matter_2_5'') }}'
+      icon_template: mdi:grain
 
     cleargrass_air_temperature:
       friendly_name: 'Cleargrass air Температура'

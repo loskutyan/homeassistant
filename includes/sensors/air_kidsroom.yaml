@@ -6,18 +6,21 @@
       unit_of_measurement: 'ppm'
       value_template: '{{ state_attr(''sensor.cgllc_cgdn1_a7b6_environment'', ''environment.co2_density'') }}'
       availability_template: '{{ state_attr(''sensor.cgllc_cgdn1_a7b6_environment'', ''environment.co2_density'') | float(0) > 100 }}'
+      icon_template: mdi:molecule-co2
 
     qingping_air_lite_pm25:
       friendly_name: 'Qingping air lite PM2.5'
       device_class: pm25
       unit_of_measurement: 'ppm'
       value_template: '{{ state_attr(''sensor.cgllc_cgdn1_a7b6_environment'', ''environment.pm2_5_density'') }}'
+      icon_template: mdi:grain
 
     qingping_air_lite_pm10:
       friendly_name: 'Qingping air lite PM10'
       device_class: pm10
       unit_of_measurement: 'ppm'
       value_template: '{{ state_attr(''sensor.cgllc_cgdn1_a7b6_environment'', ''environment.pm10_density'') }}'
+      icon_template: mdi:grain
 
     qingping_air_lite_temperature:
       friendly_name: 'Qingping air lite Температура'
