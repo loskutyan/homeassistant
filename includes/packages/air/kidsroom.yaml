@@ -183,7 +183,8 @@ kidsroom_air:
         kidsroom_airpurifier_speed_min_co2:
           value_template:  >
             {% set temp_delta = max(0, 22 - states('sensor.kidsroom_average_temperature') | float) %}
-            {% set shift_steps = temp_delta * 100 // 10 %}
+            {% set cooling_on = is_state('climate.kidsroom_ac', 'cool') | int %}
+            {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
             {% if states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 60 %}
               0
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 70 %}
@@ -269,7 +270,7 @@ kidsroom_air:
           value_template: >
             {% set hi = (states('sensor.kidsroom_airpurifier_speed_max_co2') | float) + 15 %}
             {% set lo = (states('sensor.kidsroom_airpurifier_speed_min_co2') | float) - 35 %}
-            {% set co2 = states('sensor.cleargrass_air_co2') | float %}
+            {% set co2 = states('sensor.qingping_air_lite_co2') | float %}
             {% if co2 > hi %}
               up
             {% elif co2 < lo %}
@@ -280,7 +281,7 @@ kidsroom_air:
           availability_template: >
             {% set valid_min_co2 = states('sensor.kidsroom_airpurifier_speed_min_co2') | float(-1) >= 0 %}
             {% set valid_max_co2 = states('sensor.kidsroom_airpurifier_speed_max_co2') | float(-1) >= 0 %}
-            {% set valid_co2 = states('sensor.cleargrass_air_co2') | float(0) > 0 %}
+            {% set valid_co2 = states('sensor.qingping_air_lite_co2') | float(0) > 0 %}
             {{ valid_min_co2 and valid_max_co2 and valid_co2 }}
 
 
@@ -317,6 +318,9 @@ kidsroom_air:
       trigger:
         - platform: state
           entity_id: sensor.kidsroom_airpurifier_preset_mode
+      condition:
+        - condition: template
+          value_template: '{{ trigger.to_state.state not in [''unknown'', ''unavailable''] }}'
       action:
         - service: input_select.select_option
           entity_id: input_select.kidsroom_airpurifier_mode
@@ -339,11 +343,14 @@ kidsroom_air:
       trigger:
         - platform: state
           entity_id: sensor.kidsroom_airpurifier_favorite_speed
+      condition:
+        - condition: template
+          value_template: '{{ trigger.to_state.state | int(0) > 0 }}'
       action:
         - service: input_number.set_value
           entity_id: input_number.kidsroom_airpurifier_favorite_speed
           data_template:
-            value: '{{ trigger.to_state.state }}'
+            value: '{{ trigger.to_state.state | int }}'
 
     - id: 'Умный контроль скорости работы бризера в детской'
       alias: kidsroom_airpurifier_favourite_speed_smart_control

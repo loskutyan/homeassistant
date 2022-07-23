@@ -1,17 +1,11 @@
 bathroom_lights:
-  timer:
-    bathroom_lights_turn_off_without_motion:
-      name: 'Свет в ванной погаснет через '
-      duration: 1200
-
-
   automation:
     - id: 'Свет при движении в ванной'
       alias: bathroom_motion_lights_turn_on
       initial_state: true
       trigger:
         - platform: state
-          entity_id: binary_sensor.bathroom_motion_sensor_occupancy
+          entity_id: binary_sensor.bathroom_presence_sensor_occupancy
           to: 'on'
         - platform: state
           entity_id: binary_sensor.bathroom_door_sensor_contact
@@ -28,77 +22,18 @@ bathroom_lights:
         - service: switch.turn_on
           entity_id: switch.bathroom_lights_switch
 
-    - id: 'Включение таймера выключения света в ванной'
-      alias: bathroom_lights_on_timer_start
-      initial_state: true
-      trigger:
-        - platform: state
-          entity_id: switch.bathroom_lights_switch
-          to: 'on'
-      action:
-        - service: timer.start
-          entity_id: timer.bathroom_lights_turn_off_without_motion
-
-    - id: 'Выключение таймера выключения света в ванной'
-      alias: bathroom_lights_off_timer_finish
-      initial_state: true
-      trigger:
-        - platform: state
-          entity_id: switch.bathroom_lights_switch
-          to: 'off'
-      action:
-        - service: timer.finish
-          entity_id: timer.bathroom_lights_turn_off_without_motion
-
-    - id: 'Сброс таймера выключения света при движении в ванной'
-      alias: bathroom_motion_lights_timer_reset
-      initial_state: true
-      trigger:
-        - platform: state
-          entity_id: binary_sensor.bathroom_motion_sensor_occupancy
-          to: 'on'
-      condition:
-        - condition: state
-          entity_id: timer.bathroom_lights_turn_off_without_motion
-          state: 'active'
-      action:
-        - service: timer.start
-          entity_id: timer.bathroom_lights_turn_off_without_motion
-
-    - id: 'Сброс таймера выключения света после окончания при движении в ванной'
-      alias: bathroom_motion_timer_finished_lights_timer_reset
-      initial_state: true
-      trigger:
-        - platform: state
-          entity_id: timer.bathroom_lights_turn_off_without_motion
-          from: 'active'
-          to: 'idle'
-      condition:
-        - condition: state
-          entity_id: binary_sensor.bathroom_motion_sensor_occupancy
-          state: 'on'
-        - condition: state
-          entity_id: switch.bathroom_lights_switch
-          state: 'on'
-      action:
-        - service: timer.start
-          entity_id: timer.bathroom_lights_turn_off_without_motion
-
     - id: 'Выключение света в ванной, если нет движения'
       alias: bathroom_no_motion_lights_turn_off
       initial_state: true
       trigger:
         - platform: state
-          entity_id: timer.bathroom_lights_turn_off_without_motion
-          from: 'active'
-          to: 'idle'
+          entity_id: binary_sensor.bathroom_presence_sensor_occupancy
+          to: 'off'
+          for: '00:02:00'
       condition:
         - condition: state
           entity_id: switch.bathroom_lights_switch
           state: 'on'
-        - condition: state
-          entity_id: binary_sensor.bathroom_motion_sensor_occupancy
-          state: 'off'
       action:
         - service: switch.turn_off
           entity_id: switch.bathroom_lights_switch

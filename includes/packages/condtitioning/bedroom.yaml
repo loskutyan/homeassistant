@@ -211,18 +211,15 @@ conditioning_bedroom:
       trigger:
         - platform: state
           entity_id: climate.bedroom_ac
-          not_to:
-            - 'off'
-            - 'unknown'
-            - 'unavailable'
+          attribute: last_on_operation
       condition:
         - condition: template
-          value_template: '{{ state_attr(''climate.bedroom_ac'', ''last_on_operation'') | bool(False) }}'
+          value_template: '{{ trigger.to_state.state not in [''unknown'', ''unavailable''] }}'
       action:
         - service: input_select.select_option
           entity_id: input_select.bedroom_ac_mode
           data_template:
-            option: '{{ state_attr(''climate.bedroom_ac'', ''last_on_operation'') }}'
+            option: '{{ trigger.to_state.state }}'
 
     - id: 'Отслеживание температуры кондиционера в спальне'
       alias: tracking_bedroom_ac_temperature
@@ -232,12 +229,12 @@ conditioning_bedroom:
           attribute: temperature
       condition:
         - condition: template
-          value_template: '{{ state_attr(''climate.bedroom_ac'', ''temperature'') | int(0) > 0 }}'
+          value_template: '{{ trigger.to_state.state | int(0) > 0 }}'
       action:
         - service: input_number.set_value
           entity_id: input_number.bedroom_ac_temperature
           data_template:
-            value: '{{ state_attr(''climate.bedroom_ac'', ''temperature'') | int }}'
+            value: '{{ trigger.to_state.state | int }}'
 
     - id: 'Отслеживание скорости обдува кондиционера в спальне'
       alias: tracking_bedroom_ac_fan_mode
@@ -247,12 +244,12 @@ conditioning_bedroom:
           attribute: fan_mode
       condition:
         - condition: template
-          value_template: '{{ state_attr(''climate.bedroom_ac'', ''fan_mode'') | bool(False) }}'
+          value_template: '{{ trigger.to_state.state not in [''unknown'', ''unavailable''] }}'
       action:
         - service: input_select.select_option
           entity_id: input_select.bedroom_ac_fan_mode
           data_template:
-            option: '{{ state_attr(''climate.bedroom_ac'', ''fan_mode'') }}'
+            option: '{{ trigger.to_state.state }}'
 
     - id: 'Умный контроль кондиционера в спальне'
       alias: bedroom_ac_smart_control

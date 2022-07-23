@@ -136,6 +136,7 @@ cards:
                 - entity_id: 'sensor.dishwasher_remaining_program_time'
                 - entity_id: 'sensor.dishwasher_program_progress'
                 - entity_id: 'sensor.dishwasher_duration'
+                - entity_id: 'sensor.cubeserver_parity_finish_timestamp'
 
           - type: entities      
             show_header_toggle: false

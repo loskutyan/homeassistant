@@ -94,6 +94,7 @@ telemetry:
               | selectattr ('state', 'equalto', 'unavailable')
               | rejectattr ('entity_id', 'in', dishwasher_unavailable_sensors)
               | rejectattr ('entity_id', 'match', 'sensor.sun*')
+              | rejectattr ('entity_id', 'match', 'sensor.cubeserver_parity_finish_timestamp*')
               | list
               | length }}
           icon_template: mdi:eye-off

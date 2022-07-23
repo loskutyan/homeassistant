@@ -318,6 +318,9 @@ bedroom_air:
       trigger:
         - platform: state
           entity_id: sensor.bedroom_airpurifier_preset_mode
+      condition:
+        - condition: template
+          value_template: '{{ trigger.to_state.state not in [''unknown'', ''unavailable''] }}'
       action:
         - service: input_select.select_option
           entity_id: input_select.bedroom_airpurifier_mode
@@ -340,11 +343,14 @@ bedroom_air:
       trigger:
         - platform: state
           entity_id: sensor.bedroom_airpurifier_favorite_speed
+      condition:
+        - condition: template
+          value_template: '{{ trigger.to_state.state | int(0) > 0 }}'
       action:
         - service: input_number.set_value
           entity_id: input_number.bedroom_airpurifier_favorite_speed
           data_template:
-            value: '{{ trigger.to_state.state }}'
+            value: '{{ trigger.to_state.state | int }}'
 
     - id: 'Умный контроль скорости работы бризера в спальне'
       alias: bedroom_airpurifier_favourite_speed_smart_control
