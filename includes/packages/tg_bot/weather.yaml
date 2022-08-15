@@ -107,8 +107,10 @@ weather:
               {% endif %}
               {{ messages | random }}
               {{ condition_emoji }} Сейчас на улице {{ friendly_condition.lower() }}.
-              Температура {{ state_attr('weather.yandex_weather', 'temperature') }}°C.
-              Ветер {{ friendly_wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'wind_speed') }} м/с.
+              Температура {{ state_attr('weather.yandex_weather', 'temperature') }}°C,
+              ощущается как {{ state_attr('weather.yandex_weather', 'feels_like') }}°C.
+              Ветер {{ friendly_wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'wind_speed') | float(0) / 3.6 }} м/с.
+              Давление {{ states('sensor.yandex_weather_pressure_mmhg') }} мм рт.ст.
         - delay: 00:00:15
         - service: notify.tg
           data:
@@ -142,7 +144,7 @@ weather:
               {{ condition_emoji }} {{ day_part | random }} на улице будет {{ friendly_condition.lower() }}.
               Температура ожидается около {{ temp_min }} - {{ temp_max }}°C.
               Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[0]['precipitation_probability'] }}%.
-              Ветер {{ friendly_wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'forecast')[0]['wind_speed'] }} м/с.
+              Ветер {{ friendly_wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'forecast')[0]['wind_speed'] | float(0) / 3.6 }} м/с.
         - delay: 00:00:15
         - service: notify.tg
           data:
@@ -172,7 +174,7 @@ weather:
               {{ condition_emoji }} {{ day_part | random }} будет {{ friendly_condition.lower() }}.
               Температура примерно {{ temp_min }} - {{ temp_max }}°C.
               Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[1]['precipitation_probability'] }}%.
-              Ветер {{ friendly_wind_bearing }}, скорость {{ state_attr('weather.yandex_weather', 'forecast')[1]['wind_speed'] }} м/с.
+              Ветер {{ friendly_wind_bearing }}, скорость {{ state_attr('weather.yandex_weather', 'forecast')[1]['wind_speed'] | float(0) / 3.6 }} м/с.
 
 
   automation: 

@@ -11,5 +11,5 @@
 - platform: command_line
   name: 'CPU Temperature'
   unit_of_measurement: '°C'
-  command: 'cat /sys/class/thermal/thermal_zone0/temp'
+  command: 'cat /sys/class/thermal/thermal_zone2/temp'
   value_template: '{{ value | multiply(0.001) | round(1) }}'

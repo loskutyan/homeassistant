@@ -25,6 +25,13 @@ cards:
 
 
   - type: vertical-stack
+    title: 'Погода'
+    cards:
+      - type: weather-forecast
+        entity: weather.yandex_weather
+
+
+  - type: vertical-stack
     title: 'Статус'
     cards:
       - type: entities
