@@ -133,6 +133,15 @@ cubeserver:
           field: 'temp_c'
           database: 'cubeserver_telegraf'
 
+        - name: 'Cubeserver Disk 2 temperature'
+          unit_of_measurement: '°C'
+          value_template: '{{ value | round(2) }}'
+          group_function: last
+          where: '"serial_no" = ''VRKZS4BP'' AND "host" = ''cubeserver'''
+          measurement: '"smart_device"'
+          field: 'temp_c'
+          database: 'cubeserver_telegraf'
+
         - name: 'Cubeserver Cache 1 temperature'
           unit_of_measurement: '°C'
           value_template: '{{ value | round(2) }}'
@@ -146,7 +155,7 @@ cubeserver:
           unit_of_measurement: '°C'
           value_template: '{{ value | round(2) }}'
           group_function: last
-          where: '"serial_no" = ''S3Z8NB0K728998H'' AND "host" = ''cubeserver'''
+          where: '"serial_no" = '''' AND "host" = ''cubeserver'''
           measurement: '"smart_device"'
           field: 'temp_c'
           database: 'cubeserver_telegraf'
@@ -206,13 +215,19 @@ cubeserver:
           device_class: heat
           value_template: '{{ states(''sensor.cubeserver_disk_1_temperature'') | float > 44 }}'
 
+        cubeserver_disk_2_overheat:
+          friendly_name: 'Перегрев Disk 2'
+          device_class: heat
+          value_template: '{{ states(''sensor.cubeserver_disk_2_temperature'') | float > 44 }}'
+
         cubeserver_disks_overheat:
           friendly_name: 'Перегрев дисков'
           device_class: heat
           value_template: >
             {% set parity = is_state('binary_sensor.cubeserver_parity_disk_overheat', 'on') %}
             {% set disk1 = is_state('binary_sensor.cubeserver_disk_1_overheat', 'on') %}
-            {{ parity or disk1 }}
+            {% set disk2 = is_state('binary_sensor.cubeserver_disk_2_overheat', 'on') %}
+            {{ parity or disk1 or disk2 }}
 
 
   shell_command:
@@ -265,6 +280,7 @@ cubeserver:
               {% set overheat = trigger.to_state.state | bool %}
               {% set parity_temp = states('sensor.cubeserver_parity_disk_temperature') %}
               {% set disk1_temp = states('sensor.cubeserver_disk_1_temperature') %}
+              {% set disk2_temp = states('sensor.cubeserver_disk_2_temperature') %}
               {% if overheat %}
                 {% set messages = ['диски перегреты.',
                                    'дискам жарко!',
@@ -279,6 +295,7 @@ cubeserver:
               {{ '\U0001F321' }} Температуры дисков:
               Parity: {{ parity_temp }}°C
               Disk 1: {{ disk1_temp }}°C
+              Disk 2: {{ disk2_temp }}°C
 
     - id: 'Начало/окончание Parity-Check - уведомление'
       alias: telegram_cubeserver_parity_check_start_finish

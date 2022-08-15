@@ -16,6 +16,8 @@
       - sensor.bedroom_average_humidity
       - sensor.kidsroom_average_temperature
       - sensor.kidsroom_average_humidity
+      - sensor.kitchen_aqara_air_sensor_temperature
+      - sensor.serverroom_aqara_air_sensor_temperature
       - switch.hallway_lights_switch
       - switch.kidsroom_lights_common_switch_left
       - switch.kitchen_lights_switch_left
@@ -25,6 +27,7 @@
       - switch.cubeserver_vm_windows10
     include_entity_globs:
       - binary_sensor.*_water_leak
+      - binary_sensor.*_sensor_smoke
       - switch.*_forced_ventilation
       - switch.*_airpurifier_ptc
     exclude_entities:
@@ -76,3 +79,7 @@
       name: 'Штора'
     climate.bedroom_ac:
       name: 'Кондиционер'
+    sensor.kitchen_aqara_air_sensor_temperature:
+      name: 'Температура'
+    sensor.serverroom_aqara_air_sensor_temperature:
+      name: 'Температура'

@@ -21,7 +21,7 @@
       device_class: pm25
       unit_of_measurement: 'ppm'
       value_template: '{{ state_attr(''air_quality.cgllc_airmonitor_s1'', ''particulate_matter_2_5'') }}'
-      icon_template: mdi:grain
+      icon_template: mdi:molecule
 
     cleargrass_air_temperature:
       friendly_name: 'Cleargrass air Температура'

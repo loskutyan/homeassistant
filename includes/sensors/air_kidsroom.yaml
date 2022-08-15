@@ -13,7 +13,7 @@
       device_class: pm25
       unit_of_measurement: 'ppm'
       value_template: '{{ state_attr(''sensor.cgllc_cgdn1_a7b6_environment'', ''environment.pm2_5_density'') }}'
-      icon_template: mdi:grain
+      icon_template: mdi:molecule
 
     qingping_air_lite_pm10:
       friendly_name: 'Qingping air lite PM10'

@@ -49,11 +49,6 @@ movie_time:
         - platform: state
           entity_id: sensor.bedroom_movie_status
           to: 'playing'
-      condition:
-        - condition: numeric_state
-          entity_id: sun.sun
-          attribute: elevation
-          below: 0
       action:
         - service: script.turn_on
           entity_id: script.bedroom_movie_dimming_lights_on_playing
@@ -65,11 +60,6 @@ movie_time:
         - platform: state
           entity_id: sensor.bedroom_movie_status
           to: 'paused'
-      condition:
-        - condition: numeric_state
-          entity_id: sun.sun
-          attribute: elevation
-          below: 0
       action:
         - service: script.turn_on
           entity_id: script.bedroom_movie_dimming_lights_on_pause

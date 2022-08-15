@@ -103,8 +103,34 @@ cards:
           - entity: sensor.cubeserver_parity_disk_temperature
             name: 'Parity Disk'
             show_legend: false
+        color_thresholds:
+          - value: 35
+            color: '#00FFFF'
+          - value: 40
+            color: '#00FF00'
+          - value: 43
+            color: '#FFFF00'
+          - value: 45
+            color: '#FFD700'
+          - value: 47
+            color: '#FF0000'
+          - value: 50
+            color: '#800000'
+        animate: true
+        line_width: 2
+        hour24: true
+        points_per_hour: 3
+        group_by: interval
+        lower_bound: 25
+        upper_bound: 55
+
+      - type: custom:mini-graph-card
+        entities:
           - entity: sensor.cubeserver_disk_1_temperature
             name: 'Disk 1'
+            show_legend: false
+          - entity: sensor.cubeserver_disk_2_temperature
+            name: 'Disk 2'
             show_legend: false
         color_thresholds:
           - value: 35
