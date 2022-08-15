@@ -13,9 +13,3 @@
   unit_of_measurement: '°C'
   command: 'cat /sys/class/thermal/thermal_zone0/temp'
   value_template: '{{ value | multiply(0.001) | round(1) }}'
-
-- platform: command_line
-  name: 'GPU Temperature'
-  unit_of_measurement: '°C'
-  command: '/opt/vc/bin/vcgencmd measure_temp | cut -c6- | rev | cut -c3- | rev'
-  value_template: '{{ value }}'

@@ -1,4 +1,4 @@
-title: My Home Assistant - Raspberry Pi 3B
+title: My Home Assistant - MiniPC
 views:
   - !include lovelace/00_now.yaml
   - !include lovelace/01_bedroom.yaml

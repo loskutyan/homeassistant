@@ -25,7 +25,7 @@ tg_system_status:
         - service: notify.tg
           data:
             message: |
-              {{'\U0001F4AC'}} Основной сервер Raspberry Pi 
+              {{'\U0001F4AC'}} Основной сервер MiniPC
               {{'\U0001F567'}} Зафиксирован запуск в {{ states('sensor.time_date') }}
         - delay: 00:01:10
         - service: script.turn_on
