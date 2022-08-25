@@ -194,9 +194,13 @@ kidsroom_air:
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 90 %}
               {{ 700 + 10 * shift_steps }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 100 %}
+              {{ 750 + 10 * shift_steps }}
+            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 110 %}
               {{ 800 + 10 * shift_steps }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 120 %}
               {{ 900 + 10 * shift_steps }}
+            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 130 %}
+              {{ 950 + 10 * shift_steps }}
             {% else %}
               1200
             {% endif %}
@@ -217,10 +221,14 @@ kidsroom_air:
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 80 %}
               {{ 700 + 10 * shift_steps }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 90 %}
-              {{ 800 + 10 * shift_steps }}
+              {{ 750 + 10 * shift_steps }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 100 %}
+              {{ 800 + 10 * shift_steps }}
+            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 110 %}
               {{ 900 + 10 * shift_steps }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 120 %}
+              {{ 950 + 10 * shift_steps }}
+            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 130 %}
               1200
             {% else %}
               5000
@@ -241,9 +249,11 @@ kidsroom_air:
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 90 %}
               100
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 100 %}
+              110
+            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 110 %}
               120
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 120 %}
-              150
+              130
             {% else %}
               150
             {% endif %}
@@ -259,10 +269,14 @@ kidsroom_air:
               80
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 100 %}
               90
-            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 120 %}
+            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 110 %}
               100
-            {% else %}
+            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 120 %}
+              110
+            {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 130 %}
               120
+            {% else %}
+              130
             {% endif %}
           availability_template: '{{ states(''sensor.kidsroom_airpurifier_favorite_speed'') | float(0) >= 60 }}'
 

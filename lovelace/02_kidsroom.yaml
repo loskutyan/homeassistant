@@ -1,4 +1,4 @@
-title: 'Спальня'
+title: 'Детская'
 icon: mdi:bed
 
 cards:
@@ -56,6 +56,72 @@ cards:
             - entity: binary_sensor.kidsroom_airpurifier_ptc_status
               name: 'Статус'
               icon: true
+
+
+  - type: vertical-stack
+    title: 'Кондиционер'
+    cards:
+      - type: entities
+        entities:
+          - type: custom:multiple-entity-row
+            entity: switch.kidsroom_ac
+            name: 'Состояние'
+            toggle: true
+            state_color: true
+            entities:
+              - entity: switch.kidsroom_ac_plug
+                name: 'Питание'
+                toggle: true
+              - entity: sensor.kidsroom_ac_plug_power
+                name: 'Мощность'
+
+          - entity: input_select.kidsroom_ac_mode
+            name: 'Режим'
+
+          - type: conditional
+            conditions:
+              - entity: input_select.kidsroom_ac_mode
+                state: 'cool'
+            row:
+              entity: switch.kidsroom_auto_conditioning
+              name: 'Автоматическое охлаждение'
+              state_color: true
+
+          - type: conditional
+            conditions:
+              - entity: input_boolean.kidsroom_auto_conditioning
+                state: 'on'
+              - entity: input_select.kidsroom_ac_mode
+                state: 'cool'
+            row:
+              type: custom:slider-entity-row
+              entity: input_number.kidsroom_target_cooling_temperature
+              name: 'Температура'
+              hide_state: false
+
+          - type: conditional
+            conditions:
+              - entity: input_boolean.kidsroom_auto_conditioning
+                state: 'off'
+              - entity: input_select.kidsroom_ac_mode
+                state: 'cool'
+            row:
+              type: custom:slider-entity-row
+              entity: input_number.kidsroom_ac_temperature
+              name: 'Температура'
+              hide_state: false
+
+          - entity: input_select.kidsroom_ac_fan_mode
+            name: 'Скорость обдува'
+
+          - type: conditional
+            conditions:
+              - entity: input_select.kidsroom_ac_mode
+                state: 'fan_only'
+            row:
+              entity: input_select.kidsroom_ac_fan_swing_mode
+              name: 'Направление обдува'
+              hide_state: false
 
 
   - type: vertical-stack
