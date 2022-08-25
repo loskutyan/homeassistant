@@ -181,6 +181,32 @@ cards:
               fill: false
             align_state: center
 
+      - type: horizontal-stack
+        cards:
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.cubeserver_vm_disk_temperature
+                name: 'VM Disk'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.cubeserver_games_disk_temperature
+                name: 'Games Disk'
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+
 
   - type: vertical-stack
     title: 'Климат'
