@@ -148,6 +148,13 @@ cards:
                       name: 'Спальня'
                       tap_action:
                         action: toggle
+                    
+                    - icon: mdi:bed
+                      state_color: true
+                      name: 'Детская'
+                      entity: switch.kidsroom_cooling
+                      tap_action:
+                        action: toggle
 
       - type: conditional
         conditions:

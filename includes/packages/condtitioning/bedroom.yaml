@@ -63,7 +63,7 @@ conditioning_bedroom:
         bedroom_ac_power:
           friendly_name: 'Кондиционер в спальне включен'
           device_class: power
-          value_template: '{{ states(''sensor.bedroom_ac_plug_power'') | float(0) > 15 }}'
+          value_template: '{{ states(''sensor.bedroom_ac_plug_power'') | float(0) > 10 }}'
           availability_template: >
             {% set status =  states('switch.bedroom_ac_plug') %}
             {% if status == 'off' %}

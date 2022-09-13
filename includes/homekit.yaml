@@ -79,7 +79,13 @@
       name: 'Штора'
     climate.bedroom_ac:
       name: 'Кондиционер'
+    climate.kidsroom_ac:
+      name: 'Кондиционер'
     sensor.kitchen_aqara_air_sensor_temperature:
       name: 'Температура'
     sensor.serverroom_aqara_air_sensor_temperature:
       name: 'Температура'
+    binary_sensor.kitchen_smoke_sensor_smoke:
+      name: 'Датчик дыма'
+    binary_sensor.hallway_smoke_sensor_smoke:
+      name: 'Датчик дыма'
