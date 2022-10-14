@@ -17,11 +17,25 @@ alarm:
           value_template: >
             {% set leakage_sensors = [
               'binary_sensor.bathroom_aqara_leak_sensor_water_leak',
-              'binary_sensor.washing_machine_aqara_leak_sensor_water_leak'
-              'binary_sensor.dishwasher_aqara_leak_sensor_water_leak'
+              'binary_sensor.washing_machine_aqara_leak_sensor_water_leak',
+              'binary_sensor.dishwasher_aqara_leak_sensor_water_leak',
             ] %}
             {{ states.binary_sensor
               | selectattr('entity_id','in', leakage_sensors)
+              | selectattr('state', 'eq', 'on')
+              | map(attribute='name')
+              | join(', ')
+              | lower }}
+
+        found_smokes:
+          friendly_name: 'Найденные задымления'
+          value_template: >
+            {% set smoke_sensors = [
+              'binary_sensor.hallway_smoke_sensor_smoke',
+              'binary_sensor.kitchen_smoke_sensor_smoke',
+            ] %}
+            {{ states.binary_sensor
+              | selectattr('entity_id','in', smoke_sensors)
               | selectattr('state', 'eq', 'on')
               | map(attribute='name')
               | join(', ')
@@ -41,7 +55,17 @@ alarm:
               false
             {% endif %}
           device_class: moisture
-          icon_template: mdi:water-alert
+
+        smoke_detected:
+          friendly_name: 'Обнаружено задымление'
+          value_template: >
+            {% set found_smokes = states('sensor.found_smokes') %}
+            {% if found_smokes != 'unknown' %}
+              {{ found_smokes | length > 0 }}
+            {% else %}
+              false
+            {% endif %}
+          device_class: smoke
 
         ups_not_fine:
           friendly_name: 'Проблема с ИБП'
@@ -109,6 +133,18 @@ alarm:
       message: >
         {{ '\U0001F30A' }} Протечка воды: {{ states('sensor.found_water_leaks') }}
       done_message: '{{ ''\U0001F3DC'' }} Протечка воды устранена'
+      repeat: 5
+      can_acknowledge: true
+      notifiers:
+        - tg
+
+    smoke_detected:
+      name: 'Задымление'
+      entity_id: binary_sensor.smoke_detected
+      state: 'on'
+      message: >
+        {{ '\U0001F525' }} Задымление: {{ states('sensor.found_smokes') }}
+      done_message: '{{ ''\U0001F9EF'' }} Задымление устранено'
       repeat: 5
       can_acknowledge: true
       notifiers:

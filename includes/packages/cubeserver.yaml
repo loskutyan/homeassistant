@@ -155,7 +155,7 @@ cubeserver:
           unit_of_measurement: '°C'
           value_template: '{{ value | round(2) }}'
           group_function: last
-          where: '"serial_no" = '''' AND "host" = ''cubeserver'''
+          where: '"serial_no" = ''S626NF0RA10000H'' AND "host" = ''cubeserver'''
           measurement: '"smart_device"'
           field: 'temp_c'
           database: 'cubeserver_telegraf'
