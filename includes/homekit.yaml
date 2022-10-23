@@ -24,6 +24,7 @@
       - switch.kitchen_lights_switch_right
       - switch.bedroom_lights_switch_right
       - switch.bathroom_lights_switch
+      - switch.kidsroom_nightlight_plug
       - switch.cubeserver_vm_windows10
     include_entity_globs:
       - binary_sensor.*_water_leak
@@ -61,6 +62,8 @@
       name: 'Люстра'
     switch.bathroom_lights_switch:
       name: 'Свет'
+    switch.kidsroom_nightlight_plug:
+      name: 'Ночник'
     binary_sensor.bathroom_aqara_leak_sensor_water_leak:
       name: 'Протечка под ванной'
     binary_sensor.washing_machine_aqara_leak_sensor_water_leak:

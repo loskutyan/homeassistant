@@ -24,6 +24,7 @@ away:
               'switch.hallway_lights_switch',
               'switch.bedroom_lights_switch_right',
               'switch.bathroom_lights_switch',
+              'switch.kidsroom_nightlight_plug'
             ] %}
             {{ states.switch
               | selectattr('entity_id', 'in', lights_switches_entities_ids)

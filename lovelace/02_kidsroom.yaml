@@ -147,7 +147,17 @@ cards:
           - entity: switch.kidsroom_lights_common_switch_left
             name: 'Люстра'
             icon: mdi:ceiling-light
-      
+          - entity: switch.kidsroom_nightlight_plug
+            name: 'Ночник'
+            icon: mdi:lightbulb-night
+
+      - type: entities
+        entities:
+          - entity: switch.kidsroom_lights_smart_control
+            name: 'Умное управление'
+            state_color: true
+            icon: mdi:lightbulb-auto
+
       - type: entities
         entities:
           - type: custom:slider-entity-row

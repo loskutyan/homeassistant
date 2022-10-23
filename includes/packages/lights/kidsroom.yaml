@@ -7,12 +7,16 @@ kidsroom_lights:
         - light.kidsroom_aqara_led_bulb_right
 
 
-  sensor:
-    - platform: template
-      sensors:
-        kidsroom_wall_aqara_led_bulbs_brightness_schedule:
-          friendly_name: 'Яркость ламп Aqara в детской'
-          value_template: >
+  input_boolean:
+    kidsroom_lights_smart_control:
+      name: 'Умное управление светильниками в детской'
+
+
+  template:
+    - sensor:
+        - name: 'Яркость ламп Aqara в детской'
+          unique_id: kidsroom_wall_aqara_led_bulbs_brightness_schedule
+          state: >
             {% set now = now() %}
             {% set total_minutes = now.hour * 60 + now.minute %}
             {% if total_minutes > 360 and total_minutes < 1320 %}
@@ -33,9 +37,9 @@ kidsroom_lights:
               51
             {% endif %}
 
-        kidsroom_wall_aqara_led_bulbs_color_temp_schedule:
-          friendly_name: 'Температура ламп Aqara в детской'
-          value_template: >
+        - name: 'Температура ламп Aqara в детской'
+          unique_id: kidsroom_wall_aqara_led_bulbs_color_temp_schedule
+          state: >
             {% set now = now() %}
             {% set total_minutes = now.hour * 60 + now.minute %}
             {% set min_temp = state_attr('light.kidsroom_wall_aqara_led_bulbs', 'min_mireds') %}
@@ -48,7 +52,22 @@ kidsroom_lights:
               {{ 0.9 * (max_temp  - min_temp) + min_temp }}
             {% else %}
               {{ max_temp }}
-            {% endif %}
+            {% endif %}      
+
+
+  switch:
+    - platform: template
+      switches:
+        kidsroom_lights_smart_control:
+          friendly_name: 'Умное управление светильниками в детской'
+          value_template: >
+            {{ states('input_boolean.kidsroom_lights_smart_control') }}
+          turn_on:
+            service: input_boolean.turn_on
+            entity_id: input_boolean.kidsroom_lights_smart_control
+          turn_off:
+            service: input_boolean.turn_off
+            entity_id: input_boolean.kidsroom_lights_smart_control
 
 
   automation:
@@ -98,6 +117,9 @@ kidsroom_lights:
           state: 'on'
           for:
             minutes: 5
+        - condition: state
+          entity_id: input_boolean.kidsroom_lights_smart_control
+          state: 'on'
       action:
         - service: light.turn_on
           entity_id: light.kidsroom_wall_aqara_led_bulbs
@@ -122,6 +144,9 @@ kidsroom_lights:
         - condition: state
           entity_id: light.kidsroom_wall_aqara_led_bulbs
           state: 'on'
+        - condition: state
+          entity_id: input_boolean.kidsroom_lights_smart_control
+          state: 'on'
       action:
         - service: light.turn_on
           entity_id: light.kidsroom_wall_aqara_led_bulbs
@@ -131,7 +156,7 @@ kidsroom_lights:
             color_temp: >
               {{ states('sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule') }}
             transition: 5
-    
+
     - id: 'Выключение люстры в детской вечером'
       alias: kidsroom_main_ligths_turn_off
       initial_state: true
@@ -147,8 +172,28 @@ kidsroom_lights:
           for:
             minutes: 5
         - condition: state
+          entity_id: input_boolean.kidsroom_lights_smart_control
+          state: 'on'
+        - condition: state
           entity_id: switch.kidsroom_lights_common_switch_left
           state: 'on'
       action:
         - service: switch.turn_off
           entity_id: switch.kidsroom_lights_common_switch_left
+
+    - id: 'Выключение ночника в детской ночью'
+      alias: kidsroom_nightlight_turn_off
+      initial_state: true
+      trigger:
+        - platform: time
+          at: '03:00:00'
+        - platform: state
+          entity_id: input_boolean.kidsroom_asleep
+          to: 'off'
+      condition:
+        - condition: state
+          entity_id: switch.kidsroom_nightlight_plug
+          state: 'on'
+      action:
+        - service: switch.turn_off
+          entity_id: switch.kidsroom_nightlight_plug

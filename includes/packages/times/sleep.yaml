@@ -96,6 +96,10 @@ sleep_time:
           entity_id: cover.kidsroom_curtain
           continue_on_error: true
 
+        - service: switch.turn_on
+          entity_id: switch.kidsroom_nightlight_plug
+          continue_on_error: true
+
         - service: input_boolean.turn_on
           entity_id: input_boolean.kidsroom_asleep
 
@@ -118,6 +122,9 @@ sleep_time:
       action:
         - service: input_boolean.turn_off
           entity_id: input_boolean.kidsroom_asleep
+        - service: switch.turn_off
+          entity_id: switch.kidsroom_nightlight_plug
+          continue_on_error: true
         - service: cover.stop_cover
           entity_id: cover.kidsroom_curtain
         - delay: 00:00:05

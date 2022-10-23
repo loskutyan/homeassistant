@@ -2,7 +2,7 @@
   sensors:
     phone_mac_address:
       friendly_name: 'MAC-адрес телефона'
-      value_template: '98_60_ca_d9_a5_02'
+      value_template: '4c_79_75_c6_6b_67'
 
 
 - platform: apcupsd
