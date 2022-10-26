@@ -12,11 +12,12 @@ kidsroom_lights:
       name: 'Умное управление светильниками в детской'
 
 
-  template:
-    - sensor:
-        - name: 'Яркость ламп Aqara в детской'
-          unique_id: kidsroom_wall_aqara_led_bulbs_brightness_schedule
-          state: >
+  sensor:
+    - platform: template
+      sensors:
+        kidsroom_wall_aqara_led_bulbs_brightness_schedule:
+          friendly_name: 'Яркость ламп Aqara в детской'
+          value_template: >
             {% set now = now() %}
             {% set total_minutes = now.hour * 60 + now.minute %}
             {% if total_minutes > 360 and total_minutes < 1320 %}
@@ -37,9 +38,9 @@ kidsroom_lights:
               51
             {% endif %}
 
-        - name: 'Температура ламп Aqara в детской'
-          unique_id: kidsroom_wall_aqara_led_bulbs_color_temp_schedule
-          state: >
+        kidsroom_wall_aqara_led_bulbs_color_temp_schedule:
+          friendly_name: 'Температура ламп Aqara в детской'
+          value_template: >
             {% set now = now() %}
             {% set total_minutes = now.hour * 60 + now.minute %}
             {% set min_temp = state_attr('light.kidsroom_wall_aqara_led_bulbs', 'min_mireds') %}
