@@ -130,7 +130,7 @@ cards:
                     entity: switch.kidsroom_airpurifier_forced_ventilation
                     tap_action:
                       action: toggle
-          
+
           - type: conditional
             conditions:
               - entity: switch.warm_season
@@ -184,6 +184,38 @@ cards:
               color: '#FF0000'
             - value: 35
               color: '#800000'
+          animate: true
+          line_width: 2
+          hour24: true
+          points_per_hour: 1
+          group_by: hour
+
+      - type: conditional
+        conditions:
+          - entity: switch.warm_season
+            state: 'off'
+        card:
+          type: custom:mini-graph-card
+          entities:
+            - entity: sensor.bedroom_average_humidity
+              name: 'Влажность в спальне'
+              show_legend: false
+            - entity: sensor.kidsroom_average_humidity
+              name: 'Влажность в детской'
+              show_legend: false
+          lower_bound: 15
+          upper_bound: 75
+          color_thresholds:
+            - value: 20
+              color: '#FF0000'
+            - value: 30
+              color: '#FFD700'
+            - value: 45
+              color: '#00FF00'
+            - value: 60
+              color: '#00FFFF'
+            - value: 80
+              color: '#0000FF'
           animate: true
           line_width: 2
           hour24: true

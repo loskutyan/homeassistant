@@ -133,7 +133,7 @@ cards:
     cards:
       - type: custom:light-entity-card
         entity: light.bedroom_aqara_led_bulb
-        header: 'Лампа Aqara'
+        header: 'Торшер'
         shorten_cards: true
         brightness: true
         color_temp: true

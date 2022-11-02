@@ -182,7 +182,7 @@ kidsroom_air:
 
         kidsroom_airpurifier_speed_min_co2:
           value_template:  >
-            {% set temp_delta = max(0, 22 - states('sensor.kidsroom_average_temperature') | float) %}
+            {% set temp_delta = max(0, 24 - states('sensor.kidsroom_average_temperature') | float) %}
             {% set cooling_on = is_state('climate.kidsroom_ac', 'cool') | int %}
             {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
             {% if states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 60 %}
@@ -211,7 +211,7 @@ kidsroom_air:
 
         kidsroom_airpurifier_speed_max_co2:
           value_template:  >
-            {% set temp_delta = max(0, 22 - states('sensor.kidsroom_average_temperature') | float) %}
+            {% set temp_delta = max(0, 24 - states('sensor.kidsroom_average_temperature') | float) %}
             {% set cooling_on = is_state('climate.kidsroom_ac', 'cool') | int %}
             {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
             {% if states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 60 %}
