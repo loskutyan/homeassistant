@@ -6,6 +6,9 @@ sleep_time:
     bedroom_asleep:
       name: 'В спальне спят'
 
+    bedroom_waking_up:
+      name: 'Просыпаемся в спальне'
+
 
   switch:
     - platform: template

@@ -1,4 +1,10 @@
 bedroom_lights:
+  timer:
+    bedroom_aqara_led_bulb_wakeup_light_turn_off:
+      name: 'Утренний режим лампы закончится через '
+      duration: 1800
+
+
   sensor:
     - platform: template
       sensors:
@@ -27,6 +33,35 @@ bedroom_lights:
             {% else %}
               {{ 0.9 * (max_temp  - min_temp) + min_temp }}
             {% endif %}
+
+
+  script:
+    bedroom_aqara_led_bulb_wakeup_dimming:
+      alias: 'Диммирование лампы Aqara утром в спальне'
+      sequence:
+        - service: light.turn_on
+          entity_id: light.bedroom_aqara_led_bulb
+          data_template:
+            brightness: 9
+            color_temp: >
+              {{ state_attr('light.bedroom_aqara_led_bulb', 'max_mireds') }}
+            transition: 3
+        - delay: 00:01:00
+        - repeat:
+            while: >
+              {{ state_attr('light.bedroom_aqara_led_bulb', 'brightness') < 225 }}
+            sequence:
+              - service: light.turn_on
+                entity_id: light.bedroom_aqara_led_bulb
+                data_template:
+                  brightness: >
+                    {{ min(state_attr('light.bedroom_aqara_led_bulb', 'brightness') + 13, 255) }}
+                  color_temp: >
+                    {% set min_temp = state_attr('light.bedroom_aqara_led_bulb', 'min_mireds') %}
+                    {% set max_temp = state_attr('light.bedroom_aqara_led_bulb', 'max_mireds') %}
+                    {{ (40 - repeat.index) * (max_temp  - min_temp) / 40 + min_temp }}
+                  transition: 3
+              - delay: 00:01:00
 
 
   automation:
@@ -112,6 +147,45 @@ bedroom_lights:
               {{ states('sensor.bedroom_aqara_led_bulb_color_temp_schedule') }}
             transition: 2
 
+    - id: 'Включение утреннего режима лампы Aqara в спальне'
+      alias: bedroom_aqara_led_bulb_wakeup_light_turn_on
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: input_boolean.bedroom_waking_up
+          from: 'off'
+          to: 'on'
+      condition:
+        - condition: state
+          entity_id: switch.somebody_home
+          state: 'on'
+      action:
+        - service: script.turn_on
+          entity_id: script.bedroom_aqara_led_bulb_wakeup_dimming
+
+    - id: 'Выключение утреннего режима лампы Aqara в спальне'
+      alias: bedroom_aqara_led_bulb_wakeup_light_turn_off
+      initial_state: true
+      trigger:
+        - platform: time
+          at: '15:00'
+        - platform: state
+          entity_id: switch.somebody_home
+          to: 'off'
+        - platform: state
+          entity_id: timer.bedroom_aqara_led_bulb_wakeup_light_turn_off
+          from: 'active'
+          to: 'idle'
+      condition:
+        - condition: state
+          entity_id: input_boolean.bedroom_waking_up
+          state: 'on'
+      action:
+        - service: input_boolean.turn_off
+          entity_id: input_boolean.bedroom_waking_up
+        - service: light.turn_off
+          entity_id: light.bedroom_aqara_led_bulb
+
     - id: 'Изменение света лампы Aqara в спальне'
       alias: bedroom_aqara_led_bulb_control
       initial_state: true
@@ -131,16 +205,19 @@ bedroom_lights:
         - condition: state
           entity_id: light.bedroom_aqara_led_bulb
           state: 'on'
-        - condition: not
-          conditions:
+        - not:
             - condition: state
               entity_id: sensor.bedroom_movie_status
               state: 'playing'
-        - condition: not
-          conditions:
             - condition: state
               entity_id: sensor.bedroom_movie_status
               state: 'paused'
+            - condition: state
+              entity_id: input_boolean.bedroom_waking_up
+              state: 'on'
+            - condition: state
+              entity_id: timer.bedroom_aqara_led_bulb_wakeup_light_turn_off
+              state: 'active'
       action:
         - service: light.turn_on
           entity_id: light.bedroom_aqara_led_bulb
