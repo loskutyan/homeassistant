@@ -103,6 +103,10 @@ sleep_time:
           entity_id: switch.kidsroom_nightlight_plug
           continue_on_error: true
 
+        - service: switch.turn_off
+          entity_id: switch.kidsroom_airpurifier_ptc
+          continue_on_error: true
+
         - service: input_boolean.turn_on
           entity_id: input_boolean.kidsroom_asleep
 
@@ -176,6 +180,10 @@ sleep_time:
           continue_on_error: true
         - service: timer.start
           entity_id: timer.bedroom_humidifier_fixed_mode
+          continue_on_error: true
+
+        - service: switch.turn_off
+          entity_id: switch.bedroom_airpurifier_ptc
           continue_on_error: true
 
         - service: input_boolean.turn_on

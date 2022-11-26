@@ -27,17 +27,21 @@ bedroom_air:
       name: 'Фиксированная скорость бризера в спальне, осталось '
       duration: 1800
 
-    bedroom_humidifier_fixed_mode:
-      name: 'Фиксированный режим увлажнителя в спальне, осталось '
-      duration: 1800
-
     bedroom_airpurifier_heater_remind:
       name: 'Нагреватель бризера в спальне включен, напомнить через '
-      duration: 3600
+      duration: 7200
 
-    bedroom_airpurifier_heater:
+    bedroom_airpurifier_heater_turn_off:
       name: 'Нагреватель бризера в спальне включен, выключение через '
-      duration: 10800
+      duration: 18000
+
+    bedroom_airpurifier_heater_cooldown:
+      name: 'Нагреватель бризера в спальне остывает, можно включить через '
+      duration: 1800
+
+    bedroom_periodic_ventilation:
+      name: 'Периодическое проветривание в спальне, осталось '
+      duration: 3600
 
 
   switch:
@@ -416,7 +420,7 @@ bedroom_air:
       action:
         - service: timer.start
           entity_id:
-            - timer.bedroom_airpurifier_heater
+            - timer.bedroom_airpurifier_heater_turn_off
             - timer.bedroom_airpurifier_heater_remind
 
     - id: 'Включен нагреватель бризера в спальне - уведомление'
@@ -449,9 +453,14 @@ bedroom_air:
       initial_state: true
       trigger:
         - platform: state
-          entity_id: timer.bedroom_airpurifier_heater
+          entity_id: timer.bedroom_airpurifier_heater_turn_off
           from: 'active'
           to: 'idle'
+        - platform: numeric_state
+          entity_id: sensor.bedroom_average_temperature
+          above: 22.5
+          for:
+            minutes: 1
       condition:
         - condition: state
           entity_id: switch.bedroom_airpurifier_ptc
@@ -466,8 +475,11 @@ bedroom_air:
                                  'Бризер в спальне завершает греть воздух..',
                                  'Нагреватель бризера в спальне покидает здание!'] %}
               {{ '\U0001F9EF' }} {{ messages | random }} {{ states('sensor.time_date') }}
+              {{'\U0001F321'}} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
         - service: timer.finish
           entity_id: timer.bedroom_airpurifier_heater_remind
+        - service: timer.start
+          entity_id: timer.bedroom_airpurifier_heater_cooldown
 
     - id: 'Выключение таймеров нагревателя бризера в спальне'
       alias: bedroom_airpurifier_heater_timers_turn_off
@@ -480,4 +492,94 @@ bedroom_air:
         - service: timer.finish
           entity_id:
             - timer.bedroom_airpurifier_heater_remind
-            - timer.bedroom_airpurifier_heater
+            - timer.bedroom_airpurifier_heater_turn_off
+
+    - id: 'Включение нагревателя бризера в спальне'
+      alias: bedroom_airpurifier_heater_turn_oт
+      initial_state: true
+      trigger:
+        - platform: time_pattern
+          minutes: '/10'
+        - platform: state
+          entity_id: switch.somebody_home
+          from: 'off'
+          to: 'on'
+        - platform: state
+          entity_id: timer.bedroom_airpurifier_heater_cooldown
+          to: 'idle'
+      condition:
+        - condition: state
+          entity_id: switch.warm_season
+          state: 'off'
+        - condition: state
+          entity_id: switch.somebody_home
+          state: 'on'
+        - condition: state
+          entity_id: switch.bedroom_asleep
+          state: 'off'
+        - condition: state
+          entity_id: fan.mijia_airpurifier_bedroom
+          state: 'on'
+          for:
+            minutes: 1
+        - condition: numeric_state
+          entity_id: sensor.bedroom_average_temperature
+          below: 22
+        - not:
+            - condition: state
+              entity_id: timer.bedroom_airpurifier_heater_cooldown
+              state: 'active'
+      action:
+        - service: switch.turn_off
+          entity_id: switch.bedroom_airpurifier_ptc
+
+    - id: 'Выключение бризера в спальне, когда дома никого'
+      alias: bedroom_airpurifier_nobody_home_turn_off
+      initial_state: true
+      trigger:
+        - platform: time_pattern
+          minutes: '/30'
+        - platform: state
+          entity_id: switch.somebody_home
+          from: 'on'
+          to: 'off'
+      condition:
+        - condition: state
+          entity_id: switch.warm_season
+          state: 'off'
+        - condition: state
+          entity_id: switch.somebody_home
+          state: 'off'
+        - condition: state
+          entity_id: fan.mijia_airpurifier_bedroom
+          state: 'on'
+        - condition: numeric_state
+          entity_id: sensor.cleargrass_air_co2
+          below: 600
+        - condition: numeric_state
+          entity_id: sensor.bedroom_average_temperature
+          below: 22
+        - condition: state
+          entity_id:
+            - timer.bedroom_airpurifier_fixed_speed
+            - timer.bedroom_periodic_ventilation
+          state: 'idle'
+      action:
+        - service: switch.turn_off
+          entity_id: switch.bedroom_airpurifier_ptc
+          continue_on_error: true
+        - service: fan.turn_off
+          entity_id: fan.mijia_airpurifier_bedroom
+        - delay: 00:00:30
+        - if:
+            - condition: state
+              entity_id: fan.mijia_airpurifier_bedroom
+              state: 'off'
+          then:
+            - service: notify.tg
+              data:
+                message: |
+                  {% set bedroom_co2 = states('sensor.cleargrass_air_co2') %}
+                  {{'\U0001F4A8'}} Бризер в спальне выключен.
+                  {{'\U0001F321'}} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
+                  {{'\U0000269B'}} CO2 {{ states('sensor.cleargrass_air_co2') | int }}ppm

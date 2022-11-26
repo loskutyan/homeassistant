@@ -156,39 +156,30 @@ cards:
                       tap_action:
                         action: toggle
 
-      - type: conditional
-        conditions:
-          - entity: switch.warm_season
-            state: 'on'
-        card:
-          type: custom:mini-graph-card
-          entities:
-            - entity: sensor.bedroom_average_temperature
-              name: 'Температура в спальне'
-              show_legend: false
-            - entity: sensor.kidsroom_average_temperature
-              name: 'Температура в детской'
-              show_legend: false
-          lower_bound: 18
-          upper_bound: 32
-          color_thresholds:
-            - value: 21
-              color: '#00FFFF'
-            - value: 23
-              color: '#00FF00'
-            - value: 25
-              color: '#FFFF00'
-            - value: 27
-              color: '#FFD700'
-            - value: 29
-              color: '#FF0000'
-            - value: 35
-              color: '#800000'
-          animate: true
-          line_width: 2
-          hour24: true
-          points_per_hour: 1
-          group_by: hour
+          - type: conditional
+            conditions:
+              - entity: switch.warm_season
+                state: 'off'
+            card:
+              type: entities
+              entities:
+                - type: custom:multiple-entity-row
+                  name: 'Подогрев'
+                  entity: switch.bedroom_airpurifier_ptc
+                  show_state: false
+                  entities:
+                    - icon: mdi:bed-king
+                      state_color: true
+                      name: 'Спальня'
+                      tap_action:
+                        action: toggle
+                    
+                    - icon: mdi:bed
+                      state_color: true
+                      name: 'Детская'
+                      entity: switch.kidsroom_airpurifier_ptc
+                      tap_action:
+                        action: toggle
 
       - type: conditional
         conditions:
@@ -221,6 +212,35 @@ cards:
           hour24: true
           points_per_hour: 1
           group_by: hour
+
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.bedroom_average_temperature
+            name: 'Температура в спальне'
+            show_legend: false
+          - entity: sensor.kidsroom_average_temperature
+            name: 'Температура в детской'
+            show_legend: false
+        lower_bound: 18
+        upper_bound: 32
+        color_thresholds:
+          - value: 21
+            color: '#00FFFF'
+          - value: 23
+            color: '#00FF00'
+          - value: 25
+            color: '#FFFF00'
+          - value: 27
+            color: '#FFD700'
+          - value: 29
+            color: '#FF0000'
+          - value: 35
+            color: '#800000'
+        animate: true
+        line_width: 2
+        hour24: true
+        points_per_hour: 1
+        group_by: hour
 
       - type: custom:mini-graph-card
         entities:
@@ -302,19 +322,3 @@ cards:
             hour24: true
             points_per_hour: 1
             group_by: hour
-
-
-  - type: vertical-stack
-    title: 'Aqara Hub'
-    cards:
-      - type: entities
-        entities:
-          - entity: input_number.aqara_hub_volume
-            type: custom:slider-entity-row
-            name: 'Громкость'
-            step: 2
-            hide_state: false
-          - entity: light.miio_gateway
-            type: custom:slider-entity-row
-            name: 'Яркость'
-            step: 1

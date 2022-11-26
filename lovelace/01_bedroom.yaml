@@ -149,6 +149,20 @@ cards:
             name: 'Люстра'
             icon: mdi:ceiling-light
 
+      - type: entities
+        title: 'Aqara Hub'
+        show_header_toggle: false
+        entities:
+          - entity: input_number.aqara_hub_volume
+            type: custom:slider-entity-row
+            name: 'Громкость'
+            step: 2
+            hide_state: false
+          - entity: light.miio_gateway
+            type: custom:slider-entity-row
+            name: 'Яркость'
+            step: 1
+
 
   - type: vertical-stack
     title: 'Климат'
