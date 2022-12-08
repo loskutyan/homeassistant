@@ -4,6 +4,7 @@ homeassistant:
   longitude: !secret longitude_coord
   elevation: 190
   unit_system: metric
+  country: RU
   time_zone: 'Europe/Moscow'
   currency: RUB
   internal_url: !secret internal_url
@@ -66,6 +67,8 @@ lovelace:
     - url: /hacsfiles/lovelace-battery-entity-row/battery-entity-row.js
       type: module
     - url: /hacsfiles/vertical-stack-in-card/vertical-stack-in-card.js
+      type: module
+    - url: /hacsfiles/lovelace-mushroom/mushroom.js
       type: module
 
 

@@ -72,6 +72,7 @@ kidsroom_air:
         kidsroom_airpurifier_ptc:
           friendly_name: 'Нагреватель бризера в детской'
           value_template: '{{ state_attr(''fan.mijia_airpurifier_kidsroom'', ''ptc'') }}'
+          availability_template: '{{ states(''fan.mijia_airpurifier_kidsroom'') in [''on'', ''off''] }}'
           turn_on:
             service: xiaomi_miio_airpurifier.fan_set_ptc_on
             entity_id: fan.mijia_airpurifier_kidsroom
@@ -477,14 +478,16 @@ kidsroom_air:
           entity_id:
             - timer.kidsroom_airpurifier_heater_turn_off
             - timer.kidsroom_airpurifier_heater_remind
+        - service: timer.finish
+          entity_id: timer.kidsroom_airpurifier_heater_cooldown
         - service: notify.tg
           data:
             message: >
               {% set messages = ['Нагреватель бризера в детской включен!',
                                  'Бризер в детской начинает греть воздух..',
                                  'Нагреватель бризера в детской начал жарить!'] %}
-              {{'\U0001F525'}}  {{ messages | random }} {{ states('sensor.time_date') }}
-              {{'\U0001F321'}} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
+              {{ '\U0001F525' }}  {{ messages | random }} {{ states('sensor.time_date') }}
+              {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
 
     - id: 'Работает нагреватель бризера в детской - уведомление'
       alias: kidsroom_airpurifier_heater_on_reminder
@@ -524,6 +527,8 @@ kidsroom_air:
           entity_id:
             - timer.kidsroom_airpurifier_heater_remind
             - timer.kidsroom_airpurifier_heater_turn_off
+        - service: timer.start
+          entity_id: timer.kidsroom_airpurifier_heater_cooldown
         - service: notify.tg
           data:
             message: >
@@ -531,11 +536,43 @@ kidsroom_air:
                                  'Бризер в детской завершает греть воздух..',
                                  'Нагреватель бризера в детской покидает здание!'] %}
               {{ '\U0001F9EF' }} {{ messages | random }} {{ states('sensor.time_date') }}
-              {{'\U0001F321'}} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
-        - service: timer.finish
-          entity_id: timer.kidsroom_airpurifier_heater_remind
-        - service: timer.start
-          entity_id: timer.kidsroom_airpurifier_heater_cooldown
+              {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
+
+    - id: 'Включение бризера в детской'
+      alias: kidsroom_airpurifier_turn_on
+      initial_state: true
+      trigger:
+        - platform: time_pattern
+          minutes: '/10'
+        - platform: state
+          entity_id: switch.somebody_home
+          from: 'off'
+          to: 'on'
+      condition:
+        - condition: state
+          entity_id: switch.somebody_home
+          state: 'on'
+        - condition: state
+          entity_id: fan.mijia_airpurifier_kidsroom
+          state: 'off'
+        - condition: numeric_state
+          entity_id: sensor.qingping_air_lite_co2
+          above: 650
+      action:
+        - service: fan.turn_off
+          entity_id: fan.mijia_airpurifier_kidsroom
+        - delay: 00:00:30
+        - if:
+            - condition: state
+              entity_id: fan.mijia_airpurifier_kidsroom
+              state: 'on'
+          then:
+            - service: notify.tg
+              data:
+                message: |
+                  {{ '\U0001F4A8' }} Бризер в детской включен.
+                  {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
+                  {{ '\U0000269B' }} CO2 {{ states('sensor.qingping_air_lite_co2') | int }}ppm
 
     - id: 'Выключение бризера в детской, когда дома никого'
       alias: kidsroom_airpurifier_nobody_home_turn_off
@@ -558,7 +595,7 @@ kidsroom_air:
           entity_id: fan.mijia_airpurifier_kidsroom
           state: 'on'
         - condition: numeric_state
-          entity_id: sensor.cleargrass_air_co2
+          entity_id: sensor.qingping_air_lite_co2
           below: 600
         - condition: numeric_state
           entity_id: sensor.kidsroom_average_temperature
@@ -583,6 +620,6 @@ kidsroom_air:
             - service: notify.tg
               data:
                 message: |
-                  {{'\U0001F4A8'}} Бризер в детской выключен.
-                  {{'\U0001F321'}} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
-                  {{'\U0000269B'}} CO2 {{ states('sensor.cleargrass_air_co2') | int }}ppm
+                  {{ '\U0001F4A8' }} Бризер в детской выключен.
+                  {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
+                  {{ '\U0000269B' }} CO2 {{ states('sensor.qingping_air_lite_co2') | int }}ppm

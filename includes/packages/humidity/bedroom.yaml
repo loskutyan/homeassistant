@@ -1,4 +1,10 @@
 bedroom_humidity:
+  timer:
+    bedroom_humidifier_fixed_mode:
+      name: 'Фиксированный режим увлажнителя в спальне, осталось '
+      duration: 1800
+
+
   binary_sensor:
     - platform: template
       sensors:
@@ -57,8 +63,7 @@ bedroom_humidity:
         - condition: state
           entity_id: timer.bedroom_humidifier_fixed_mode
           state: 'idle'
-        - condition: not
-          conditions:
+        - not:
             - condition: state
               entity_id: sensor.bedroom_humidifier_mode_needs_changes
               state: 'keep'

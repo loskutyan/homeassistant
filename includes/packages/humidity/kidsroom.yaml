@@ -1,4 +1,10 @@
 kidsroom_humidity:
+  timer:
+    kidsroom_humidifier_fixed_mode:
+      name: 'Фиксированный режим увлажнителя в детской, осталось '
+      duration: 1800
+
+
   binary_sensor:
     - platform: template
       sensors:
@@ -57,8 +63,7 @@ kidsroom_humidity:
         - condition: state
           entity_id: timer.kidsroom_humidifier_fixed_mode
           state: 'idle'
-        - condition: not
-          conditions:
+        - not:
             - condition: state
               entity_id: sensor.kidsroom_humidifier_mode_needs_changes
               state: 'keep'
