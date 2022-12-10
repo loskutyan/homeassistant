@@ -559,7 +559,7 @@ kidsroom_air:
           entity_id: sensor.qingping_air_lite_co2
           above: 650
       action:
-        - service: fan.turn_off
+        - service: fan.turn_on
           entity_id: fan.mijia_airpurifier_kidsroom
         - delay: 00:00:30
         - if:

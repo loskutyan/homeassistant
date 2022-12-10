@@ -189,6 +189,19 @@ away:
         - service: script.turn_on
           entity_id: script.turn_off_all_heaters
 
+    - id: 'Все ушли из дома, выключаем ТВ и колонки'
+      alias: everyone_left_home_turn_off_media
+      trigger:
+        - platform: state
+          entity_id: input_boolean.somebody_home
+          from: 'on'
+          to: 'off'
+      action:
+        - service: media_player.turn_off
+          entity_id: media_player.sony_xr_65a80j
+        - service: media_player.media_pause
+          entity_id: media_player.homepod_mini_kidsroom
+
     - id: 'Входная дверь закрылась, запуск таймера проверки отсутствия'
       alias: left_home_check_timer_start
       trigger:

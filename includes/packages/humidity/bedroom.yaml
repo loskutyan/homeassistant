@@ -83,7 +83,7 @@ bedroom_humidity:
       condition:
         - condition: time
           before: '02:00:00'
-          after: '12:00:00'
+          after: '10:00:00'
         - condition: state
           entity_id: binary_sensor.bedroom_needs_humidification
           state: 'on'
@@ -92,6 +92,10 @@ bedroom_humidity:
           state: 'on'
           for:
             minutes: 20
+        - not:
+            - condition: numeric_state
+              entity_id: sensor.smartmi_humidifier_bedroom_motor_speed
+              above: 1
         - condition: template
           value_template: >
             {% set last_triggered = state_attr('automation.telegram_bedroom_needs_humidification', 'last_triggered') %}
@@ -113,7 +117,7 @@ bedroom_humidity:
       trigger:
         - platform: numeric_state
           entity_id: sensor.smartmi_humidifier_bedroom_water_level
-          below: 20
+          below: 30
           for:
             minutes: 5
       condition:
@@ -134,6 +138,6 @@ bedroom_humidity:
           data:
             message: >
               {% set messages = ['Вода в увлажнителе в спальне кончается!',
-                                 'Вода для увлажнения спальни на исходе, милорд!',
+                                 'Вода для увлажнения в спальне на исходе, милорд!',
                                  'Нужно долить воды в увлажнитель в спальне'] %}
               {{ '\U0001F6B1' }} {{ messages | random }} {{ states('sensor.time_date') }}

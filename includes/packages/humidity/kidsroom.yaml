@@ -12,7 +12,7 @@ kidsroom_humidity:
           friendly_name: 'Нужно увлажнить воздух в детской'
           value_template: >
             {% set humidifier_state_on = states('humidifier.smartmi_humidifier_kidsroom') | bool(False) %}
-            {% set humidifier_speed = states('sensor.smartmi_humidifier_bedroom_motor_speed') %}
+            {% set humidifier_speed = states('sensor.smartmi_humidifier_kidsroom_motor_speed') %}
             {% set low_hum = states('sensor.kidsroom_average_humidity') | float(100) < 35 %}
             {{ (not humidifier_state_on or humidifier_speed == 0) and low_hum }}
 
@@ -83,7 +83,7 @@ kidsroom_humidity:
       condition:
         - condition: time
           before: '02:00:00'
-          after: '12:00:00'
+          after: '10:00:00'
         - condition: state
           entity_id: binary_sensor.kidsroom_needs_humidification
           state: 'on'
@@ -92,6 +92,10 @@ kidsroom_humidity:
           state: 'on'
           for:
             minutes: 20
+        - not:
+            - condition: numeric_state
+              entity_id: sensor.smartmi_humidifier_kidsroom_motor_speed
+              above: 1
         - condition: template
           value_template: >
             {% set last_triggered = state_attr('automation.telegram_kidsroom_needs_humidification', 'last_triggered') %}
@@ -134,6 +138,6 @@ kidsroom_humidity:
           data:
             message: >
               {% set messages = ['Вода в увлажнителе в детской кончается!',
-                                 'Вода для увлажнения спальни на исходе, милорд!',
+                                 'Вода для увлажнения в детской на исходе, милорд!',
                                  'Нужно долить воды в увлажнитель в детской'] %}
               {{ '\U0001F6B1' }} {{ messages | random }} {{ states('sensor.time_date') }}

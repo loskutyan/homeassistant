@@ -559,7 +559,7 @@ bedroom_air:
           entity_id: sensor.cleargrass_air_co2
           above: 650
       action:
-        - service: fan.turn_off
+        - service: fan.turn_on
           entity_id: fan.mijia_airpurifier_bedroom
         - delay: 00:00:30
         - if:
