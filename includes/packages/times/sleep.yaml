@@ -115,7 +115,7 @@ sleep_time:
       initial_state: true
       trigger:
         - platform: time
-          at: '09:30'
+          at: '07:30'
         - platform: state
           entity_id: sensor.kidsroom_lights_common_switch_action
           to: 'double_right'
@@ -158,6 +158,8 @@ sleep_time:
         - service: switch.turn_off
           entity_id: switch.bedroom_lights_switch_right
           continue_on_error: true
+        - service: media_player.turn_off
+          entity_id: media_player.sony_xr_65a80j
 
         - service: input_select.select_option
           entity_id: input_select.bedroom_airpurifier_mode
@@ -194,7 +196,7 @@ sleep_time:
       initial_state: true
       trigger:
         - platform: time
-          at: '09:30'
+          at: '07:30'
         - platform: state
           entity_id: sensor.bedroom_aqara_cube_action
           to: 'flip180'
