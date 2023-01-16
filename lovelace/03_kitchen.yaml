@@ -22,6 +22,13 @@ cards:
             tap_action:
               action: toggle
 
+          - entity: switch.kitchen_led_strip_switch
+            name: 'LED подсветка'
+            show_last_changed: true
+            icon: mdi:led-strip
+            tap_action:
+              action: toggle
+
 
   - type: vertical-stack
     title: 'Климат'

@@ -22,6 +22,7 @@
       - switch.kidsroom_lights_common_switch_left
       - switch.kitchen_lights_switch_left
       - switch.kitchen_lights_switch_right
+      - switch.kitchen_led_strip_switch
       - switch.bedroom_lights_switch_right
       - switch.bathroom_lights_switch
       - switch.kidsroom_nightlight_plug
@@ -58,6 +59,8 @@
       name: 'Бра'
     switch.kitchen_lights_switch_right:
       name: 'Люстра'
+    switch.kitchen_led_strip_switch:
+      name: 'Лента'
     switch.bedroom_lights_switch_right:
       name: 'Люстра'
     switch.bathroom_lights_switch:

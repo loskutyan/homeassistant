@@ -102,58 +102,70 @@ cards:
 
       - type: custom:mini-graph-card
         entities:
-          - entity: sensor.cubeserver_parity_disk_temperature
-            name: 'Parity Disk'
+          - entity: sensor.cubeserver_plug_power
+            name: 'Cubeserver Power'
             show_legend: false
         color_thresholds:
-          - value: 35
+          - value: 80
             color: '#00FFFF'
-          - value: 40
+          - value: 120
             color: '#00FF00'
-          - value: 43
+          - value: 180
             color: '#FFFF00'
-          - value: 45
+          - value: 250
             color: '#FFD700'
-          - value: 47
+          - value: 300
             color: '#FF0000'
-          - value: 50
+          - value: 400
             color: '#800000'
         animate: true
         line_width: 2
         hour24: true
         points_per_hour: 3
         group_by: interval
-        lower_bound: 25
-        upper_bound: 55
+        lower_bound: 50
+        upper_bound: 600
 
-      - type: custom:mini-graph-card
-        entities:
-          - entity: sensor.cubeserver_disk_1_temperature
-            name: 'Disk 1'
-            show_legend: false
-          - entity: sensor.cubeserver_disk_2_temperature
-            name: 'Disk 2'
-            show_legend: false
-        color_thresholds:
-          - value: 35
-            color: '#00FFFF'
-          - value: 40
-            color: '#00FF00'
-          - value: 43
-            color: '#FFFF00'
-          - value: 45
-            color: '#FFD700'
-          - value: 47
-            color: '#FF0000'
-          - value: 50
-            color: '#800000'
-        animate: true
-        line_width: 2
-        hour24: true
-        points_per_hour: 3
-        group_by: interval
-        lower_bound: 25
-        upper_bound: 55
+      - type: horizontal-stack
+        cards:
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.cubeserver_parity_disk_temperature
+                name: 'Parity Disk'
+                show_legend: false
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.cubeserver_disk_1_temperature
+                name: 'Disk 1'
+                show_legend: false
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
+
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.cubeserver_disk_2_temperature
+                name: 'Disk 2'
+                show_legend: false
+            hour24: true
+            show:
+              graph: false
+              icon: true
+              extrema: true
+              fill: false
+            align_state: center
 
       - type: horizontal-stack
         cards:
