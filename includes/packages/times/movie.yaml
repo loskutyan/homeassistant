@@ -8,7 +8,7 @@ movie_time:
             {% set status = states('media_player.plex_plex_for_android_tv_bravia_4k') %}
             {% if status != 'unavailable' and status != 'idle' %}
               {% set library = state_attr('media_player.plex_plex_for_android_tv_bravia_4k', 'media_library_title') %}
-              {% if library == 'Фильмы' %}
+              {% if library == 'Фильмы' or library == 'Мультфильмы' %}
                 {{ status }}
               {% else %}
                 off

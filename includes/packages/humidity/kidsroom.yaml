@@ -24,7 +24,11 @@ kidsroom_humidity:
           value_template: >
             {% set current_mode = state_attr('humidifier.smartmi_humidifier_kidsroom', 'mode') %}
             {% set current_humidity = states('sensor.kidsroom_average_humidity') | float(0) %}
-            {% if 0 < current_humidity < 45 and current_mode != 'High'%}
+            {% set breezer_state = states('fan.mijia_airpurifier_kidsroom') %}
+            {% set somebody_home = states('switch.somebody_home') %}
+            {% if current_humidity > 40 and breezer_state == 'off' and somebody_home == 'off' %}
+              Silent
+            {% elif 0 < current_humidity < 45 and current_mode != 'High'%}
               High
             {% elif 50 <= current_humidity < 55 and current_mode != 'Medium'%}
               Medium

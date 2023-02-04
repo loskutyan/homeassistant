@@ -22,11 +22,16 @@ bedroom_humidity:
       sensors:
         bedroom_humidifier_mode_needs_changes:
           value_template: >
+            {% set current_state = states('humidifier.smartmi_humidifier_bedroom') %}
             {% set current_mode = state_attr('humidifier.smartmi_humidifier_bedroom', 'mode') %}
             {% set current_humidity = states('sensor.bedroom_average_humidity') | float(0) %}
-            {% if 0 < current_humidity < 45 and current_mode != 'High'%}
+            {% set breezer_state = states('fan.mijia_airpurifier_bedroom') %}
+            {% set somebody_home = states('switch.somebody_home') %}
+            {% if current_humidity > 40 and breezer_state == 'off' and somebody_home == 'off' %}
+              Silent
+            {% elif 0 < current_humidity < 45 and current_mode != 'High' %}
               High
-            {% elif 50 <= current_humidity < 55 and current_mode != 'Medium'%}
+            {% elif 50 <= current_humidity < 55 and current_mode != 'Medium' or current_state != 'on' %}
               Medium
             {% elif current_humidity >= 60 and current_mode != 'Silent' %}
               Silent

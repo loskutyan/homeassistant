@@ -175,10 +175,8 @@ sleep_time:
             value: 60
           continue_on_error: true
 
-        - service: humidifier.set_mode
+        - service: humidifier.turn_off
           entity_id: humidifier.smartmi_humidifier_bedroom
-          data:
-            mode: 'Silent'
           continue_on_error: true
         - service: timer.start
           entity_id: timer.bedroom_humidifier_fixed_mode
