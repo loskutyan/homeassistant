@@ -187,7 +187,8 @@ kidsroom_air:
 
         kidsroom_airpurifier_speed_min_co2:
           value_template:  >
-            {% set temp_delta = max(0, 24 - states('sensor.kidsroom_average_temperature') | float) %}
+            {% set target_t = states('sensor.target_temperature') | float(-1) %}
+            {% set temp_delta = max(0, target_t - states('sensor.kidsroom_average_temperature') | float) %}
             {% set cooling_on = is_state('climate.kidsroom_ac', 'cool') | int %}
             {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
             {% if states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 60 %}
@@ -216,7 +217,8 @@ kidsroom_air:
 
         kidsroom_airpurifier_speed_max_co2:
           value_template:  >
-            {% set temp_delta = max(0, 24 - states('sensor.kidsroom_average_temperature') | float) %}
+            {% set target_t = states('sensor.target_temperature') | float(-1) %}
+            {% set temp_delta = max(0, target_t - states('sensor.kidsroom_average_temperature') | float) %}
             {% set cooling_on = is_state('climate.kidsroom_ac', 'cool') | int %}
             {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
             {% if states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 60 %}
@@ -597,9 +599,6 @@ kidsroom_air:
         - condition: numeric_state
           entity_id: sensor.qingping_air_lite_co2
           below: 600
-        - condition: numeric_state
-          entity_id: sensor.kidsroom_average_temperature
-          below: 22
         - condition: state
           entity_id:
             - timer.kidsroom_airpurifier_fixed_speed

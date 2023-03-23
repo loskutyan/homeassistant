@@ -187,7 +187,8 @@ bedroom_air:
 
         bedroom_airpurifier_speed_min_co2:
           value_template:  >
-            {% set temp_delta = max(0, 24 - states('sensor.bedroom_average_temperature') | float) %}
+            {% set target_t = states('sensor.target_temperature') | float(-1) %}
+            {% set temp_delta = max(0, target_t - states('sensor.bedroom_average_temperature') | float) %}
             {% set cooling_on = is_state('climate.bedroom_ac', 'cool') | int %}
             {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
             {% if states('sensor.bedroom_airpurifier_favorite_speed') | float <= 60 %}
@@ -216,7 +217,8 @@ bedroom_air:
 
         bedroom_airpurifier_speed_max_co2:
           value_template:  >
-            {% set temp_delta = max(0, 24 - states('sensor.bedroom_average_temperature') | float) %}
+            {% set target_t = states('sensor.target_temperature') | float(-1) %}
+            {% set temp_delta = max(0, target_t - states('sensor.bedroom_average_temperature') | float) %}
             {% set cooling_on = is_state('climate.bedroom_ac', 'cool') | int %}
             {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
             {% if states('sensor.bedroom_airpurifier_favorite_speed') | float <= 60 %}
@@ -597,9 +599,6 @@ bedroom_air:
         - condition: numeric_state
           entity_id: sensor.cleargrass_air_co2
           below: 600
-        - condition: numeric_state
-          entity_id: sensor.bedroom_average_temperature
-          below: 22
         - condition: state
           entity_id:
             - timer.bedroom_airpurifier_fixed_speed
