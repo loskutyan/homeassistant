@@ -40,6 +40,7 @@ cards:
           - entity: switch.bedroom_asleep
           - entity: switch.kidsroom_asleep
           - entity: switch.warm_season
+          - entity: switch.bathroom_valves
 
       - type: conditional
         conditions:
@@ -69,6 +70,36 @@ cards:
               row:
                 entity: sensor.hacs
                 name: 'Обновления HACS'
+
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.smartmi_humidifier_bedroom_water_tank
+            state: 'on'
+        card:
+          type: custom:auto-entities
+          card:
+            type: entities
+          show_empty: false
+          filter:
+            include:
+              - entity_id: sensor.smartmi_humidifier_bedroom_water_level
+            exclude:
+              - state: '> 30'
+
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.smartmi_humidifier_kidsroom_water_tank
+            state: 'on'
+        card:
+          type: custom:auto-entities
+          card:
+            type: entities
+          show_empty: false
+          filter:
+            include:
+              - entity_id: sensor.smartmi_humidifier_kidsroom_water_level
+            exclude:
+              - state: '> 30'
 
       - type: custom:auto-entities
         card:

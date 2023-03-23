@@ -9,6 +9,11 @@ alarm:
       duration: 20
 
 
+  input_boolean:
+    bathroom_valves:
+      name: 'Шаровые краны в ванной'
+
+
   sensor:
     - platform: template
       sensors:
@@ -202,6 +207,69 @@ alarm:
         - tg
 
 
+  script:
+    close_bathroom_valves:
+      alias: 'Закрытие кранов в ванной'
+      sequence:
+        - service: switch.turn_on
+          data_template:
+            entity_id: switch.bathroom_valves_relay_right
+          continue_on_error: false
+        - delay: 00:00:30
+        - service: switch.turn_off
+          data_template:
+            entity_id: switch.bathroom_valves_relay_right
+          continue_on_error: true
+        - service: notify.tg
+          data:
+            message: >
+              {{ '\U0001F6B1' }} Краны перекрыты! {{ states('sensor.time_date') }}
+          continue_on_error: true
+        - service: input_boolean.turn_off
+          entity_id: input_boolean.bathroom_valves
+
+    open_bathroom_valves:
+      alias: 'Открытие кранов в ванной'
+      sequence:
+        - service: switch.turn_on
+          data_template:
+            entity_id: switch.bathroom_valves_relay_left
+          continue_on_error: false
+        - delay: 00:00:20
+        - service: switch.turn_off
+          data_template:
+            entity_id: switch.bathroom_valves_relay_left
+          continue_on_error: true
+        - service: notify.tg
+          data:
+            message: >
+              {{ '\U0001F6B0' }} Краны открыты! {{ states('sensor.time_date') }}
+          continue_on_error: true
+        - service: input_boolean.turn_on
+          entity_id: input_boolean.bathroom_valves
+
+
+  switch:
+    - platform: template
+      switches:
+        bathroom_valves:
+          friendly_name: 'Шаровые краны в ванной'
+          value_template: >
+            {{ states('input_boolean.bathroom_valves') }}
+          turn_on:
+            - service: script.turn_on
+              entity_id: script.open_bathroom_valves
+          turn_off:
+            - service: script.turn_on
+              entity_id: script.close_bathroom_valves
+          icon_template: >
+            {% if is_state('input_boolean.bathroom_valves', 'on') %}
+              mdi:valve-open
+            {% else %}
+              mdi:valve-closed
+            {% endif %}
+
+
   automation:
     - id: 'Протечка воды'
       alias: water_leak_detected_alarm
@@ -213,6 +281,8 @@ alarm:
             - binary_sensor.dishwasher_aqara_leak_sensor_water_leak
           to: 'on'
       action:
+        - service: script.turn_on
+          entity_id: script.close_bathroom_valves
         - service: alarm_control_panel.alarm_trigger
           entity_id: alarm_control_panel.miio_gateway
 

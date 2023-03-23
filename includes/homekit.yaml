@@ -27,6 +27,7 @@
       - switch.bathroom_lights_switch
       - switch.kidsroom_nightlight_plug
       - switch.cubeserver_vm_windows10
+      - switch.bathroom_valves
     include_entity_globs:
       - binary_sensor.*_water_leak
       - binary_sensor.*_sensor_smoke
@@ -95,3 +96,5 @@
       name: 'Датчик дыма'
     binary_sensor.hallway_smoke_sensor_smoke:
       name: 'Датчик дыма'
+    switch.bathroom_valves:
+      name: 'Шаровые краны в ванной'
