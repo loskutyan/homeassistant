@@ -23,3 +23,9 @@
         {% else %}
           unavailable
         {% endif %}
+
+    electricity_price:
+      friendly_name: 'Цена электроэнергии'
+      unit_of_measurement: 'RUB/kWh'
+      value_template: >
+        {{ 5.66 }}

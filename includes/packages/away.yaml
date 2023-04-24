@@ -202,6 +202,8 @@ away:
           entity_id: media_player.sony_xr_65a80j
         - service: media_player.media_pause
           entity_id: media_player.homepod_mini_kidsroom
+        - service: media_player.media_pause
+          entity_id: media_player.homepod_mini_bedroom
 
     - id: 'Входная дверь закрылась, запуск таймера проверки отсутствия'
       alias: left_home_check_timer_start

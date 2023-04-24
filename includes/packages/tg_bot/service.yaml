@@ -1,0 +1,15 @@
+tg_service:
+  automation:
+    - id: 'Низкий уровень заряда батарей'
+      alias: telegram_low_battery_level_notification
+      description: ''
+      use_blueprint:
+        path: sbyx/low-battery-level-detection-notification-for-all-battery-sensors.yaml
+        input:
+          time: '12:00:00'
+          day: 2
+          actions:
+          - service: notify.tg
+            data:
+              message: >
+                {{''\U0001FAAB''}} Низкий заряд батарей: {{ sensors }}!

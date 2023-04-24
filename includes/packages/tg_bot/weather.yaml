@@ -1,4 +1,4 @@
-weather:
+tg_weather:
   sensor:
     - platform: template
       sensors:
