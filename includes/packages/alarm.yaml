@@ -182,7 +182,7 @@ alarm:
       state: 'on'
       repeat: 60
       message: >
-        {{ '\U000026A0' }} Пробелма с ИБП, статус {{ states('sensor.ups_status') }}. {{ states('sensor.time_date') }}
+        {{ '\U000026A0' }} Проблема с ИБП, статус {{ states('sensor.ups_status') }}. {{ states('sensor.time_date') }}
       notifiers:
         - tg
 

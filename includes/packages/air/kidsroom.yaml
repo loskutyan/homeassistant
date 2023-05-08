@@ -187,7 +187,7 @@ kidsroom_air:
 
         kidsroom_airpurifier_speed_min_co2:
           value_template:  >
-            {% set target_t = states('sensor.target_temperature') | float(-1) %}
+            {% set target_t = states('input_number.target_temperature') | float(-1) %}
             {% set temp_delta = max(0, target_t - states('sensor.kidsroom_average_temperature') | float) %}
             {% set cooling_on = is_state('climate.kidsroom_ac', 'cool') | int %}
             {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
@@ -217,7 +217,7 @@ kidsroom_air:
 
         kidsroom_airpurifier_speed_max_co2:
           value_template:  >
-            {% set target_t = states('sensor.target_temperature') | float(-1) %}
+            {% set target_t = states('input_number.target_temperature') | float(-1) %}
             {% set temp_delta = max(0, target_t - states('sensor.kidsroom_average_temperature') | float) %}
             {% set cooling_on = is_state('climate.kidsroom_ac', 'cool') | int %}
             {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
@@ -576,8 +576,8 @@ kidsroom_air:
                   {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
                   {{ '\U0000269B' }} CO2 {{ states('sensor.qingping_air_lite_co2') | int }}ppm
 
-    - id: 'Выключение бризера в детской, когда дома никого'
-      alias: kidsroom_airpurifier_nobody_home_turn_off
+    - id: 'Выключение бризера в детской'
+      alias: kidsroom_airpurifier_turn_off
       initial_state: true
       trigger:
         - platform: time_pattern
@@ -587,18 +587,23 @@ kidsroom_air:
           from: 'on'
           to: 'off'
       condition:
-        - condition: state
-          entity_id: switch.warm_season
-          state: 'off'
-        - condition: state
-          entity_id: switch.somebody_home
-          state: 'off'
+        - or:
+            - condition: state
+              entity_id: switch.somebody_home
+              state: 'off'
+            - and:
+                - condition: state
+                  entity_id: switch.bedroom_asleep
+                  state: 'on'
+                - condition: state
+                  entity_id: switch.kidsroom_asleep
+                  state: 'off'
         - condition: state
           entity_id: fan.mijia_airpurifier_kidsroom
           state: 'on'
         - condition: numeric_state
           entity_id: sensor.qingping_air_lite_co2
-          below: 600
+          below: sensor.breezers_turnoff_co2_threshold
         - condition: state
           entity_id:
             - timer.kidsroom_airpurifier_fixed_speed
