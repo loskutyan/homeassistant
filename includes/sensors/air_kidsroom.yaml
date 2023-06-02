@@ -55,14 +55,12 @@
       device_class: temperature
       unit_of_measurement: '°C'
       value_template: >
-        {% set temps = [states('sensor.qingping_air_lite_temperature'),
-                        states('sensor.kidsroom_aqara_temperature')] %}
+        {% set temps = [states('sensor.kidsroom_aqara_temperature')] %}
         {% set filtered_temps = temps | reject('equalto', 'unavailable') | map('float') | list %}
         {{ filtered_temps | sum / filtered_temps | count }}
       availability_template: >
-        {% set temps = [states('sensor.qingping_air_lite_temperature'),
-                        states('sensor.kidsroom_aqara_temperature')] %}
-        {{ temps | reject('equalto', 'unavailable') | list | count == 2 }}
+        {% set temps = [states('sensor.kidsroom_aqara_temperature')] %}
+        {{ temps | reject('equalto', 'unavailable') | list | count > 0 }}
 
     kidsroom_average_humidity:
       friendly_name: 'Влажность'

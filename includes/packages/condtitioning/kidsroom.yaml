@@ -108,27 +108,6 @@ conditioning_kidsroom:
             entity_id: climate.kidsroom_ac
           icon_template: mdi:air-conditioner
 
-        kidsroom_cooling:
-          friendly_name: 'Охлаждение воздуха в детской'
-          value_template: >
-            {% set ac_on = is_state('switch.kidsroom_ac', 'on') %}
-            {% set cooling_on = is_state_attr('climate.kidsroom_ac', 'last_on_operation', 'cool') %}
-            {% set is_cooling_temp_low = state_attr('climate.kidsroom_ac', 'temperature') | int(31) <= 28 %}
-            {{ ac_on and cooling_on and is_cooling_temp_low }}
-          turn_on:
-            service: climate.set_temperature
-            entity_id: climate.kidsroom_ac
-            data_template:
-              temperature: '{{ min(states(''input_number.kidsroom_ac_temperature'') | int(28), 28) }}'
-              hvac_mode: 'cool'
-          turn_off:
-            service: climate.set_temperature
-            entity_id: climate.kidsroom_ac
-            data_template:
-              temperature: '{{ states(''input_number.kidsroom_ac_temperature'') | int }}'
-              hvac_mode: 'fan_only'
-          icon_template: mdi:snowflake
-
         kidsroom_auto_conditioning:
           friendly_name: 'Автоматическое охлаждение воздуха в детской'
           value_template: >
@@ -140,6 +119,30 @@ conditioning_kidsroom:
             service: input_boolean.turn_off
             entity_id: input_boolean.kidsroom_auto_conditioning
           icon_template: mdi:snowflake-thermometer
+
+        kidsroom_cooling:
+          friendly_name: 'Охлаждение воздуха в детской'
+          value_template: >
+            {% set ac_on = is_state('switch.kidsroom_ac', 'on') %}
+            {% set cooling_on = is_state_attr('climate.kidsroom_ac', 'last_on_operation', 'cool') %}
+            {% set auto_cooling_on = is_state('switch.kidsroom_auto_conditioning', 'on') %}
+            {% set is_cooling_temp_low = state_attr('climate.kidsroom_ac', 'temperature') | int(31) <= 28 %}
+            {{ ac_on and cooling_on and (is_cooling_temp_low or auto_cooling_on) }}
+          turn_on:
+            - service: climate.set_temperature
+              entity_id: climate.kidsroom_ac
+              data_template:
+                temperature: '{{ (''input_number.kidsroom_target_cooling_temperature'') | int(25) }}'
+                hvac_mode: 'cool'
+            - service: switch.turn_on
+              entity_id: switch.kidsroom_auto_conditioning
+          turn_off:
+            service: climate.set_temperature
+            entity_id: climate.kidsroom_ac
+            data_template:
+              temperature: '{{ states(''input_number.kidsroom_ac_temperature'') | int }}'
+              hvac_mode: 'fan_only'
+          icon_template: mdi:snowflake
 
 
   script:

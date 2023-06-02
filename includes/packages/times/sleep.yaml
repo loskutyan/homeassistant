@@ -115,7 +115,7 @@ sleep_time:
       initial_state: true
       trigger:
         - platform: time
-          at: '07:30'
+          at: '10:30'
         - platform: state
           entity_id: sensor.kidsroom_lights_common_switch_action
           to: 'double_right'
