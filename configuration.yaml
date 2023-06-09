@@ -38,11 +38,6 @@ default_config:
 homekit: !include includes/homekit.yaml
 
 
-apcupsd:
-  host: !secret cubeserver_ip
-  port: 3551
-
-
 lovelace:
   mode: yaml
   resources:

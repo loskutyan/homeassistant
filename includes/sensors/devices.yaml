@@ -3,14 +3,3 @@
     phone_mac_address:
       friendly_name: 'MAC-адрес телефона'
       value_template: '4c_79_75_c6_6b_67'
-
-
-- platform: apcupsd
-  resources:
-    - bcharge
-    - loadpct
-    - status
-    - timeleft
-    - model
-    - linev
-    - outputv

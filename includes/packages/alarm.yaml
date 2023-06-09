@@ -75,13 +75,13 @@ alarm:
         ups_not_fine:
           friendly_name: 'Проблема с ИБП'
           value_template: >
-            {{ states('sensor.ups_status') not in ['ONLINE', 'CHARGING', 'ONBATT'] }}
+            {{ states('sensor.ups_status') not in ['Online', 'Online Battery Charging', 'On Battery Battery Discharging'] }}
           device_class: problem
 
         ups_powered_by_battery:
           friendly_name: 'ИБП работает от аккумулятора'
           value_template: >
-            {{ states('sensor.ups_status') == 'ONBATT' }}
+            {{ states('sensor.ups_status') == 'On Battery Battery Discharging' }}
           icon_template: >
             {% if is_state('binary_sensor.ups_powered_by_battery', 'on') %}
               mdi:battery-arrow-down
