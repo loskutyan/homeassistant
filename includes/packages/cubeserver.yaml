@@ -1,30 +1,5 @@
 cubeserver:
   sensor:
-    - platform: command_line
-      unique_id: cubeserver_parity_common_size_raw
-      name: 'Cubeserver Parity Common Size Raw'
-      command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} mdcmd status | sed -n ''s/mdResyncSize=//p'''
-
-    - platform: command_line
-      unique_id: cubeserver_parity_size_raw
-      name: 'Cubeserver Parity Size Raw'
-      command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} mdcmd status | sed -n ''s/mdResync=//p'''
-
-    - platform: command_line
-      unique_id: cubeserver_parity_pos_row
-      name: 'Cubeserver Parity Pos Raw'
-      command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} mdcmd status | sed -n ''s/mdResyncPos=//p'''
-
-    - platform: command_line
-      unique_id: cubeserver_parity_dt_raw
-      name: 'Cubeserver Parity Dt Raw'
-      command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} mdcmd status | sed -n ''s/mdResyncDt=//p'''
-
-    - platform: command_line
-      unique_id: cubeserver_parity_db_raw
-      name: 'Cubeserver Parity Db Raw'
-      command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} mdcmd status | sed -n ''s/mdResyncDb=//p'''
-
     - platform: template
       sensors:
         cubeserver_ip:
@@ -186,13 +161,6 @@ cubeserver:
       scan_interval: 20
       count: 2
 
-    - platform: command_line
-      name: cubeserver_vm_windows10_virsh_status
-      command: 'if test $(ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} virsh list --all | grep ''Windows 10'' | awk ''{print $4}'') == running; then echo running; else echo ''not running''; fi'
-      device_class: connectivity
-      payload_on: 'running'
-      payload_off: 'not running'
-
     - platform: template
       sensors:
         cubeserver_parity_check_in_progress:
@@ -237,6 +205,41 @@ cubeserver:
             {% set disk1 = is_state('binary_sensor.cubeserver_disk_1_overheat', 'on') %}
             {% set disk2 = is_state('binary_sensor.cubeserver_disk_2_overheat', 'on') %}
             {{ parity or disk1 or disk2 }}
+
+
+  command_line:
+    - sensor:
+        unique_id: cubeserver_parity_common_size_raw
+        name: 'Cubeserver Parity Common Size Raw'
+        command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} mdcmd status | sed -n ''s/mdResyncSize=//p'''
+
+    - sensor:
+        unique_id: cubeserver_parity_size_raw
+        name: 'Cubeserver Parity Size Raw'
+        command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} mdcmd status | sed -n ''s/mdResync=//p'''
+
+    - sensor:
+        unique_id: cubeserver_parity_pos_row
+        name: 'Cubeserver Parity Pos Raw'
+        command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} mdcmd status | sed -n ''s/mdResyncPos=//p'''
+
+    - sensor:
+        unique_id: cubeserver_parity_dt_raw
+        name: 'Cubeserver Parity Dt Raw'
+        command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} mdcmd status | sed -n ''s/mdResyncDt=//p'''
+
+    - sensor:
+        unique_id: cubeserver_parity_db_raw
+        name: 'Cubeserver Parity Db Raw'
+        command: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} mdcmd status | sed -n ''s/mdResyncDb=//p'''
+
+    - binary_sensor:
+        unique_id: cubeserver_vm_windows10_virsh_status
+        name: 'Cubeserver VM Windows10 Virsh Status'
+        command: 'if test $(ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} virsh list --all | grep ''Windows 10'' | awk ''{print $4}'') == running; then echo running; else echo ''not running''; fi'
+        device_class: connectivity
+        payload_on: 'running'
+        payload_off: 'not running'
 
 
   shell_command:
