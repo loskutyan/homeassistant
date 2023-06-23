@@ -119,7 +119,7 @@ kidsroom_air:
             - service: input_boolean.turn_off
               entity_id: input_boolean.kidsroom_airpurifier_favourite_speed_smart_control
           icon_template: mdi:speedometer
-        
+
         kidsroom_airpurifier_favourite_speed_temporary_fixed:
           friendly_name: 'Фиксированная скорость бризера в детской'
           value_template: >
@@ -185,28 +185,43 @@ kidsroom_air:
           friendly_name: 'Mi Fresh Air Kidsroom Режим работы'
           value_template: '{{ state_attr(''fan.mijia_airpurifier_kidsroom'', ''preset_mode'') }}'
 
+        kidsroom_current_target_temperature_delta:
+          friendly_name: 'Разница текущей и желаемой температур в детской'
+          device_class: temperature
+          unit_of_measurement: '°C'
+          value_template: >
+            {{ states('sensor.kidsroom_average_temperature') | float - states('input_number.target_temperature') | float(22) }}
+
+        kidsroom_airpurifier_target_co2_delta:
+          friendly_name: 'Поправка к скорости бризера в детской'
+          value_template: >
+            {% set delta_ct = states('sensor.kidsroom_current_target_temperature_delta') | float %}
+            {% set delta_ot = states('sensor.outside_target_temperature_delta') | float %}
+            {{ (delta_ct * delta_ot / ((delta_ct * delta_ot) | abs)) * min(150, ((delta_ct | abs)**1.5 * sin((min(20, delta_ot | abs)) / 20 * 3.1415926)) | round * 10) }}
+
+
         kidsroom_airpurifier_speed_min_co2:
           value_template:  >
-            {% set target_t = states('input_number.target_temperature') | float(-1) %}
-            {% set temp_delta = max(0, target_t - states('sensor.kidsroom_average_temperature') | float) %}
-            {% set cooling_on = is_state('climate.kidsroom_ac', 'cool') | int %}
-            {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
+            {% set co2_delta = states('sensor.kidsroom_airpurifier_target_co2_delta') | float(0) %}
+            {% set cooling_on = is_state('binary_sensor.kidsroom_ac_is_cooling', 'on') | int %}
+            {% set heating_on = is_state('switch.kidsroom_airpurifier_ptc', 'on') | int %}
+            {% set co2_shift = max(cooling_on, heating_on) * 150 + co2_delta * (1 - cooling_on) * (1 - heating_on)  %}
             {% if states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 60 %}
               0
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 70 %}
-              {{ 600 + 10 * shift_steps }}
+              {{ 600 + co2_shift }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 80 %}
-              {{ 650 + 10 * shift_steps }}
+              {{ 650 + co2_shift }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 90 %}
-              {{ 700 + 10 * shift_steps }}
+              {{ 700 + co2_shift }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 100 %}
-              {{ 750 + 10 * shift_steps }}
+              {{ 750 + co2_shift }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 110 %}
-              {{ 800 + 10 * shift_steps }}
+              {{ 800 + co2_shift }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 120 %}
-              {{ 900 + 10 * shift_steps }}
+              {{ 900 + co2_shift }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 130 %}
-              {{ 950 + 10 * shift_steps }}
+              {{ 950 + co2_shift }}
             {% else %}
               1200
             {% endif %}
@@ -217,24 +232,24 @@ kidsroom_air:
 
         kidsroom_airpurifier_speed_max_co2:
           value_template:  >
-            {% set target_t = states('input_number.target_temperature') | float(-1) %}
-            {% set temp_delta = max(0, target_t - states('sensor.kidsroom_average_temperature') | float) %}
-            {% set cooling_on = is_state('climate.kidsroom_ac', 'cool') | int %}
-            {% set shift_steps = temp_delta * 100 // 10 + 15 * cooling_on %}
+            {% set co2_delta = states('sensor.kidsroom_airpurifier_target_co2_delta') | float(0) %}
+            {% set cooling_on = is_state('binary_sensor.kidsroom_ac_is_cooling', 'on') | int %}
+            {% set heating_on = is_state('switch.kidsroom_airpurifier_ptc', 'on') | int %}
+            {% set co2_shift = max(cooling_on, heating_on) * 150 + co2_delta * (1 - cooling_on) * (1 - heating_on)  %}
             {% if states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 60 %}
-              {{ 600 + 10 * shift_steps }}
+              {{ 600 + co2_shift }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 70 %}
-              {{ 650 + 10 * shift_steps }}
+              {{ 650 + co2_shift }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 80 %}
-              {{ 700 + 10 * shift_steps }}
+              {{ 700 + co2_shift }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 90 %}
-              {{ 750 + 10 * shift_steps }}
+              {{ 750 + co2_shift }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 100 %}
-              {{ 800 + 10 * shift_steps }}
+              {{ 800 + co2_shift }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 110 %}
-              {{ 900 + 10 * shift_steps }}
+              {{ 900 + co2_shift }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 120 %}
-              {{ 950 + 10 * shift_steps }}
+              {{ 950 + co2_shift }}
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 130 %}
               1200
             {% else %}
@@ -437,7 +452,7 @@ kidsroom_air:
             minutes: 1
         - condition: numeric_state
           entity_id: sensor.kidsroom_average_temperature
-          below: 22
+          below: input_number.target_temperature
         - not:
             - condition: state
               entity_id: timer.kidsroom_airpurifier_heater_cooldown
@@ -456,7 +471,8 @@ kidsroom_air:
           to: 'idle'
         - platform: numeric_state
           entity_id: sensor.kidsroom_average_temperature
-          above: 22.5
+          value_template: '{{ state.state | float(0) - 0.5 }}'
+          above: input_number.target_temperature
           for:
             minutes: 1
       condition:
