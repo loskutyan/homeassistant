@@ -232,12 +232,12 @@ conditioning_kidsroom:
           attribute: temperature
       condition:
         - condition: template
-          value_template: '{{ trigger.to_state.state | int(0) > 0 }}'
+          value_template: '{{ trigger.to_state.attributes.temperature | int(0) > 0 }}'
       action:
         - service: input_number.set_value
           entity_id: input_number.kidsroom_ac_temperature
           data_template:
-            value: '{{ trigger.to_state.state | int }}'
+            value: '{{ trigger.to_state.attributes.temperature | int }}'
 
     - id: 'Отслеживание скорости обдува кондиционера в детской'
       alias: tracking_kidsroom_ac_fan_mode
@@ -247,12 +247,12 @@ conditioning_kidsroom:
           attribute: fan_mode
       condition:
         - condition: template
-          value_template: '{{ trigger.to_state.state not in [''unknown'', ''unavailable''] }}'
+          value_template: '{{ trigger.to_state.attributes.fan_mode not in [''unknown'', ''unavailable''] }}'
       action:
         - service: input_select.select_option
           entity_id: input_select.kidsroom_ac_fan_mode
           data_template:
-            option: '{{ trigger.to_state.state }}'
+            option: '{{ trigger.to_state.attributes.fan_mode }}'
 
     - id: 'Умный контроль кондиционера в детской'
       alias: kidsroom_ac_smart_control
@@ -278,6 +278,13 @@ conditioning_kidsroom:
           state: 'on'
         - condition: template
           value_template: '{{ states(''sensor.kidsroom_average_temperature'') | float(0) > 0 }}'
+        - condition: template
+          value_template: >
+              {% set target_temp = states('input_number.kidsroom_target_cooling_temperature') | int %}
+              {% set cur_temp = states('sensor.kidsroom_average_temperature') | float %}
+              {% set ac_temp = state_attr('climate.kidsroom_ac', 'temperature') | float %}
+              {% set delta = target_temp - cur_temp %}
+              {{ (delta > 0.5 and ac_temp < 31) or (delta < -0.5 and  ac_temp > cur_temp) }}
       action:
         - service: climate.set_temperature
           entity_id: climate.kidsroom_ac
