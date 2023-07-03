@@ -31,6 +31,11 @@ miio_gateway:
   port: 54321
 
 
+duckdns:
+  domain: !secret duckdns_domain
+  access_token: !secret duckdns_access_token
+
+
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
@@ -84,11 +89,6 @@ telegram_bot:
     api_key: !secret tg_bot_api_key
     allowed_chat_ids:
       - !secret chat_id_loskutyan
-
-
-home_connect:
-  client_id: !secret home_connect_client_id
-  client_secret: !secret home_connect_client_secret
 
 
 smartir:

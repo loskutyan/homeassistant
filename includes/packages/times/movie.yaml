@@ -5,9 +5,9 @@ movie_time:
         bedroom_movie_status:
           friendly_name: 'Включен фильм в спальне'
           value_template: >
-            {% set status = states('media_player.plex_plex_for_android_tv_bravia_4k') %}
+            {% set status = states('media_player.plex_plex_for_android_tv_bravia_vh2') %}
             {% if status != 'unavailable' and status != 'idle' %}
-              {% set library = state_attr('media_player.plex_plex_for_android_tv_bravia_4k', 'media_library_title') %}
+              {% set library = state_attr('media_player.plex_plex_for_android_tv_bravia_vh2', 'media_library_title') %}
               {% if library == 'Фильмы' or library == 'Мультфильмы' %}
                 {{ status }}
               {% else %}
