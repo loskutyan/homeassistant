@@ -11,5 +11,6 @@ tg_service:
           actions:
           - service: notify.tg
             data:
-              message: >
-                {{''\U0001FAAB''}} Низкий заряд батарей: {{ sensors }}!
+              message: |
+                {{'\U0001FAAB'}} Низкий заряд батарей:
+                {{ sensors.split(', ')  | join('\n') }}
