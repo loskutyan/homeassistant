@@ -5,168 +5,215 @@ cards:
   - type: vertical-stack
     title: 'Вентиляция'
     cards:
-      - type: entities
+      - type: custom:vertical-stack-in-card
         title: 'Очиститель воздуха'
-        show_header_toggle: false
-        entities:
-          - entity: fan.mijia_airpurifier_bedroom
-            name: 'Состояние'
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-fan-card
+                entity: fan.mijia_airpurifier_bedroom
+                name: 'Состояние'
 
-          - entity: switch.bedroom_airpurifier_forced_ventilation
-            name: 'Режим проветривания'
-            state_color: true
+              - type: custom:mushroom-entity-card
+                entity: switch.bedroom_airpurifier_forced_ventilation
+                name: 'Проветривание'
+                tap_action:
+                  action: toggle
 
-          - entity: input_select.bedroom_airpurifier_mode
+          - type: custom:mushroom-select-card
+            entity: input_select.bedroom_airpurifier_mode
             name: 'Режим работы'
+            layout: horizontal
+            secondary_info: last-changed
 
-          - type: conditional
-            conditions:
-              - entity: input_select.bedroom_airpurifier_mode
-                state: 'Favorite'
-            row:
-              type: custom:multiple-entity-row
-              entity: switch.bedroom_airpurifier_favourite_speed_smart_control
-              name: 'Умное управление скоростью'
-              toggle: true
-              state_color: true
-              entities:
-              - entity: switch.bedroom_airpurifier_favourite_speed_temporary_fixed
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: switch.bedroom_airpurifier_favourite_speed_smart_control
+                name: 'Умное управление'
+                layout: horizontal
+                tap_action:
+                  action: toggle
+                icon_color: green
+
+              - type: custom:mushroom-entity-card
+                entity: switch.bedroom_airpurifier_favourite_speed_temporary_fixed
                 name: 'Фикс. скорость'
-                toggle: true
+                layout: horizontal
+                tap_action:
+                  action: toggle
 
-          - type: conditional
-            conditions:
-              - entity: input_select.bedroom_airpurifier_mode
-                state: 'Favorite'
-              - entity: binary_sensor.bedroom_airpurifier_favourite_speed_fixed
-                state: 'on'
-            row:
-              type: custom:slider-entity-row
-              entity: input_number.bedroom_airpurifier_favorite_speed
-              name: 'Заданная скорость'
-              hide_state: false
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: sensor.bedroom_airpurifier_current_speed
+                name: 'Текущая скорость'
+                layout: horizontal
 
-          - entity: sensor.bedroom_airpurifier_current_speed
-            name: 'Текущая скорость'
+              - type: conditional
+                conditions:
+                  - entity: input_select.bedroom_airpurifier_mode
+                    state: 'Favorite'
+                  - entity: binary_sensor.bedroom_airpurifier_favourite_speed_fixed
+                    state: 'on'
+                card:
+                  type: custom:mushroom-number-card
+                  entity: input_number.bedroom_airpurifier_favorite_speed
+                  name: 'Заданная скорость'
+                  layout: horizontal
+                  icon_type: none
+                  card_mod:
+                    style: |
+                      ha-card {
+                        --ha-card-border-width: 0;
+                      }
 
-          - type: custom:multiple-entity-row
-            entity: switch.bedroom_airpurifier_ptc
-            name: 'Нагреватель'
-            toggle: true
-            state_color: true
-            entities:
-            - entity: binary_sensor.bedroom_airpurifier_ptc_status
-              name: 'Статус'
-              icon: true
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: switch.bedroom_airpurifier_ptc
+                name: 'Нагреватель'
+                layout: horizontal
+                tap_action:
+                  action: toggle
+                icon_color: orange
 
+              - type: custom:mushroom-entity-card
+                entity: binary_sensor.bedroom_airpurifier_ptc_status
+                name: 'Статус'
+                layout: horizontal
+                secondary_info: last-changed
+                icon_color: orange
 
       - type: conditional
         conditions:
           - entity: switch.warm_season
             state: 'on'
         card:
-          type: entities
+          type: custom:vertical-stack-in-card
           title: 'Кондиционер'
-          show_header_toggle: false
-          entities:
-            - type: custom:multiple-entity-row
-              entity: switch.bedroom_ac
+          cards:
+            - type: custom:mushroom-climate-card
+              entity: climate.bedroom_ac
               name: 'Состояние'
-              toggle: true
-              state_color: true
-              entities:
-                - entity: switch.bedroom_ac_plug
-                  name: 'Питание'
-                  toggle: true
-                - entity: sensor.bedroom_ac_plug_power
-                  name: 'Мощность'
-  
-            - entity: input_select.bedroom_ac_mode
-              name: 'Режим'
-  
-            - type: conditional
-              conditions:
-                - entity: input_select.bedroom_ac_mode
-                  state: 'cool'
-              row:
-                entity: switch.bedroom_auto_conditioning
-                name: 'Автоматическое охлаждение'
-                state_color: true
-  
-            - type: conditional
-              conditions:
-                - entity: input_boolean.bedroom_auto_conditioning
-                  state: 'on'
-                - entity: input_select.bedroom_ac_mode
-                  state: 'cool'
-              row:
-                type: custom:slider-entity-row
-                entity: input_number.bedroom_target_cooling_temperature
-                name: 'Температура'
-                hide_state: false
-  
-            - type: conditional
-              conditions:
-                - entity: input_boolean.bedroom_auto_conditioning
-                  state: 'off'
-                - entity: input_select.bedroom_ac_mode
-                  state: 'cool'
-              row:
-                type: custom:slider-entity-row
-                entity: input_number.bedroom_ac_temperature
-                name: 'Температура'
-                hide_state: false
-  
-            - entity: input_select.bedroom_ac_fan_mode
-              name: 'Скорость обдува'
-  
-            - type: conditional
-              conditions:
-                - entity: input_select.bedroom_ac_mode
-                  state: 'fan_only'
-              row:
-                entity: input_select.bedroom_ac_fan_swing_mode
-                name: 'Направление обдува'
-                hide_state: false
+              layout: horizontal
+              hvac_modes:
+                - cool
+                - fan_only
+                - dry
+                - auto
+              collapsible_controls: true
+              icon: mdi:air-conditioner
 
+            - type: horizontal-stack
+              cards:
+                - type: conditional
+                  conditions:
+                    - entity: input_select.bedroom_ac_mode
+                      state: 'cool'
+                  card:
+                    type: custom:mushroom-entity-card
+                    entity: switch.bedroom_auto_conditioning
+                    name: 'Автом. охлаждение'
+                    tap_action:
+                      action: toggle
+                    card_mod:
+                      style: |
+                        ha-card {
+                          --ha-card-border-width: 0;
+                        }
+
+                - type: conditional
+                  conditions:
+                    - entity: input_boolean.bedroom_auto_conditioning
+                      state: 'on'
+                    - entity: input_select.bedroom_ac_mode
+                      state: 'cool'
+                  card:
+                    type: custom:mushroom-number-card
+                    entity: input_number.bedroom_target_cooling_temperature
+                    name: 'Температура'
+                    layout: horizontal
+                    primary_info: none
+                    secondary_info: none
+                    display_mode: buttons
+                    icon: mdi:thermometer-auto
+                    card_mod:
+                      style: |
+                        ha-card {
+                          --ha-card-border-width: 0;
+                        }
+
+                - type: conditional
+                  conditions:
+                    - entity: input_boolean.bedroom_auto_conditioning
+                      state: 'off'
+                    - entity: input_select.bedroom_ac_mode
+                      state: 'cool'
+                  card:
+                    type: custom:mushroom-number-card
+                    entity: input_number.bedroom_ac_temperature
+                    layout: horizontal
+                    primary_info: none
+                    secondary_info: none
+                    show_temperature_control: true
+                    display_mode: buttons
+                    icon: mdi:thermometer
+                    card_mod:
+                      style: |
+                        ha-card {
+                          --ha-card-border-width: 0;
+                        }
+
+            - type: custom:mushroom-select-card
+              entity: input_select.bedroom_ac_fan_mode
+              name: 'Скорость обдува'
+              layout: horizontal
+              secondary_info: last-changed
+
+            - type: horizontal-stack
+              cards:
+                - type: custom:mushroom-entity-card
+                  entity: switch.bedroom_ac_plug
+                  name: 'Питание'
+                  tap_action:
+                    action: toggle
+                  icon_color: orange
+
+                - type: custom:mushroom-entity-card
+                  entity: sensor.bedroom_ac_plug_power
+                  name: 'Мощность'
 
   - type: vertical-stack
     title: 'Свет'
     cards:
-      - type: custom:light-entity-card
-        entity: light.bedroom_aqara_led_bulb
-        header: 'Торшер'
-        shorten_cards: true
-        brightness: true
-        color_temp: true
-        full_width_sliders: true
-        show_slider_percent: true
-        effects_list: false
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: custom:mushroom-light-card
+            entity: light.bedroom_aqara_led_bulb
+            name: 'Торшер'
+            show_brightness_control: true
+            show_color_temp_control: true
+            collapsible_controls: true
+            use_light_color: true
 
-      - type: entities
-        entities:
-          - entity: switch.bedroom_lights_switch_right
+          - type: custom:mushroom-light-card
+            entity: switch.bedroom_lights_switch_right
             name: 'Люстра'
             icon: mdi:ceiling-light
 
-      - type: entities
-        title: 'Aqara Hub'
-        show_header_toggle: false
-        entities:
-          - entity: input_number.aqara_hub_volume
-            type: custom:slider-entity-row
-            name: 'Громкость'
-            step: 2
-            hide_state: false
-          - entity: light.miio_gateway
-            type: custom:slider-entity-row
-            name: 'Яркость'
-            step: 1
-
+          - type: custom:mushroom-light-card
+            entity: light.miio_gateway
+            name: 'Aqara Hub'
+            show_brightness_control: true
+            show_color_control: true
+            collapsible_controls: true
+            use_light_color: true
+            icon: mdi:alarm-light
 
   - type: vertical-stack
     title: 'Климат'
-    cards:      
+    cards:
       - type: custom:mini-graph-card
         entities:
           - entity: sensor.bedroom_average_temperature
@@ -174,24 +221,23 @@ cards:
         lower_bound: 18
         upper_bound: 32
         color_thresholds:
-            - value: 21
-              color: '#00FFFF'
-            - value: 23
-              color: '#00FF00'
-            - value: 25
-              color: '#FFFF00'
-            - value: 27
-              color: '#FFD700'
-            - value: 29
-              color: '#FF0000'
-            - value: 35
-              color: '#800000'
+          - value: 21
+            color: '#00FFFF'
+          - value: 23
+            color: '#00FF00'
+          - value: 25
+            color: '#FFFF00'
+          - value: 27
+            color: '#FFD700'
+          - value: 29
+            color: '#FF0000'
+          - value: 35
+            color: '#800000'
         animate: true
         line_width: 2
         hour24: true
         points_per_hour: 1
         group_by: hour
-
 
       - type: custom:mini-graph-card
         entities:
@@ -216,10 +262,9 @@ cards:
         points_per_hour: 1
         group_by: hour
 
-
   - type: vertical-stack
     title: 'Качество воздуха'
-    cards:      
+    cards:
       - type: custom:mini-graph-card
         entities:
           - entity: sensor.cleargrass_air_co2

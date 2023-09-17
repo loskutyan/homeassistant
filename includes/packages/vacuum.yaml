@@ -6,26 +6,31 @@ vacuum:
           friendly_name: 'Roborock S5 Max Часов уборки до замены основной щетки'
           device_class: duration
           unit_of_measurement: 'h'
-          value_template: '{{ states(''sensor.roborock_vacuum_s5e_main_brush_left'') | float / 3600 }}'
-          availability_template: '{{ states(''sensor.roborock_vacuum_s5e_main_brush_left'') | float(-1) >= 0 }}'
+          value_template: >
+            {{ states('sensor.roborock_vacuum_s5e_main_brush_left') | float / 3600 }}
+          availability_template: >
+            {{ states('sensor.roborock_vacuum_s5e_main_brush_left') | float(-1) >= 0 }}
           icon_template: mdi:robot-vacuum
 
         vacuum_side_brush_left:
           friendly_name: 'Roborock S5 Max Часов уборки до замены боковой щетки'
           device_class: duration
           unit_of_measurement: 'h'
-          value_template: '{{ states(''sensor.roborock_vacuum_s5e_side_brush_left'') | float / 3600 }}'
-          availability_template: '{{ states(''sensor.roborock_vacuum_s5e_side_brush_left'') | float(-1) >= 0 }}'
+          value_template: >
+            {{ states('sensor.roborock_vacuum_s5e_side_brush_left') | float / 3600 }}
+          availability_template: >
+            {{ states('sensor.roborock_vacuum_s5e_side_brush_left') | float(-1) >= 0 }}
           icon_template: mdi:robot-vacuum
 
         vacuum_filter_left:
           friendly_name: 'Roborock S5 Max Часов уборки до замены фильтра'
           device_class: duration
           unit_of_measurement: 'h'
-          value_template: '{{ states(''sensor.roborock_vacuum_s5e_filter_left'') | float / 3600 }}'
-          availability_template: '{{ states(''sensor.roborock_vacuum_s5e_filter_left'') | float(-1) >= 0 }}'
+          value_template: >
+            {{ states('sensor.roborock_vacuum_s5e_filter_left') | float / 3600 }}
+          availability_template: >
+            {{ states('sensor.roborock_vacuum_s5e_filter_left') | float(-1) >= 0 }}
           icon_template: mdi:air-filter
-
 
   automation:
     - id: 'Пылесос начал уборку - уведомление'

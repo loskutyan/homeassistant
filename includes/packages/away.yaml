@@ -4,12 +4,10 @@ away:
       name: 'Дома'
       initial: 'on'
 
-
   timer:
     left_home_by_phone_presence_after_door_closed:
       name: 'Проверка присутствия телефона в сети в течение '
       duration: 1800
-
 
   sensor:
     - platform: template
@@ -22,7 +20,6 @@ away:
               'switch.kitchen_lights_switch_left',
               'switch.kitchen_lights_switch_right',
               'switch.kitchen_led_strip_switch',
-              'switch.hallway_lights_switch',
               'switch.bedroom_lights_switch_right',
               'switch.bathroom_lights_switch',
               'switch.kidsroom_nightlight_plug'
@@ -40,6 +37,7 @@ away:
             {% set lights_entities_ids = [
               'light.bedroom_aqara_led_bulb',
               'light.kidsroom_wall_aqara_led_bulbs',
+              'light.hallway_lights_switch'
             ] %}
             {{ states.light
               | selectattr('entity_id', 'in', lights_entities_ids)
@@ -61,7 +59,6 @@ away:
               | map(attribute='entity_id')
               | list
               | to_json(ensure_ascii=False) }}
-
 
   binary_sensor:
     - platform: template
@@ -101,7 +98,6 @@ away:
           value_template: >
             {{ states('sensor.heaters_list_turned_on') | from_json | length > 0 }}
 
-
   switch:
     - platform: template
       switches:
@@ -121,7 +117,6 @@ away:
             {% else %}
               mdi:home-minus
             {% endif %}
-
 
   script:
     turn_off_all_lights:
@@ -157,7 +152,6 @@ away:
                                  'Нагрев выключен - сэкономили кучу денег',
                                  'Обогреватели обесточены... но это неточно'] %}
               {{ '\U0001F525' }} {{ messages | random }}
-
 
   automation:
     - id: 'Все ушли из дома, выключаем свет'

@@ -3,7 +3,6 @@ kidsroom_air:
     kidsroom_airpurifier_favourite_speed_smart_control:
       name: 'Умное управление скоростью бризера в детской'
 
-
   input_number:
     kidsroom_airpurifier_favorite_speed:
       name: 'Установленная скорость бризера в детской'
@@ -12,7 +11,6 @@ kidsroom_air:
       step: 1
       icon: mdi:weather-windy
 
-
   input_select:
     kidsroom_airpurifier_mode:
       name: 'Режим работы бризера в детской'
@@ -20,7 +18,6 @@ kidsroom_air:
         - Auto
         - Sleep
         - Favorite
-
 
   timer:
     kidsroom_airpurifier_fixed_speed:
@@ -43,13 +40,12 @@ kidsroom_air:
       name: 'Периодическое проветривание в детской, осталось '
       duration: 3600
 
-
   switch:
     - platform: template
       switches:
         kidsroom_airpurifier_display:
           friendly_name: 'Дисплей бризера в детской'
-          value_template: '{{ is_state_attr(''fan.mijia_airpurifier_kidsroom'', ''display'', True) }}'
+          value_template: "{{ is_state_attr('fan.mijia_airpurifier_kidsroom', 'display', True) }}"
           turn_on:
             service: xiaomi_miio_airpurifier.fan_set_display_on
             entity_id: fan.mijia_airpurifier_kidsroom
@@ -60,7 +56,7 @@ kidsroom_air:
 
         kidsroom_airpurifier_buzzer:
           friendly_name: 'Звук бризера в детской'
-          value_template: '{{ is_state_attr(''fan.mijia_airpurifier_kidsroom'', ''buzzer'', True) }}'
+          value_template: "{{ is_state_attr('fan.mijia_airpurifier_kidsroom', 'buzzer', True) }}"
           turn_on:
             service: xiaomi_miio_airpurifier.fan_set_buzzer_on
             entity_id: fan.mijia_airpurifier_kidsroom
@@ -71,8 +67,8 @@ kidsroom_air:
 
         kidsroom_airpurifier_ptc:
           friendly_name: 'Нагреватель бризера в детской'
-          value_template: '{{ state_attr(''fan.mijia_airpurifier_kidsroom'', ''ptc'') }}'
-          availability_template: '{{ states(''fan.mijia_airpurifier_kidsroom'') in [''on'', ''off''] }}'
+          value_template: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'ptc') }}"
+          availability_template: "{{ states('fan.mijia_airpurifier_kidsroom') in ['on', 'off'] }}"
           turn_on:
             service: xiaomi_miio_airpurifier.fan_set_ptc_on
             entity_id: fan.mijia_airpurifier_kidsroom
@@ -118,7 +114,7 @@ kidsroom_air:
           turn_off:
             - service: input_boolean.turn_off
               entity_id: input_boolean.kidsroom_airpurifier_favourite_speed_smart_control
-          icon_template: mdi:speedometer
+          icon_template: mdi:fan-auto
 
         kidsroom_airpurifier_favourite_speed_temporary_fixed:
           friendly_name: 'Фиксированная скорость бризера в детской'
@@ -135,7 +131,6 @@ kidsroom_air:
               entity_id: timer.kidsroom_airpurifier_fixed_speed
           icon_template: mdi:speedometer
 
-
   sensor:
     - platform: template
       sensors:
@@ -143,47 +138,47 @@ kidsroom_air:
           friendly_name: 'Mi Fresh Air Kidsroom CO²'
           device_class: carbon_dioxide
           unit_of_measurement: 'ppm'
-          value_template: '{{ state_attr(''fan.mijia_airpurifier_kidsroom'', ''co2'') }}'
+          value_template: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'co2') }}"
           icon_template: mdi:molecule-co2
 
         kidsroom_airpurifier_pm25:
           friendly_name: 'Mi Fresh Air Kidsroom PM2.5'
           device_class: pm25
           unit_of_measurement: 'µg/m³'
-          value_template: '{{ state_attr(''fan.mijia_airpurifier_kidsroom'', ''pm25'') }}'
+          value_template: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'pm25') }}"
           icon_template: mdi:grain
 
         kidsroom_airpurifier_temperature:
           friendly_name: 'Mi Fresh Air Kidsroom Температура'
           device_class: temperature
           unit_of_measurement: '°C'
-          value_template: '{{ state_attr(''fan.mijia_airpurifier_kidsroom'', ''temperature'') }}'
+          value_template: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'temperature') }}"
           icon_template: mdi:thermometer
 
         kidsroom_airpurifier_current_speed:
           friendly_name: 'Mi Fresh Air Kidsroom Текущая скорость'
-          value_template: '{{ state_attr(''fan.mijia_airpurifier_kidsroom'', ''control_speed'') }}'
+          value_template: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'control_speed') }}"
           icon_template: mdi:speedometer
 
         kidsroom_airpurifier_favorite_speed:
           friendly_name: 'Mi Fresh Air Kidsroom Установленная скорость'
-          value_template: '{{ state_attr(''fan.mijia_airpurifier_kidsroom'', ''favorite_speed'') }}'
+          value_template: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'favorite_speed') }}"
           icon_template: mdi:speedometer
 
         kidsroom_airpurifier_dust_filter_life_remaining:
           friendly_name: 'Mi Fresh Air Kidsroom Состояние фильтра'
-          value_template: '{{ state_attr(''fan.mijia_airpurifier_kidsroom'', ''dust_filter_life_remaining'') }}'
+          value_template: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'dust_filter_life_remaining') }}"
           unit_of_measurement: '%'
           icon_template: mdi:air-filter
 
         kidsroom_airpurifier_dust_filter_life_remaining_days:
           friendly_name: 'Mi Fresh Air Kidsroom Дней до замены фильтра'
-          value_template: '{{ state_attr(''fan.mijia_airpurifier_kidsroom'', ''dust_filter_life_remaining_days'') }}'
+          value_template: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'dust_filter_life_remaining_days') }}"
           icon_template: mdi:air-filter
 
         kidsroom_airpurifier_preset_mode:
           friendly_name: 'Mi Fresh Air Kidsroom Режим работы'
-          value_template: '{{ state_attr(''fan.mijia_airpurifier_kidsroom'', ''preset_mode'') }}'
+          value_template: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'preset_mode') }}"
 
         kidsroom_current_target_temperature_delta:
           friendly_name: 'Разница текущей и желаемой температур в детской'
@@ -199,9 +194,8 @@ kidsroom_air:
             {% set delta_ot = states('sensor.outside_target_temperature_delta') | float %}
             {{ (delta_ct * delta_ot / ((delta_ct * delta_ot) | abs)) * min(150, ((delta_ct | abs)**1.5 * sin((min(20, delta_ot | abs)) / 20 * 3.1415926)) | round * 10) }}
 
-
         kidsroom_airpurifier_speed_min_co2:
-          value_template:  >
+          value_template: >
             {% set co2_delta = states('sensor.kidsroom_airpurifier_target_co2_delta') | float(0) %}
             {% set cooling_on = is_state('binary_sensor.kidsroom_ac_is_cooling', 'on') | int %}
             {% set heating_on = is_state('switch.kidsroom_airpurifier_ptc', 'on') | int %}
@@ -231,7 +225,7 @@ kidsroom_air:
             {{ valid_speed and valid_temp }}
 
         kidsroom_airpurifier_speed_max_co2:
-          value_template:  >
+          value_template: >
             {% set co2_delta = states('sensor.kidsroom_airpurifier_target_co2_delta') | float(0) %}
             {% set cooling_on = is_state('binary_sensor.kidsroom_ac_is_cooling', 'on') | int %}
             {% set heating_on = is_state('switch.kidsroom_airpurifier_ptc', 'on') | int %}
@@ -261,7 +255,7 @@ kidsroom_air:
             {{ valid_speed and valid_temp }}
 
         kidsroom_airpurifier_next_speed:
-          value_template:  >
+          value_template: >
             {% if states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 60 %}
               70
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 70 %}
@@ -279,10 +273,10 @@ kidsroom_air:
             {% else %}
               150
             {% endif %}
-          availability_template: '{{ states(''sensor.kidsroom_airpurifier_favorite_speed'') | float(0) >= 60 }}'
+          availability_template: "{{ states('sensor.kidsroom_airpurifier_favorite_speed') | float(0) >= 60 }}"
 
         kidsroom_airpurifier_previous_speed:
-          value_template:  >
+          value_template: >
             {% if states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 70 %}
               60
             {% elif states('sensor.kidsroom_airpurifier_favorite_speed') | float <= 80 %}
@@ -300,7 +294,7 @@ kidsroom_air:
             {% else %}
               130
             {% endif %}
-          availability_template: '{{ states(''sensor.kidsroom_airpurifier_favorite_speed'') | float(0) >= 60 }}'
+          availability_template: "{{ states('sensor.kidsroom_airpurifier_favorite_speed') | float(0) >= 60 }}"
 
         kidsroom_airpurifier_favourite_speed_needs_changes:
           value_template: >
@@ -320,14 +314,13 @@ kidsroom_air:
             {% set valid_co2 = states('sensor.qingping_air_lite_co2') | float(0) > 0 %}
             {{ valid_min_co2 and valid_max_co2 and valid_co2 }}
 
-
   binary_sensor:
     - platform: template
       sensors:
         kidsroom_airpurifier_ptc_status:
           friendly_name: 'Статус нагревателя бризера в детской'
           device_class: heat
-          value_template: '{{ is_state_attr(''fan.mijia_airpurifier_kidsroom'', ''ptc_status'', True) }}'
+          value_template: "{{ is_state_attr('fan.mijia_airpurifier_kidsroom', 'ptc_status', True) }}"
 
         kidsroom_airpurifier_favourite_speed_fixed:
           friendly_name: 'Фиксированная скорость бризера в детской'
@@ -335,7 +328,6 @@ kidsroom_air:
             {% set smart_control_off = is_state('switch.kidsroom_airpurifier_favourite_speed_smart_control', 'off') %}
             {% set tmp_fixed_speed = is_state('switch.kidsroom_airpurifier_favourite_speed_temporary_fixed', 'on') %}
             {{ smart_control_off or tmp_fixed_speed }}
-
 
   automation:
     - id: 'Выбор режима работы бризера в детской'
@@ -356,7 +348,7 @@ kidsroom_air:
           entity_id: sensor.kidsroom_airpurifier_preset_mode
       condition:
         - condition: template
-          value_template: '{{ trigger.to_state.state not in [''unknown'', ''unavailable''] }}'
+          value_template: "{{ trigger.to_state.state not in ['unknown', 'unavailable'] }}"
       action:
         - service: input_select.select_option
           entity_id: input_select.kidsroom_airpurifier_mode
@@ -643,3 +635,25 @@ kidsroom_air:
                   {{ '\U0001F4A8' }} Бризер в детской выключен.
                   {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
                   {{ '\U0000269B' }} CO2 {{ states('sensor.qingping_air_lite_co2') | int }}ppm
+
+    - id: 'Регулярное проветривание бризера в детской'
+      alias: kidsroom_periodic_ventilation
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: fan.mijia_airpurifier_kidsroom
+          from: 'on'
+          for:
+            hours: 12
+      condition:
+        - condition: state
+          entity_id: switch.somebody_home
+          state: 'off'
+        - condition: state
+          entity_id: fan.mijia_airpurifier_kidsroom
+          state: 'off'
+      action:
+        - service: switch.turn_on
+          entity_id: switch.kidsroom_airpurifier_forced_ventilation
+        - service: timer.start
+          entity_id: timer.kidsroom_periodic_ventilation

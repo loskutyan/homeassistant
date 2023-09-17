@@ -5,34 +5,28 @@ cards:
   - type: vertical-stack
     title: 'Свет'
     cards:
-      - type: glance
-        state_color: true
-        entities:
-          - entity: switch.kitchen_lights_switch_right
-            name: 'Люстра'
-            show_last_changed: true
-            icon: mdi:ceiling-light
-            tap_action:
-              action: toggle
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-light-card
+                entity: switch.kitchen_lights_switch_right
+                name: 'Люстра'
+                icon: mdi:ceiling-light
 
-          - entity: switch.kitchen_lights_switch_left
-            name: 'Бра'
-            show_last_changed: true
-            icon: mdi:coach-lamp
-            tap_action:
-              action: toggle
+              - type: custom:mushroom-light-card
+                entity: switch.kitchen_lights_switch_left
+                name: 'Бра'
+                icon: mdi:coach-lamp
 
-          - entity: switch.kitchen_led_strip_switch
-            name: 'LED подсветка'
-            show_last_changed: true
-            icon: mdi:led-strip
-            tap_action:
-              action: toggle
-
+              - type: custom:mushroom-light-card
+                entity: switch.kitchen_led_strip_switch
+                name: 'LED лента'
+                icon: mdi:led-strip
 
   - type: vertical-stack
     title: 'Климат'
-    cards:      
+    cards:
       - type: custom:mini-graph-card
         entities:
           - entity: sensor.kitchen_aqara_air_sensor_temperature
@@ -40,24 +34,23 @@ cards:
         lower_bound: 18
         upper_bound: 32
         color_thresholds:
-            - value: 21
-              color: '#00FFFF'
-            - value: 23
-              color: '#00FF00'
-            - value: 25
-              color: '#FFFF00'
-            - value: 27
-              color: '#FFD700'
-            - value: 29
-              color: '#FF0000'
-            - value: 35
-              color: '#800000'
+          - value: 21
+            color: '#00FFFF'
+          - value: 23
+            color: '#00FF00'
+          - value: 25
+            color: '#FFFF00'
+          - value: 27
+            color: '#FFD700'
+          - value: 29
+            color: '#FF0000'
+          - value: 35
+            color: '#800000'
         animate: true
         line_width: 2
         hour24: true
         points_per_hour: 1
         group_by: hour
-
 
       - type: custom:mini-graph-card
         entities:

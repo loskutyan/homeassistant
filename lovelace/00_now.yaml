@@ -3,73 +3,121 @@ icon: mdi:home-assistant
 
 cards:
   - type: vertical-stack
-    title: 'Дата и время'
+    title: 'Сейчас'
     cards:
-      - type: entities
-        show_header_toggle: false
-        entities:
-          - type: custom:multiple-entity-row
-            name: 'Сейчас'
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-entity-card
             entity: sensor.date
-            state_header: 'Дата'
-            icon: mdi:calendar-clock
-            entities:
-            - entity: sensor.sun_next_rising
-              format: relative
-              hide_unavailable: true
-            - entity: sensor.sun_next_setting
-              format: relative
-              hide_unavailable: true
-            - entity: sensor.time
-              name: 'Время'
+            name: Дата
+            layout: vertical
 
+          - type: custom:mushroom-entity-card
+            entity: sensor.time
+            name: Время
+            layout: vertical
+
+          - type: conditional
+            conditions:
+              - entity: sun.sun
+                state: below_horizon
+            card:
+              type: custom:mushroom-entity-card
+              entity: sensor.sun_next_rising
+              name: Восход солнца
+              layout: vertical
+
+          - type: conditional
+            conditions:
+              - entity: sun.sun
+                state: above_horizon
+            card:
+              type: custom:mushroom-entity-card
+              entity: sensor.sun_next_setting
+              name: Заход солнца
+              layout: vertical
 
   - type: vertical-stack
     title: 'Погода'
     cards:
-      - type: weather-forecast
-        entity: weather.yandex_weather
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: weather-forecast
+            entity: weather.yandex_weather
 
+          - type: custom:mushroom-entity-card
+            entity: switch.warm_season
+            layout: horizontal
 
   - type: vertical-stack
     title: 'Статус'
     cards:
-      - type: entities
-        entities:
-          - entity: switch.somebody_home
-          - entity: switch.bedroom_asleep
-          - entity: switch.kidsroom_asleep
-          - entity: switch.warm_season
-          - entity: switch.bathroom_valves
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: switch.somebody_home
+                layout: horizontal
+
+              - type: custom:mushroom-person-card
+                entity: person.aleksandr
+                layout: horizontal
+                secondary_info: last-changed
+                icon_type: entity-picture
+
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: switch.bedroom_asleep
+                icon_color: orange
+
+              - type: custom:mushroom-entity-card
+                entity: switch.kidsroom_asleep
+                icon_color: orange
+
+          - type: custom:mushroom-entity-card
+            entity: switch.bathroom_valves
+            layout: horizontal
+
+          - type: custom:mushroom-number-card
+            entity: input_number.aqara_hub_volume
+            name: 'Aqara Hub'
+            layout: horizontal
 
       - type: conditional
         conditions:
-          - entity: binary_sensor.any_software_updates_available
+          - entity: binary_sensor.hacs_updates_available
             state: 'on'
         card:
-          type: entities
-          entities:
-            - type: conditional
-              conditions:
-                - entity: binary_sensor.home_assistant_versions_update_available
-                  state: 'on'
-              row:
-                type: custom:multiple-entity-row
-                entity: sensor.current_version
-                name: 'Версия Home Assistant'
-                show_state: false
-                entities:
-                  - entity: sensor.current_version
-                    name: 'Текущая'
-                  - entity: sensor.home_assistant_versions
-                    name: 'Последняя'
-            - type: conditional
-              conditions:
-                - entity: binary_sensor.hacs_updates_available
-                  state: 'on'
-              row:
-                entity: sensor.hacs
-                name: 'Обновления HACS'
+          type: custom:mushroom-update-card
+          entity: sensor.hacs
+          name: 'Обновления HACS (old)'
+
+      - type: conditional
+        conditions:
+          - entity: update.home_assistant_core_update
+            state: 'on'
+        card:
+          type: custom:mushroom-update-card
+          entity: update.home_assistant_core_update
+
+      - type: conditional
+        conditions:
+          - entity: update.home_assistant_supervisor_update
+            state: 'on'
+        card:
+          type: custom:mushroom-update-card
+          entity: update.home_assistant_supervisor_update
+
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.hacs_updates_available
+            state: 'on'
+        card:
+          type: custom:mushroom-update-card
+          entity: sensor.hacs
+          name: 'Обновления HACS'
 
       - type: conditional
         conditions:
@@ -135,12 +183,10 @@ cards:
           exclude:
             - state: '> 25'
 
-
   - type: vertical-stack
     title: 'Климат и качество воздуха'
     cards:
-      - type: custom:stack-in-card
-        mode: vertical
+      - type: custom:vertical-stack-in-card
         cards:
           - type: entities
             entities:
@@ -154,7 +200,7 @@ cards:
                     name: 'Спальня'
                     tap_action:
                       action: toggle
-                  
+
                   - icon: mdi:bed
                     state_color: true
                     name: 'Детская'
@@ -179,7 +225,7 @@ cards:
                       name: 'Спальня'
                       tap_action:
                         action: toggle
-                    
+
                     - icon: mdi:bed
                       state_color: true
                       name: 'Детская'
@@ -204,7 +250,7 @@ cards:
                       name: 'Спальня'
                       tap_action:
                         action: toggle
-                    
+
                     - icon: mdi:bed
                       state_color: true
                       name: 'Детская'

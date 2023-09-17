@@ -4,8 +4,7 @@ cards:
   - type: vertical-stack
     title: 'Счетчики и недоступные сущности'
     cards:
-      - type: custom:stack-in-card
-        mode: vertical
+      - type: custom:vertical-stack-in-card
         cards:
           - type: entities
             show_header_toggle: false
@@ -34,7 +33,7 @@ cards:
                   options:
                     secondary_info: last-changed
 
-          - type: entities         
+          - type: entities
             show_header_toggle: false
             entities:
               - entity: sensor.scripts_count
@@ -61,20 +60,20 @@ cards:
                   options:
                     secondary_info: last-changed
 
-          - type: entities         
+          - type: entities
             show_header_toggle: false
             entities:
-            - entity: sensor.lights_count
-              type: custom:multiple-entity-row
-              name: 'Светильники'
-              state_header: 'Всего'
-              entities:
-                - entity: sensor.lights_on_count
-                  name: 'Активно'
-                - entity: sensor.lights_off_count
-                  name: 'Отключено'
-                - entity: sensor.lights_unavailable_count
-                  name: 'Недоступно'
+              - entity: sensor.lights_count
+                type: custom:multiple-entity-row
+                name: 'Светильники'
+                state_header: 'Всего'
+                entities:
+                  - entity: sensor.lights_on_count
+                    name: 'Активно'
+                  - entity: sensor.lights_off_count
+                    name: 'Отключено'
+                  - entity: sensor.lights_unavailable_count
+                    name: 'Недоступно'
 
           - type: custom:auto-entities
             show_empty: false
@@ -115,7 +114,7 @@ cards:
                   options:
                     secondary_info: last-changed
 
-          - type: entities      
+          - type: entities
             show_header_toggle: false
             entities:
               - entity: sensor.sensors_unavailable_count
@@ -138,7 +137,7 @@ cards:
                 - entity_id: 'sensor.dishwasher_duration'
                 - entity_id: 'sensor.cubeserver_parity_finish_timestamp'
 
-          - type: entities      
+          - type: entities
             show_header_toggle: false
             entities:
               - entity: sensor.binary_sensors_unavailable_count
@@ -155,12 +154,10 @@ cards:
                   options:
                     secondary_info: last-changed
 
-
   - type: vertical-stack
     title: 'Свет'
     cards:
-      - type: custom:stack-in-card
-        mode: vertical
+      - type: custom:vertical-stack-in-card
         cards:
           - type: custom:auto-entities
             show_empty: false
@@ -168,7 +165,7 @@ cards:
               type: entities
               show_header_toggle: false
             filter:
-              template: '{{ states(''sensor.lights_switches_list_turned_on'') | from_json }}'
+              template: "{{ states('sensor.lights_switches_list_turned_on') | from_json }}"
 
           - type: custom:auto-entities
             show_empty: false
@@ -176,7 +173,7 @@ cards:
               type: entities
               show_header_toggle: false
             filter:
-              template: '{{ states(''sensor.lights_list_turned_on'') | from_json }}'
+              template: "{{ states('sensor.lights_list_turned_on') | from_json }}"
               options:
                 type: custom:multiple-entity-row
                 toggle: true
@@ -187,12 +184,10 @@ cards:
                   - attribute: color_temp
                     name: 'Температура'
 
-
   - type: vertical-stack
     title: 'Таймеры'
     cards:
-      - type: custom:stack-in-card
-        mode: vertical
+      - type: custom:vertical-stack-in-card
         cards:
           - type: custom:auto-entities
             show_empty: false
@@ -206,12 +201,10 @@ cards:
                   options:
                     secondary_info: last-changed
 
-
   - type: vertical-stack
     title: 'Аварийные датчики'
     cards:
-      - type: custom:stack-in-card
-        mode: vertical
+      - type: custom:vertical-stack-in-card
         cards:
           - type: custom:auto-entities
             show_empty: false
@@ -225,20 +218,18 @@ cards:
                   attributes:
                     device_class: 'moisture'
                   options:
-                      secondary_info: last-changed
+                    secondary_info: last-changed
                 - domain: binary_sensor
                   state: 'on'
                   attributes:
                     device_class: 'smoke'
                   options:
-                      secondary_info: last-changed
-
+                    secondary_info: last-changed
 
   - type: vertical-stack
     title: 'Движение и присутствие'
     cards:
-      - type: custom:stack-in-card
-        mode: vertical
+      - type: custom:vertical-stack-in-card
         cards:
           - type: custom:auto-entities
             card:

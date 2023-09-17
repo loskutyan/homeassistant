@@ -52,6 +52,7 @@ alarm:
       sensors:
         water_leak_detected:
           friendly_name: 'Обнаружена протечка'
+          device_class: moisture
           value_template: >
             {% set found_water_leaks = states('sensor.found_water_leaks') %}
             {% if found_water_leaks != 'unknown' %}
@@ -59,10 +60,10 @@ alarm:
             {% else %}
               false
             {% endif %}
-          device_class: moisture
 
         smoke_detected:
           friendly_name: 'Обнаружено задымление'
+          device_class: smoke
           value_template: >
             {% set found_smokes = states('sensor.found_smokes') %}
             {% if found_smokes != 'unknown' %}
@@ -70,13 +71,12 @@ alarm:
             {% else %}
               false
             {% endif %}
-          device_class: smoke
 
         ups_not_fine:
           friendly_name: 'Проблема с ИБП'
+          device_class: problem
           value_template: >
             {{ states('sensor.ups_status') not in ['Online', 'Online Battery Charging', 'On Battery Battery Discharging'] }}
-          device_class: problem
 
         ups_powered_by_battery:
           friendly_name: 'ИБП работает от аккумулятора'
