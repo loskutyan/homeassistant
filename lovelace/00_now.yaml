@@ -188,75 +188,161 @@ cards:
     cards:
       - type: custom:vertical-stack-in-card
         cards:
-          - type: entities
-            entities:
-              - type: custom:multiple-entity-row
-                name: 'Проветривание'
-                entity: switch.bedroom_airpurifier_forced_ventilation
-                show_state: false
-                entities:
-                  - icon: mdi:bed-king
-                    state_color: true
-                    name: 'Спальня'
-                    tap_action:
-                      action: toggle
+          - type: horizontal-stack
+            cards:
+              - type: custom:vertical-stack-in-card
+                cards:
+                  - type: custom:mushroom-title-card
+                    subtitle: 'Проветривание'
+                    alignment: center
+                    style: |
+                      ha-card {
+                        --subtitle-font-weight: bold;
+                        --subtitle-line-height: 1.2;
+                        --title-padding: 0 0 10px;
+                      }
 
-                  - icon: mdi:bed
-                    state_color: true
-                    name: 'Детская'
-                    entity: switch.kidsroom_airpurifier_forced_ventilation
-                    tap_action:
-                      action: toggle
+                  - type: custom:mushroom-chips-card
+                    alignment: center
+                    chips:
+                      - type: template
+                        entity: switch.bedroom_airpurifier_forced_ventilation
+                        tap_action:
+                          action: toggle
+                        icon: mdi:bed-king
+                        icon_color: >
+                          {% if is_state ('switch.bedroom_airpurifier_forced_ventilation', 'on') %}
+                            amber
+                          {% else %}
+                            disabled
+                          {% endif %}
 
-          - type: conditional
-            conditions:
-              - entity: switch.warm_season
-                state: 'on'
-            card:
-              type: entities
-              entities:
-                - type: custom:multiple-entity-row
-                  name: 'Охлаждение'
-                  entity: switch.bedroom_cooling
-                  show_state: false
-                  entities:
-                    - icon: mdi:bed-king
-                      state_color: true
-                      name: 'Спальня'
-                      tap_action:
-                        action: toggle
+                      - type: template
+                        entity: switch.kidsroom_airpurifier_forced_ventilation
+                        tap_action:
+                          action: toggle
+                        icon: mdi:bed
+                        icon_color: >
+                          {% if is_state ('switch.kidsroom_airpurifier_forced_ventilation', 'on') %}
+                            amber
+                          {% else %}
+                            disabled
+                          {% endif %}
+                    style: |
+                      ha-card {
+                        --chip-height: 40px;
+                        --chip-border-radius: 20px;
+                        --chip-icon-size: 0.6em;
+                      }
 
-                    - icon: mdi:bed
-                      state_color: true
-                      name: 'Детская'
-                      entity: switch.kidsroom_cooling
-                      tap_action:
-                        action: toggle
+              - type: conditional
+                conditions:
+                  - entity: switch.warm_season
+                    state: 'on'
+                card:
+                  type: custom:vertical-stack-in-card
+                  cards:
+                    - type: custom:mushroom-title-card
+                      subtitle: 'Охлаждение'
+                      alignment: center
+                      style: |
+                        ha-card {
+                          --subtitle-font-weight: bold;
+                          --subtitle-line-height: 1.2;
+                          --title-padding: 0 0 10px;
+                        }
 
-          - type: conditional
-            conditions:
-              - entity: switch.warm_season
-                state: 'off'
-            card:
-              type: entities
-              entities:
-                - type: custom:multiple-entity-row
-                  name: 'Подогрев'
-                  entity: switch.bedroom_airpurifier_ptc
-                  show_state: false
-                  entities:
-                    - icon: mdi:bed-king
-                      state_color: true
-                      name: 'Спальня'
-                      tap_action:
-                        action: toggle
+                    - type: custom:mushroom-chips-card
+                      alignment: center
+                      chips:
+                        - type: template
+                          entity: switch.bedroom_cooling
+                          tap_action:
+                            action: toggle
+                          icon: mdi:bed-king
+                          icon_color: >
+                            {% if is_state ('switch.bedroom_cooling', 'on') %}
+                              amber
+                            {% else %}
+                              disabled
+                            {% endif %}
 
-                    - icon: mdi:bed
-                      state_color: true
-                      name: 'Детская'
-                      entity: switch.kidsroom_airpurifier_ptc
-                      tap_action:
-                        action: toggle
+                        - type: template
+                          entity: switch.kidsroom_cooling
+                          tap_action:
+                            action: toggle
+                          icon: mdi:bed
+                          icon_color: >
+                            {% if is_state ('switch.kidsroom_cooling', 'on') %}
+                              amber
+                            {% else %}
+                              disabled
+                            {% endif %}
+                      style: |
+                        ha-card {
+                          --chip-height: 40px;
+                          --chip-border-radius: 20px;
+                          --chip-icon-size: 0.6em;
+                        }
+
+              - type: conditional
+                conditions:
+                  - entity: switch.warm_season
+                    state: 'off'
+                card:
+                  type: custom:vertical-stack-in-card
+                  cards:
+                    - type: custom:mushroom-title-card
+                      subtitle: 'Подогрев'
+                      alignment: center
+                      style: |
+                        ha-card {
+                          --subtitle-font-weight: bold;
+                          --subtitle-line-height: 1.2;
+                          --title-padding: 0 0 10px;
+                        }
+
+                    - type: custom:mushroom-chips-card
+                      alignment: center
+                      chips:
+                        - type: template
+                          entity: switch.bedroom_airpurifier_ptc
+                          tap_action:
+                            action: toggle
+                          icon: mdi:bed-king
+                          icon_color: >
+                            {% if is_state ('switch.bedroom_airpurifier_ptc', 'on') %}
+                              accent
+                            {% else %}
+                              disabled
+                            {% endif %}
+
+                        - type: template
+                          entity: switch.kidsroom_airpurifier_ptc
+                          tap_action:
+                            action: toggle
+                          icon: mdi:bed
+                          icon_color: >
+                            {% if is_state ('switch.kidsroom_airpurifier_ptc', 'on') %}
+                              accent
+                            {% else %}
+                              disabled
+                            {% endif %}
+                      style: |
+                        ha-card {
+                          --chip-height: 40px;
+                          --chip-border-radius: 20px;
+                          --chip-icon-size: 0.6em;
+                        }
+                  style: |
+                    ha-card {
+                      border-width: 0;
+                    }
+        style: |
+          ha-card {
+            padding-top: 24px;
+            padding-bottom: 16px;
+          }
 
       - type: conditional
         conditions:

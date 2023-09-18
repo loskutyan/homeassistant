@@ -19,12 +19,14 @@ cards:
                 name: 'Проветривание'
                 tap_action:
                   action: toggle
+                icon_color: amber
 
           - type: custom:mushroom-select-card
             entity: input_select.bedroom_airpurifier_mode
             name: 'Режим работы'
             layout: horizontal
             secondary_info: last-changed
+            icon_color: green
 
           - type: horizontal-stack
             cards:
@@ -42,6 +44,7 @@ cards:
                 layout: horizontal
                 tap_action:
                   action: toggle
+                icon_color: amber
 
           - type: horizontal-stack
             cards:
@@ -49,6 +52,7 @@ cards:
                 entity: sensor.bedroom_airpurifier_current_speed
                 name: 'Текущая скорость'
                 layout: horizontal
+                icon_color: green
 
               - type: conditional
                 conditions:
@@ -62,11 +66,11 @@ cards:
                   name: 'Заданная скорость'
                   layout: horizontal
                   icon_type: none
-                  card_mod:
-                    style: |
-                      ha-card {
-                        --ha-card-border-width: 0;
-                      }
+                  icon_color: amber
+                  style: |
+                    ha-card { 
+                      border-width: 0;
+                    }
 
           - type: horizontal-stack
             cards:
@@ -76,14 +80,14 @@ cards:
                 layout: horizontal
                 tap_action:
                   action: toggle
-                icon_color: orange
+                icon_color: accent
 
               - type: custom:mushroom-entity-card
                 entity: binary_sensor.bedroom_airpurifier_ptc_status
                 name: 'Статус'
                 layout: horizontal
                 secondary_info: last-changed
-                icon_color: orange
+                icon_color: accent
 
       - type: conditional
         conditions:
@@ -117,11 +121,10 @@ cards:
                     name: 'Автом. охлаждение'
                     tap_action:
                       action: toggle
-                    card_mod:
-                      style: |
-                        ha-card {
-                          --ha-card-border-width: 0;
-                        }
+                    style: |
+                      ha-card { 
+                        border-width: 0;
+                      }
 
                 - type: conditional
                   conditions:
@@ -138,11 +141,10 @@ cards:
                     secondary_info: none
                     display_mode: buttons
                     icon: mdi:thermometer-auto
-                    card_mod:
-                      style: |
-                        ha-card {
-                          --ha-card-border-width: 0;
-                        }
+                    style: |
+                      ha-card { 
+                        border-width: 0;
+                      }
 
                 - type: conditional
                   conditions:
@@ -159,11 +161,10 @@ cards:
                     show_temperature_control: true
                     display_mode: buttons
                     icon: mdi:thermometer
-                    card_mod:
-                      style: |
-                        ha-card {
-                          --ha-card-border-width: 0;
-                        }
+                    style: |
+                      ha-card { 
+                        border-width: 0;
+                      }
 
             - type: custom:mushroom-select-card
               entity: input_select.bedroom_ac_fan_mode
@@ -178,7 +179,7 @@ cards:
                   name: 'Питание'
                   tap_action:
                     action: toggle
-                  icon_color: orange
+                  icon_color: amber
 
                 - type: custom:mushroom-entity-card
                   entity: sensor.bedroom_ac_plug_power
