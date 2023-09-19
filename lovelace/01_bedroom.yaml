@@ -14,19 +14,22 @@ cards:
                 entity: fan.mijia_airpurifier_bedroom
                 name: 'Состояние'
 
-              - type: custom:mushroom-entity-card
-                entity: switch.bedroom_airpurifier_forced_ventilation
-                name: 'Проветривание'
-                tap_action:
-                  action: toggle
-                icon_color: amber
-
-          - type: custom:mushroom-select-card
-            entity: input_select.bedroom_airpurifier_mode
-            name: 'Режим работы'
-            layout: horizontal
-            secondary_info: last-changed
-            icon_color: green
+              - type: custom:button-card
+                template: mushroom_mode_control_3buttons
+                entity: input_select.bedroom_airpurifier_mode
+                variables:
+                  mode1_value: 'Auto'
+                  mode1_icon: mdi:auto-mode
+                  mode1_color: rgb(43, 154, 249)
+                  mode1_background_color: rgba(43, 154, 249, 0.2)
+                  mode2_value: 'Sleep'
+                  mode2_icon: mdi:weather-night
+                  mode2_color: rgb(255, 193, 7)
+                  mode2_background_color: rgba(255, 193, 7, 0.2)
+                  mode3_value: 'Favorite'
+                  mode3_icon: mdi:heart
+                  mode3_color: rgb(76, 175, 80)
+                  mode3_background_color: rgba(76, 175, 80, 0.2)
 
           - type: horizontal-stack
             cards:
@@ -39,9 +42,9 @@ cards:
                 icon_color: green
 
               - type: custom:mushroom-entity-card
-                entity: switch.bedroom_airpurifier_favourite_speed_temporary_fixed
-                name: 'Фикс. скорость'
-                layout: horizontal
+                entity: switch.bedroom_airpurifier_forced_ventilation
+                name: 'Проветривание'
+                secondary_info: last-changed
                 tap_action:
                   action: toggle
                 icon_color: amber
@@ -54,23 +57,30 @@ cards:
                 layout: horizontal
                 icon_color: green
 
-              - type: conditional
-                conditions:
-                  - entity: input_select.bedroom_airpurifier_mode
-                    state: 'Favorite'
-                  - entity: binary_sensor.bedroom_airpurifier_favourite_speed_fixed
-                    state: 'on'
-                card:
-                  type: custom:mushroom-number-card
-                  entity: input_number.bedroom_airpurifier_favorite_speed
-                  name: 'Заданная скорость'
-                  layout: horizontal
-                  icon_type: none
-                  icon_color: amber
-                  style: |
-                    ha-card { 
-                      border-width: 0;
-                    }
+              - type: custom:mushroom-entity-card
+                entity: switch.bedroom_airpurifier_favourite_speed_temporary_fixed
+                name: 'Фикс. скорость'
+                layout: horizontal
+                tap_action:
+                  action: toggle
+                icon_color: amber
+
+          - type: conditional
+            conditions:
+              - entity: input_select.bedroom_airpurifier_mode
+                state: 'Favorite'
+              - entity: binary_sensor.bedroom_airpurifier_favourite_speed_fixed
+                state: 'on'
+            card:
+              type: custom:mushroom-number-card
+              entity: input_number.bedroom_airpurifier_favorite_speed
+              name: 'Заданная скорость'
+              layout: horizontal
+              icon_color: amber
+              style: |
+                ha-card { 
+                  border-width: 0;
+                }
 
           - type: horizontal-stack
             cards:

@@ -13,35 +13,28 @@ homeassistant:
   customize: !include customize.yaml
   packages: !include_dir_merge_named includes/packages
 
-
 logger:
   default: info
   logs:
-     libav.rtsp: critical
-
+    libav.rtsp: critical
 
 http:
   use_x_forwarded_for: true
   trusted_proxies:
     - !secret cubeserver_ip
 
-
 miio_gateway:
   host: 192.168.1.20
   port: 54321
-
 
 duckdns:
   domain: !secret duckdns_domain
   access_token: !secret duckdns_access_token
 
-
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
-
 homekit: !include includes/homekit.yaml
-
 
 lovelace:
   mode: yaml
@@ -72,12 +65,12 @@ lovelace:
       type: module
     - url: /hacsfiles/lovelace-card-mod/card-mod.js
       type: module
-
+    - url: /hacsfiles/button-card/button-card.js
+      type: module
 
 # Text to speech
 tts:
   - platform: google_translate
-
 
 influxdb:
   host: !secret cubeserver_influxdb_host
@@ -85,17 +78,14 @@ influxdb:
   exclude:
     entity_globs: '*'
 
-
 telegram_bot:
   - platform: polling
     api_key: !secret tg_bot_api_key
     allowed_chat_ids:
       - !secret chat_id_loskutyan
 
-
 smartir:
   check_updates: false
-
 
 notify: !include includes/notify.yaml
 recorder: !include includes/recorder.yaml

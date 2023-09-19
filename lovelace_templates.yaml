@@ -1,0 +1,92 @@
+mushroom_button:
+  variables:
+    color: var(--primary-text-color)
+    background_color: rgba(var(--rgb-primary-text-color), 0.05)
+  styles:
+    card:
+      - box-shadow: none
+      - min-width: 42px
+      - height: 42px
+      - padding: 0
+      - border-radius: 12px
+      - border-width: 0
+      - background-color: '[[[ return variables.background_color ]]]'
+      - color: '[[[ return variables.color ]]]'
+    name:
+      - font-weight: bold
+    icon:
+      - width: 20px
+      - color: '[[[ return variables.color ]]]'
+
+mushroom_mode_control_3buttons:
+  show_name: false
+  show_icon: false
+  styles:
+    card:
+      - box-shadow: none
+      - margin: 0
+      - padding: 12px
+      - border-radius: 12px
+      - border-width: 0
+      - '--mdc-ripple-press-opacity': 0
+    grid:
+      - grid-template-areas: >-
+          'rest mode1 mode2 mode3'
+      - grid-template-columns: >-
+          1fr min-content min-content min-content
+      - grid-template-rows: min-content
+    custom_fields:
+      mode1:
+        - display: 'block'
+      mode2:
+        - margin-left: 12px
+        - display: 'block'
+      mode3:
+        - margin-left: 12px
+        - display: 'block'
+  custom_fields:
+    mode1:
+      card:
+        type: custom:button-card
+        template: mushroom_button
+        icon: '[[[ return variables.mode1_icon ]]]'
+        variables:
+          background_color: '[[[ return (entity.state == variables.mode1_value) ? variables.mode1_background_color : "rgba(var(--rgb-primary-text-color), 0.05)" ]]]'
+          color: '[[[ return (entity.state == variables.mode1_value) ? variables.mode1_color : "var(--rgb-primary-text-color)" ]]]'
+        tap_action:
+          action: call-service
+          service: input_select.select_option
+          data:
+            option: '[[[ return variables.mode1_value ]]]'
+          target:
+            entity_id: '[[[ return entity.entity_id ]]]'
+    mode2:
+      card:
+        type: custom:button-card
+        template: mushroom_button
+        icon: '[[[ return variables.mode2_icon ]]]'
+        variables:
+          background_color: '[[[ return (entity.state == variables.mode2_value) ? variables.mode2_background_color : "rgba(var(--rgb-primary-text-color), 0.05)" ]]]'
+          color: '[[[ return (entity.state == variables.mode2_value) ? variables.mode2_color : "var(--rgb-primary-text-color)" ]]]'
+        tap_action:
+          action: call-service
+          service: input_select.select_option
+          data:
+            option: '[[[ return variables.mode2_value ]]]'
+          target:
+            entity_id: '[[[ return entity.entity_id ]]]'
+    mode3:
+      card:
+        type: custom:button-card
+        template: mushroom_button
+        icon: '[[[ return variables.mode3_icon ]]]'
+        variables:
+          background_color: '[[[ return (entity.state == variables.mode3_value) ? variables.mode3_background_color : "rgba(var(--rgb-primary-text-color), 0.05)" ]]]'
+          color: '[[[ return (entity.state == variables.mode3_value) ? variables.mode3_color : "var(--rgb-primary-text-color)" ]]]'
+        tap_action:
+          action: call-service
+          service: input_select.select_option
+          data:
+            option: '[[[ return variables.mode3_value ]]]'
+          target:
+            entity_id: '[[[ return entity.entity_id ]]]'
