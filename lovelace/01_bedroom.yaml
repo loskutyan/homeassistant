@@ -18,18 +18,18 @@ cards:
                 template: mushroom_mode_control_3buttons
                 entity: input_select.bedroom_airpurifier_mode
                 variables:
-                  mode1_value: 'Auto'
-                  mode1_icon: mdi:auto-mode
-                  mode1_color: rgb(43, 154, 249)
-                  mode1_background_color: rgba(43, 154, 249, 0.2)
+                  mode1_value: 'Favorite'
+                  mode1_icon: mdi:heart
+                  mode1_color: rgb(76, 175, 80)
+                  mode1_background_color: rgba(76, 175, 80, 0.2)
                   mode2_value: 'Sleep'
                   mode2_icon: mdi:weather-night
                   mode2_color: rgb(255, 193, 7)
                   mode2_background_color: rgba(255, 193, 7, 0.2)
-                  mode3_value: 'Favorite'
-                  mode3_icon: mdi:heart
-                  mode3_color: rgb(76, 175, 80)
-                  mode3_background_color: rgba(76, 175, 80, 0.2)
+                  mode3_value: 'Auto'
+                  mode3_icon: mdi:auto-mode
+                  mode3_color: rgb(43, 154, 249)
+                  mode3_background_color: rgba(43, 154, 249, 0.2)
 
           - type: horizontal-stack
             cards:

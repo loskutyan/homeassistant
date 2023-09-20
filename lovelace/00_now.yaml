@@ -192,157 +192,92 @@ cards:
             cards:
               - type: custom:vertical-stack-in-card
                 cards:
-                  - type: custom:mushroom-title-card
-                    subtitle: 'Проветривание'
-                    alignment: center
-                    style: |
-                      ha-card {
-                        --subtitle-font-weight: bold;
-                        --subtitle-line-height: 1.2;
-                        --title-padding: 0 0 10px;
-                      }
+                  - type: horizontal-stack
+                    cards:
+                      - type: custom:mushroom-template-card
+                        primary: 'Проветривание'
+                        layout: horizontal
+                        fill_container: True
 
-                  - type: custom:mushroom-chips-card
-                    alignment: center
-                    chips:
-                      - type: template
+                      - type: custom:button-card
+                        template: mushroom_switch_button
                         entity: switch.bedroom_airpurifier_forced_ventilation
-                        tap_action:
-                          action: toggle
-                        icon: mdi:bed-king
-                        icon_color: >
-                          {% if is_state ('switch.bedroom_airpurifier_forced_ventilation', 'on') %}
-                            amber
-                          {% else %}
-                            disabled
-                          {% endif %}
+                        variables:
+                          icon: mdi:bed-king
+                          color: rgb(76, 175, 80)
+                          background_color: rgba(76, 175, 80, 0.2)
 
-                      - type: template
+                      - type: custom:button-card
+                        template: mushroom_switch_button
                         entity: switch.kidsroom_airpurifier_forced_ventilation
-                        tap_action:
-                          action: toggle
-                        icon: mdi:bed
-                        icon_color: >
-                          {% if is_state ('switch.kidsroom_airpurifier_forced_ventilation', 'on') %}
-                            amber
-                          {% else %}
-                            disabled
-                          {% endif %}
-                    style: |
-                      ha-card {
-                        --chip-height: 40px;
-                        --chip-border-radius: 20px;
-                        --chip-icon-size: 0.6em;
-                      }
+                        variables:
+                          icon: mdi:bed
+                          color: rgb(76, 175, 80)
+                          background_color: rgba(76, 175, 80, 0.2)
 
-              - type: conditional
-                conditions:
-                  - entity: switch.warm_season
-                    state: 'on'
-                card:
-                  type: custom:vertical-stack-in-card
-                  cards:
-                    - type: custom:mushroom-title-card
-                      subtitle: 'Охлаждение'
-                      alignment: center
-                      style: |
-                        ha-card {
-                          --subtitle-font-weight: bold;
-                          --subtitle-line-height: 1.2;
-                          --title-padding: 0 0 10px;
-                        }
+                  - type: conditional
+                    conditions:
+                      - entity: switch.warm_season
+                        state: 'on'
+                    card:
+                      type: horizontal-stack
+                      cards:
+                        - type: custom:mushroom-template-card
+                          primary: 'Охлаждение'
+                          layout: horizontal
+                          fill_container: True
+                          style: |
+                            ha-card { 
+                              border-width: 0;
+                            }
 
-                    - type: custom:mushroom-chips-card
-                      alignment: center
-                      chips:
-                        - type: template
+                        - type: custom:button-card
+                          template: mushroom_switch_button
                           entity: switch.bedroom_cooling
-                          tap_action:
-                            action: toggle
-                          icon: mdi:bed-king
-                          icon_color: >
-                            {% if is_state ('switch.bedroom_cooling', 'on') %}
-                              amber
-                            {% else %}
-                              disabled
-                            {% endif %}
+                          variables:
+                            icon: mdi:bed-king
+                            color: rgb(43, 154, 249)
+                            background_color: rgba(43, 154, 249, 0.2)
 
-                        - type: template
+                        - type: custom:button-card
+                          template: mushroom_switch_button
                           entity: switch.kidsroom_cooling
-                          tap_action:
-                            action: toggle
-                          icon: mdi:bed
-                          icon_color: >
-                            {% if is_state ('switch.kidsroom_cooling', 'on') %}
-                              amber
-                            {% else %}
-                              disabled
-                            {% endif %}
-                      style: |
-                        ha-card {
-                          --chip-height: 40px;
-                          --chip-border-radius: 20px;
-                          --chip-icon-size: 0.6em;
-                        }
+                          variables:
+                            icon: mdi:bed
+                            color: rgb(43, 154, 249)
+                            background_color: rgba(43, 154, 249, 0.2)
 
-              - type: conditional
-                conditions:
-                  - entity: switch.warm_season
-                    state: 'off'
-                card:
-                  type: custom:vertical-stack-in-card
-                  cards:
-                    - type: custom:mushroom-title-card
-                      subtitle: 'Подогрев'
-                      alignment: center
-                      style: |
-                        ha-card {
-                          --subtitle-font-weight: bold;
-                          --subtitle-line-height: 1.2;
-                          --title-padding: 0 0 10px;
-                        }
+                  - type: conditional
+                    conditions:
+                      - entity: switch.warm_season
+                        state: 'off'
+                    card:
+                      type: horizontal-stack
+                      cards:
+                        - type: custom:mushroom-template-card
+                          primary: 'Подогрев'
+                          layout: horizontal
+                          fill_container: True
+                          style: |
+                            ha-card { 
+                              border-width: 0;
+                            }
 
-                    - type: custom:mushroom-chips-card
-                      alignment: center
-                      chips:
-                        - type: template
+                        - type: custom:button-card
+                          template: mushroom_switch_button
                           entity: switch.bedroom_airpurifier_ptc
-                          tap_action:
-                            action: toggle
-                          icon: mdi:bed-king
-                          icon_color: >
-                            {% if is_state ('switch.bedroom_airpurifier_ptc', 'on') %}
-                              accent
-                            {% else %}
-                              disabled
-                            {% endif %}
+                          variables:
+                            icon: mdi:bed-king
+                            color: rgb(255, 152, 0)
+                            background_color: rgba(255, 152, 0, 0.2)
 
-                        - type: template
+                        - type: custom:button-card
+                          template: mushroom_switch_button
                           entity: switch.kidsroom_airpurifier_ptc
-                          tap_action:
-                            action: toggle
-                          icon: mdi:bed
-                          icon_color: >
-                            {% if is_state ('switch.kidsroom_airpurifier_ptc', 'on') %}
-                              accent
-                            {% else %}
-                              disabled
-                            {% endif %}
-                      style: |
-                        ha-card {
-                          --chip-height: 40px;
-                          --chip-border-radius: 20px;
-                          --chip-icon-size: 0.6em;
-                        }
-                  style: |
-                    ha-card {
-                      border-width: 0;
-                    }
-        style: |
-          ha-card {
-            padding-top: 24px;
-            padding-bottom: 16px;
-          }
+                          variables:
+                            icon: mdi:bed
+                            color: rgb(255, 152, 0)
+                            background_color: rgba(255, 152, 0, 0.2)
 
       - type: conditional
         conditions:
