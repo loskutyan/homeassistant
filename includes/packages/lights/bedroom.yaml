@@ -4,7 +4,6 @@ bedroom_lights:
       name: 'Утренний режим лампы закончится через '
       duration: 1800
 
-
   sensor:
     - platform: template
       sensors:
@@ -34,7 +33,6 @@ bedroom_lights:
               {{ 0.9 * (max_temp  - min_temp) + min_temp }}
             {% endif %}
 
-
   script:
     bedroom_aqara_led_bulb_wakeup_dimming:
       alias: 'Диммирование лампы Aqara утром в спальне'
@@ -63,15 +61,14 @@ bedroom_lights:
                   transition: 3
               - delay: 00:01:00
 
-
   automation:
     - id: 'Включение/выключение люстры в спальне'
       alias: bedroom_main_lights_toggle
       initial_state: true
       trigger:
         - platform: state
-          entity_id: sensor.bedroom_aqara_cube_action
-          to: 'fall'
+          entity_id: sensor.bedroom_nightstand_switch_action
+          to: 'single_left'
       action:
         - service: switch.toggle
           entity_id: switch.bedroom_lights_switch_right
@@ -84,8 +81,8 @@ bedroom_lights:
           entity_id: sensor.bedroom_lights_switch_action
           to: 'single_left'
         - platform: state
-          entity_id: sensor.bedroom_aqara_cube_action
-          to: 'flip90'
+          entity_id: sensor.bedroom_nightstand_switch_action
+          to: 'single_right'
       action:
         - service: light.toggle
           entity_id: light.bedroom_aqara_led_bulb
