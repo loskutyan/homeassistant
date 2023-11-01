@@ -35,7 +35,8 @@ away:
           friendly_name: 'Список включенных светильников'
           value_template: >
             {% set lights_entities_ids = [
-              'light.bedroom_aqara_led_bulb',
+              'light.bedroom_floor_aqara_led_bulb',
+              'light.bedroom_nightstand_aqara_led_bulb',
               'light.kidsroom_wall_aqara_led_bulbs',
               'light.hallway_lights_switch'
             ] %}

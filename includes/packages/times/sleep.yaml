@@ -9,6 +9,17 @@ sleep_time:
     bedroom_waking_up:
       name: 'Просыпаемся в спальне'
 
+  sensor:
+    - platform: template
+      sensors:
+        kidsroom_wakeup_time:
+          value_template: >
+            {% set is_weekend = is_state('binary_sensor.workday_sensor', 'on') %}
+            {% if is_weekend %}
+              '10:30'
+            {% else %}
+              '07:50'
+            {% endif %}
 
   switch:
     - platform: template
@@ -30,8 +41,6 @@ sleep_time:
               mdi:human-child
             {% endif %}
 
-    - platform: template
-      switches:
         bedroom_asleep:
           friendly_name: 'В спальне спят'
           value_template: >
@@ -48,7 +57,6 @@ sleep_time:
             {% else %}
               mdi:human
             {% endif %}
-
 
   automation:
     - id: 'Отход ко сну в детской'
@@ -72,7 +80,7 @@ sleep_time:
         - service: light.turn_off
           entity_id: light.kidsroom_wall_aqara_led_bulbs
           continue_on_error: true
-        
+
         - service: input_select.select_option
           entity_id: input_select.kidsroom_airpurifier_mode
           data:
@@ -151,7 +159,9 @@ sleep_time:
           state: 'off'
       action:
         - service: light.turn_off
-          entity_id: light.bedroom_aqara_led_bulb
+          entity_id:
+            - light.bedroom_floor_aqara_led_bulb
+            - light.bedroom_nightstand_aqara_led_bulb
           data:
             transition: 1
           continue_on_error: true

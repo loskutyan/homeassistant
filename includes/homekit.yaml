@@ -18,7 +18,6 @@
       - sensor.kidsroom_average_humidity
       - sensor.kitchen_aqara_air_sensor_temperature
       - sensor.serverroom_aqara_air_sensor_temperature
-      - switch.hallway_lights_switch
       - switch.kidsroom_lights_common_switch_left
       - switch.kitchen_lights_switch_left
       - switch.kitchen_lights_switch_right
@@ -46,13 +45,15 @@
       name: 'Увлажнитель'
     humidifier.smartmi_humidifier_kidsroom:
       name: 'Увлажнитель'
-    light.bedroom_aqara_led_bulb:
+    light.bedroom_floor_aqara_led_bulb:
       name: 'Торшер'
+    light.bedroom_nightstand_aqara_led_bulb:
+      name: 'Прикроватный светильник'
     fan.mijia_airpurifier_bedroom:
       name: 'Бризер'
     fan.mijia_airpurifier_kidsroom:
       name: 'Бризер'
-    switch.hallway_lights_switch:
+    light.hallway_lights_switch:
       name: 'Свет'
     switch.kidsroom_lights_common_switch_left:
       name: 'Люстра'

@@ -7,5 +7,5 @@
 - platform: xiaomi_miio_airpurifier
   name: mijia_airpurifier_kidsroom
   host: 192.168.1.77
-  token: 868bb0ee63738f25dc4a0d058da4b151
+  token: 0c4f2780671ac1ec7dc0642bdeb8a53c
   model: dmaker.airfresh.a1

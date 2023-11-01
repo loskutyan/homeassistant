@@ -87,15 +87,6 @@ cards:
 
       - type: conditional
         conditions:
-          - entity: binary_sensor.hacs_updates_available
-            state: 'on'
-        card:
-          type: custom:mushroom-update-card
-          entity: sensor.hacs
-          name: 'Обновления HACS (old)'
-
-      - type: conditional
-        conditions:
           - entity: update.home_assistant_core_update
             state: 'on'
         card:

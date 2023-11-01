@@ -6,11 +6,9 @@ kidsroom_lights:
         - light.kidsroom_aqara_led_bulb_left
         - light.kidsroom_aqara_led_bulb_right
 
-
   input_boolean:
     kidsroom_lights_smart_control:
       name: 'Умное управление светильниками в детской'
-
 
   sensor:
     - platform: template
@@ -19,20 +17,21 @@ kidsroom_lights:
           friendly_name: 'Яркость ламп Aqara в детской'
           value_template: >
             {% set now = now() %}
-            {% set total_minutes = now.hour * 60 + now.minute %}
-            {% if total_minutes > 360 and total_minutes < 1320 %}
+            {% set is_friday = is_state('sensor.weekday', 'Friday') | int(0) %}
+            {% set total_minutes = (now.hour - is_friday) * 60 + now.minute %}
+            {% if total_minutes > 360 and total_minutes < 1260 %}
               230
-            {% elif total_minutes >= 1320 and total_minutes < 1350 %}
+            {% elif total_minutes >= 1260 and total_minutes < 1290 %}
               204
-            {% elif total_minutes >= 1350 and total_minutes < 1365 %}
+            {% elif total_minutes >= 1290 and total_minutes < 1305 %}
               178
-            {% elif total_minutes >= 1365 and total_minutes < 1380 %}
+            {% elif total_minutes >= 1305 and total_minutes < 1320 %}
               153
-            {% elif total_minutes >= 1380 and total_minutes < 1395 %}
+            {% elif total_minutes >= 1320 and total_minutes < 1335 %}
               127
-            {% elif total_minutes >= 1395 and total_minutes < 1410 %}
+            {% elif total_minutes >= 1335 and total_minutes < 1350 %}
               102
-            {% elif total_minutes >= 1410 and total_minutes < 1420 %}
+            {% elif total_minutes >= 1350 and total_minutes < 1360 %}
               76
             {% else %}
               51
@@ -42,19 +41,19 @@ kidsroom_lights:
           friendly_name: 'Температура ламп Aqara в детской'
           value_template: >
             {% set now = now() %}
-            {% set total_minutes = now.hour * 60 + now.minute %}
+            {% set is_friday = is_state('sensor.weekday', 'Friday') | int(0) %}
+            {% set total_minutes = (now.hour - is_friday) * 60 + now.minute %}
             {% set min_temp = state_attr('light.kidsroom_wall_aqara_led_bulbs', 'min_mireds') %}
             {% set max_temp = state_attr('light.kidsroom_wall_aqara_led_bulbs', 'max_mireds') %}
-            {% if total_minutes > 360 and total_minutes < 1350 %}
+            {% if total_minutes > 360 and total_minutes < 1290 %}
               {{ 0.7 * (max_temp  - min_temp) + min_temp }}
-            {% elif total_minutes >= 1350 and total_minutes < 1365 %}
+            {% elif total_minutes >= 1290 and total_minutes < 1305 %}
               {{ 0.8 * (max_temp  - min_temp) + min_temp }}
-            {% elif total_minutes >= 1365 and total_minutes < 1380 %}
+            {% elif total_minutes >= 1305 and total_minutes < 1320 %}
               {{ 0.9 * (max_temp  - min_temp) + min_temp }}
             {% else %}
               {{ max_temp }}
-            {% endif %}      
-
+            {% endif %}
 
   switch:
     - platform: template
@@ -69,7 +68,6 @@ kidsroom_lights:
           turn_off:
             service: input_boolean.turn_off
             entity_id: input_boolean.kidsroom_lights_smart_control
-
 
   automation:
     - id: 'Включение/выключение люстры в детской'
@@ -117,7 +115,7 @@ kidsroom_lights:
           minutes: '/5'
       condition:
         - condition: time
-          after: '22:10'
+          after: '21:20'
           before: '23:30'
         - condition: state
           entity_id: switch.kidsroom_lights_common_switch_left
@@ -172,7 +170,7 @@ kidsroom_lights:
           minutes: '/5'
       condition:
         - condition: time
-          after: '22:15'
+          after: '21:25'
         - condition: state
           entity_id: light.kidsroom_wall_aqara_led_bulbs
           state: 'on'

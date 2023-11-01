@@ -201,8 +201,16 @@ cards:
       - type: custom:vertical-stack-in-card
         cards:
           - type: custom:mushroom-light-card
-            entity: light.bedroom_aqara_led_bulb
+            entity: light.bedroom_floor_aqara_led_bulb
             name: 'Торшер'
+            show_brightness_control: true
+            show_color_temp_control: true
+            collapsible_controls: true
+            use_light_color: true
+
+          - type: custom:mushroom-light-card
+            entity: light.bedroom_nightstand_aqara_led_bulb
+            name: 'Прикроватный светильник'
             show_brightness_control: true
             show_color_temp_control: true
             collapsible_controls: true

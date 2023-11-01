@@ -22,10 +22,11 @@ movie_time:
       alias: 'Приглушение света в спальне для фильма - проигрывание'
       sequence:
         - service: switch.turn_off
-          data_template:
-            entity_id: switch.bedroom_lights_switch_right
+          entity_id: switch.bedroom_lights_switch_right
+        - service: light.turn_off
+          entity_id: switch.bedroom_nightstand_aqara_led_bulb
         - service: light.turn_on
-          entity_id: light.bedroom_aqara_led_bulb
+          entity_id: light.bedroom_floor_aqara_led_bulb
           data:
             brightness: 38
             color_temp: 350
@@ -35,7 +36,7 @@ movie_time:
       alias: 'Приглушение света в спальне для фильма - пауза'
       sequence:
         - service: light.turn_on
-          entity_id: light.bedroom_aqara_led_bulb
+          entity_id: light.bedroom_floor_aqara_led_bulb
           data:
             brightness: 127
             color_temp: 325
