@@ -3,6 +3,36 @@ icon: mdi:server-network
 
 cards:
   - type: vertical-stack
+    title: 'UPS'
+    cards:
+      - type: custom:mushroom-entity-card
+        entity: sensor.ups_status
+        name: 'Статус'
+        layout: horizontal
+        icon: mdi:battery
+        icon_color: accent
+
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            name: 'Заряд аккумулятора'
+            unit: '%'
+            entity: sensor.ups_zariad_akkumuliatora
+            severity:
+              green: 80
+              yellow: 40
+              red: 0
+
+          - type: gauge
+            name: 'Загрузка'
+            unit: '%'
+            entity: sensor.ups_zagruzka
+            severity:
+              green: 0
+              yellow: 50
+              red: 80
+
+  - type: vertical-stack
     title: 'Keenetic Router'
     cards:
       - type: horizontal-stack

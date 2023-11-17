@@ -41,9 +41,9 @@
   entity_config:
     vacuum.roborock_vacuum_s5e:
       name: 'Пылесос'
-    humidifier.smartmi_humidifier_bedroom:
+    humidifier.bedroom_smartmi_humidifier:
       name: 'Увлажнитель'
-    humidifier.smartmi_humidifier_kidsroom:
+    humidifier.kidsroom_smartmi_humidifier:
       name: 'Увлажнитель'
     light.bedroom_floor_aqara_led_bulb:
       name: 'Торшер'

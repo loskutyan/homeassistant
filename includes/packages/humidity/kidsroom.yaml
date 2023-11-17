@@ -4,25 +4,23 @@ kidsroom_humidity:
       name: 'Фиксированный режим увлажнителя в детской, осталось '
       duration: 1800
 
-
   binary_sensor:
     - platform: template
       sensors:
         kidsroom_needs_humidification:
           friendly_name: 'Нужно увлажнить воздух в детской'
           value_template: >
-            {% set humidifier_state_on = states('humidifier.smartmi_humidifier_kidsroom') | bool(False) %}
-            {% set humidifier_speed = states('sensor.smartmi_humidifier_kidsroom_motor_speed') %}
+            {% set humidifier_state_on = states('humidifier.kidsroom_smartmi_humidifier') | bool(False) %}
+            {% set humidifier_speed = states('sensor.kidsroom_smartmi_humidifier_motor_speed') %}
             {% set low_hum = states('sensor.kidsroom_average_humidity') | float(100) < 35 %}
             {{ (not humidifier_state_on or humidifier_speed == 0) and low_hum }}
-
 
   sensor:
     - platform: template
       sensors:
         kidsroom_humidifier_mode_needs_changes:
           value_template: >
-            {% set current_mode = state_attr('humidifier.smartmi_humidifier_kidsroom', 'mode') %}
+            {% set current_mode = state_attr('humidifier.kidsroom_smartmi_humidifier', 'mode') %}
             {% set current_humidity = states('sensor.kidsroom_average_humidity') | float(0) %}
             {% set breezer_state = states('fan.mijia_airpurifier_kidsroom') %}
             {% set somebody_home = states('switch.somebody_home') %}
@@ -38,7 +36,6 @@ kidsroom_humidity:
               keep
             {% endif %}
 
-
   automation:
     - id: 'Выключение звука увлажнителя в детской'
       alias: kidsroom_humidifier_buzzer_turn_off
@@ -47,11 +44,11 @@ kidsroom_humidity:
         - platform: homeassistant
           event: start
         - platform: state
-          entity_id: switch.smartmi_humidifier_kidsroom_buzzer
+          entity_id: switch.kidsroom_smartmi_humidifier_buzzer
           to: 'on'
       action:
         - service: switch.turn_off
-          entity_id: switch.smartmi_humidifier_kidsroom_buzzer
+          entity_id: switch.kidsroom_smartmi_humidifier_buzzer
 
     - id: 'Контроль режима увлажнителя в детской'
       alias: kidsroom_humidifier_mode_control
@@ -73,7 +70,7 @@ kidsroom_humidity:
               state: 'keep'
       action:
         - service: humidifier.set_mode
-          entity_id: humidifier.smartmi_humidifier_kidsroom
+          entity_id: humidifier.kidsroom_smartmi_humidifier
           data_template:
             mode: >
               {{ states('sensor.kidsroom_humidifier_mode_needs_changes') }}
@@ -98,7 +95,7 @@ kidsroom_humidity:
             minutes: 20
         - not:
             - condition: numeric_state
-              entity_id: sensor.smartmi_humidifier_kidsroom_motor_speed
+              entity_id: sensor.kidsroom_smartmi_humidifier_motor_speed
               above: 1
         - condition: template
           value_template: >
@@ -120,16 +117,16 @@ kidsroom_humidity:
       initial_state: true
       trigger:
         - platform: numeric_state
-          entity_id: sensor.smartmi_humidifier_kidsroom_water_level
+          entity_id: sensor.kidsroom_smartmi_humidifier_water_level
           below: 20
           for:
             minutes: 5
       condition:
         - condition: state
-          entity_id: humidifier.smartmi_humidifier_kidsroom
+          entity_id: humidifier.kidsroom_smartmi_humidifier
           state: 'on'
         - condition: numeric_state
-          entity_id: sensor.smartmi_humidifier_kidsroom_motor_speed
+          entity_id: sensor.kidsroom_smartmi_humidifier_motor_speed
           above: 1
         - condition: template
           value_template: >

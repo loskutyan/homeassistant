@@ -6,31 +6,31 @@ tg_climate_status:
         - service: notify.tg
           data:
             message: |
-              {% set bedroom_hum_status = states('humidifier.smartmi_humidifier_bedroom') %}
+              {% set bedroom_hum_status = states('humidifier.bedroom_smartmi_humidifier') %}
               {% set bedroom_hum_status_message = 'недоступен' %}
               {% if bedroom_hum_status == 'off' %}
                 {% set bedroom_hum_status_message = 'выключен' %}
               {% elif bedroom_hum_status == 'on'%}
-                {% set bedroom_hum_tank_status = states('sensor.smartmi_humidifier_bedroom_water_tank') %}
+                {% set bedroom_hum_tank_status = states('sensor.bedroom_smartmi_humidifier_water_tank') %}
                 {% if bedroom_hum_tank_status == 'off' %}
                   {% set bedroom_hum_status_message = 'контейнер снят' %}
                 {% else %}
-                  {% set bedroom_hum_speed = states('sensor.smartmi_humidifier_bedroom_motor_speed') %}
-                  {% set bedroom_hum_water_level = states('sensor.smartmi_humidifier_bedroom_water_level') %}
+                  {% set bedroom_hum_speed = states('sensor.bedroom_smartmi_humidifier_motor_speed') %}
+                  {% set bedroom_hum_water_level = states('sensor.bedroom_smartmi_humidifier_water_level') %}
                   {% set bedroom_hum_status_message = bedroom_hum_speed + ' об/мин, ур. воды ' + bedroom_hum_water_level + '%' %}
                 {% endif %}
               {% endif %}
-              {% set kidsroom_hum_status = states('humidifier.smartmi_humidifier_kidsroom') %}
+              {% set kidsroom_hum_status = states('humidifier.kidsroom_smartmi_humidifier') %}
               {% set kidsroom_hum_status_message = 'недоступен' %}
               {% if kidsroom_hum_status == 'off' %}
                 {% set kidsroom_hum_status_message = 'выключен' %}
               {% elif kidsroom_hum_status == 'on'%}
-                {% set kidsroom_hum_tank_status = states('sensor.smartmi_humidifier_kidsroom_water_tank') %}
+                {% set kidsroom_hum_tank_status = states('sensor.kidsroom_smartmi_humidifier_water_tank') %}
                 {% if kidsroom_hum_tank_status == 'off' %}
                   {% set kidsroom_hum_status_message = 'контейнер снят' %}
                 {% else %}
-                  {% set kidsroom_hum_speed = states('sensor.smartmi_humidifier_kidsroom_motor_speed') %}
-                  {% set kidsroom_hum_water_level = states('sensor.smartmi_humidifier_kidsroom_water_level') %}
+                  {% set kidsroom_hum_speed = states('sensor.kidsroom_smartmi_humidifier_motor_speed') %}
+                  {% set kidsroom_hum_water_level = states('sensor.kidsroom_smartmi_humidifier_water_level') %}
                   {% set kidsroom_hum_status_message = kidsroom_hum_speed + ' об/мин, ур. воды ' + kidsroom_hum_water_level + '%' %}
                 {% endif %}
               {% endif %}

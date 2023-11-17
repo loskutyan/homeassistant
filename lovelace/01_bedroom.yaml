@@ -13,6 +13,8 @@ cards:
               - type: custom:mushroom-fan-card
                 entity: fan.mijia_airpurifier_bedroom
                 name: 'Состояние'
+                tap_action:
+                  action: more-info
 
               - type: custom:button-card
                 template: mushroom_mode_control_3buttons
@@ -194,6 +196,22 @@ cards:
                 - type: custom:mushroom-entity-card
                   entity: sensor.bedroom_ac_plug_power
                   name: 'Мощность'
+
+      - type: conditional
+        conditions:
+          - entity: switch.warm_season
+            state: 'off'
+        card:
+          type: custom:vertical-stack-in-card
+          title: 'Увлажнитель'
+          cards:
+            - type: custom:mushroom-humidifier-card
+              entity: humidifier.bedroom_smartmi_humidifier
+              name: 'Состояние'
+              layout: horizontal
+              collapsible_controls: true
+              tap_action:
+                action: more-info
 
   - type: vertical-stack
     title: 'Свет'

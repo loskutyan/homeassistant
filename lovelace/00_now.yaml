@@ -112,7 +112,7 @@ cards:
 
       - type: conditional
         conditions:
-          - entity: binary_sensor.smartmi_humidifier_bedroom_water_tank
+          - entity: binary_sensor.bedroom_smartmi_humidifier_water_tank
             state: 'on'
         card:
           type: custom:auto-entities
@@ -121,13 +121,13 @@ cards:
           show_empty: false
           filter:
             include:
-              - entity_id: sensor.smartmi_humidifier_bedroom_water_level
+              - entity_id: sensor.bedroom_smartmi_humidifier_water_level
             exclude:
               - state: '> 30'
 
       - type: conditional
         conditions:
-          - entity: binary_sensor.smartmi_humidifier_kidsroom_water_tank
+          - entity: binary_sensor.kidsroom_smartmi_humidifier_water_tank
             state: 'on'
         card:
           type: custom:auto-entities
@@ -136,7 +136,7 @@ cards:
           show_empty: false
           filter:
             include:
-              - entity_id: sensor.smartmi_humidifier_kidsroom_water_level
+              - entity_id: sensor.kidsroom_smartmi_humidifier_water_level
             exclude:
               - state: '> 30'
 

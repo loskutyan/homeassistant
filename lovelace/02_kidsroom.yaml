@@ -13,6 +13,8 @@ cards:
               - type: custom:mushroom-fan-card
                 entity: fan.mijia_airpurifier_kidsroom
                 name: 'Состояние'
+                tap_action:
+                  action: more-info
 
               - type: custom:button-card
                 template: mushroom_mode_control_3buttons
