@@ -435,11 +435,13 @@ kidsroom_air:
           entity_id: switch.somebody_home
           state: 'on'
         - condition: state
-          entity_id: switch.kidsroom_asleep
-          state: 'off'
-        - condition: state
           entity_id: fan.mijia_airpurifier_kidsroom
           state: 'on'
+          for:
+            minutes: 1
+        - condition: state
+          entity_id: binary_sensor.kidsroom_airpurifier_ptc_status
+          state: 'off'
           for:
             minutes: 1
         - condition: numeric_state
@@ -595,17 +597,6 @@ kidsroom_air:
           from: 'on'
           to: 'off'
       condition:
-        - or:
-            - condition: state
-              entity_id: switch.somebody_home
-              state: 'off'
-            - and:
-                - condition: state
-                  entity_id: switch.bedroom_asleep
-                  state: 'on'
-                - condition: state
-                  entity_id: switch.kidsroom_asleep
-                  state: 'off'
         - condition: state
           entity_id: fan.mijia_airpurifier_kidsroom
           state: 'on'
@@ -623,7 +614,7 @@ kidsroom_air:
           continue_on_error: true
         - service: fan.turn_off
           entity_id: fan.mijia_airpurifier_kidsroom
-        - delay: 00:00:30
+        - delay: 00:00:45
         - if:
             - condition: state
               entity_id: fan.mijia_airpurifier_kidsroom
@@ -635,6 +626,11 @@ kidsroom_air:
                   {{ '\U0001F4A8' }} Бризер в детской выключен.
                   {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
                   {{ '\U0000269B' }} CO2 {{ states('sensor.qingping_air_lite_co2') | int }}ppm
+          else:
+            - service: notify.tg
+              data:
+                message: |
+                  {{ '\U000026A0' }} Не получилось выключить бризер в детской, статус {{ states('fan.mijia_airpurifier_kidsroom') }}.
 
     - id: 'Регулярное проветривание бризера в детской'
       alias: kidsroom_periodic_ventilation

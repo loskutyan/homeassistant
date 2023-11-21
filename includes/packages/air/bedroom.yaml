@@ -442,6 +442,11 @@ bedroom_air:
           state: 'on'
           for:
             minutes: 1
+        - condition: state
+          entity_id: binary_sensor.bedroom_airpurifier_ptc_status
+          state: 'off'
+          for:
+            minutes: 1
         - condition: numeric_state
           entity_id: sensor.bedroom_average_temperature
           below: input_number.target_temperature
@@ -584,8 +589,8 @@ bedroom_air:
                   {{ '\U0001F321' }} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
                   {{ '\U0000269B' }} CO2 {{ states('sensor.cleargrass_air_co2') | int }}ppm
 
-    - id: 'Выключение бризера в спальне, когда дома никого'
-      alias: bedroom_airpurifier_nobody_home_turn_off
+    - id: 'Выключение бризера в спальне'
+      alias: bedroom_airpurifier_turn_off
       initial_state: true
       trigger:
         - platform: time_pattern
@@ -595,9 +600,6 @@ bedroom_air:
           from: 'on'
           to: 'off'
       condition:
-        - condition: state
-          entity_id: switch.somebody_home
-          state: 'off'
         - condition: state
           entity_id: fan.mijia_airpurifier_bedroom
           state: 'on'
@@ -615,7 +617,7 @@ bedroom_air:
           continue_on_error: true
         - service: fan.turn_off
           entity_id: fan.mijia_airpurifier_bedroom
-        - delay: 00:00:30
+        - delay: 00:00:45
         - if:
             - condition: state
               entity_id: fan.mijia_airpurifier_bedroom
@@ -627,6 +629,11 @@ bedroom_air:
                   {{ '\U0001F4A8' }} Бризер в спальне выключен.
                   {{ '\U0001F321' }} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
                   {{ '\U0000269B' }} CO2 {{ states('sensor.cleargrass_air_co2') | int }}ppm
+          else:
+            - service: notify.tg
+              data:
+                message: |
+                  {{ '\U000026A0' }} Не получилось выключить бризер в спальне, статус {{ states('fan.mijia_airpurifier_bedroom') }}.
 
     - id: 'Регулярное проветривание бризера в спальне'
       alias: bedroom_periodic_ventilation

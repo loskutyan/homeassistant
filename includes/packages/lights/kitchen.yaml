@@ -2,8 +2,7 @@ kitchen_lights:
   timer:
     kitchen_lights_turn_off_without_motion:
       name: 'Свет на кухне погаснет через '
-      duration: 1200
-
+      duration: 2400
 
   automation:
     - id: 'Свет при движении на кухне'
@@ -122,7 +121,7 @@ kitchen_lights:
           from: 'active'
           to: 'idle'
       condition:
-        - or: 
+        - or:
             - condition: state
               entity_id: switch.kitchen_lights_switch_left
               state: 'on'

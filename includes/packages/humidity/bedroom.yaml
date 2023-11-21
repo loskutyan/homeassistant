@@ -25,13 +25,13 @@ bedroom_humidity:
             {% set current_humidity = states('sensor.bedroom_average_humidity') | float(0) %}
             {% set breezer_state = states('fan.mijia_airpurifier_bedroom') %}
             {% set somebody_home = states('switch.somebody_home') %}
-            {% if current_humidity > 40 and breezer_state == 'off' and somebody_home == 'off' %}
+            {% if current_humidity > 35 and breezer_state == 'off' and somebody_home == 'off' %}
               Silent
-            {% elif 0 < current_humidity < 45 and current_mode != 'High' %}
+            {% elif 0 < current_humidity < 43 and current_mode != 'High' %}
               High
-            {% elif 50 <= current_humidity < 55 and current_mode != 'Medium' or current_state != 'on' %}
+            {% elif 45 <= current_humidity < 48 and current_mode != 'Medium' or current_state != 'on' %}
               Medium
-            {% elif current_humidity >= 60 and current_mode != 'Silent' %}
+            {% elif current_humidity >= 50 and current_mode != 'Silent' %}
               Silent
             {% else %}
               keep
@@ -108,10 +108,11 @@ bedroom_humidity:
         - service: notify.tg
           data:
             message: >
+              {% set hum = states('sensor.bedroom_average_humidity') %}
               {% set messages = ['В спальне слишком сухой воздух!',
                                  'Нужно увлажнить воздух в спальне.',
                                  'Беги скорее увлажнитель в спальне включай! СКОРЕЕ!'] %}
-              {{ '\U0001F6B1' }} {{ messages | random }} {{ states('sensor.time_date') }}
+              {{ '\U0001F6B1' }} {{ messages | random }} Влажность {{ hum }}%. {{ states('sensor.time_date') }}
 
     - id: 'Кончается вода в увлажнителе в спальне - уведомление'
       alias: telegram_bedroom_humidifier_low_water_level
@@ -139,7 +140,8 @@ bedroom_humidity:
         - service: notify.tg
           data:
             message: >
+              {% set lvl = states('sensor.bedroom_smartmi_humidifier_water_level') %}
               {% set messages = ['Вода в увлажнителе в спальне кончается!',
                                  'Вода для увлажнения в спальне на исходе, милорд!',
                                  'Нужно долить воды в увлажнитель в спальне'] %}
-              {{ '\U0001F6B1' }} {{ messages | random }} {{ states('sensor.time_date') }}
+              {{ '\U0001F6B1' }} {{ messages | random }} Осталось всего {{ lvl }}%. {{ states('sensor.time_date') }}
