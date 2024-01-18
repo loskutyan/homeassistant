@@ -36,10 +36,6 @@ kidsroom_air:
       name: 'Нагреватель бризера в детской остывает, можно включить через '
       duration: 1800
 
-    kidsroom_periodic_ventilation:
-      name: 'Периодическое проветривание в детской, осталось '
-      duration: 3600
-
   switch:
     - platform: template
       switches:
@@ -492,7 +488,7 @@ kidsroom_air:
             - timer.kidsroom_airpurifier_heater_remind
         - service: timer.finish
           entity_id: timer.kidsroom_airpurifier_heater_cooldown
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set messages = ['Нагреватель бризера в детской включен!',
@@ -516,7 +512,7 @@ kidsroom_air:
           entity_id: switch.kidsroom_airpurifier_ptc
           state: 'on'
       action:
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set messages = ['Нагреватель бризера в детской все еще работает!',
@@ -541,7 +537,7 @@ kidsroom_air:
             - timer.kidsroom_airpurifier_heater_turn_off
         - service: timer.start
           entity_id: timer.kidsroom_airpurifier_heater_cooldown
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set messages = ['Нагреватель бризера в детской выключен!',
@@ -579,7 +575,7 @@ kidsroom_air:
               entity_id: fan.mijia_airpurifier_kidsroom
               state: 'on'
           then:
-            - service: notify.tg
+            - service: notify.tg_bot
               data:
                 message: |
                   {{ '\U0001F4A8' }} Бризер в детской включен.
@@ -620,14 +616,14 @@ kidsroom_air:
               entity_id: fan.mijia_airpurifier_kidsroom
               state: 'off'
           then:
-            - service: notify.tg
+            - service: notify.tg_bot
               data:
                 message: |
                   {{ '\U0001F4A8' }} Бризер в детской выключен.
                   {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
                   {{ '\U0000269B' }} CO2 {{ states('sensor.qingping_air_lite_co2') | int }}ppm
           else:
-            - service: notify.tg
+            - service: notify.tg_bot
               data:
                 message: |
                   {{ '\U000026A0' }} Не получилось выключить бризер в детской, статус {{ states('fan.mijia_airpurifier_kidsroom') }}.
@@ -640,7 +636,7 @@ kidsroom_air:
           entity_id: fan.mijia_airpurifier_kidsroom
           from: 'on'
           for:
-            hours: 12
+            hours: 24
       condition:
         - condition: state
           entity_id: switch.somebody_home
@@ -651,5 +647,3 @@ kidsroom_air:
       action:
         - service: switch.turn_on
           entity_id: switch.kidsroom_airpurifier_forced_ventilation
-        - service: timer.start
-          entity_id: timer.kidsroom_periodic_ventilation

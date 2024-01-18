@@ -12,8 +12,8 @@ tg_heaters_control:
         - service: telegram_bot.answer_callback_query
           data_template:
             callback_query_id: '{{ trigger.event.data.id }}'
-            message: 'Что нужно сделать с обогревателями?'  
-        - service: notify.tg
+            message: 'Что нужно сделать с обогревателями?'
+        - service: notify.tg_bot
           data:
             message: 'Управляем обогревателями..'
             data:

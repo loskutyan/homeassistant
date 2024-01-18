@@ -36,10 +36,6 @@ bedroom_air:
       name: 'Нагреватель бризера в спальне остывает, можно включить через '
       duration: 1800
 
-    bedroom_periodic_ventilation:
-      name: 'Периодическое проветривание в спальне, осталось '
-      duration: 3600
-
   switch:
     - platform: template
       switches:
@@ -495,7 +491,7 @@ bedroom_air:
             - timer.bedroom_airpurifier_heater_remind
         - service: timer.finish
           entity_id: timer.bedroom_airpurifier_heater_cooldown
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set messages = ['Нагреватель бризера в спальне включен!',
@@ -519,7 +515,7 @@ bedroom_air:
           entity_id: switch.bedroom_airpurifier_ptc
           state: 'on'
       action:
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set messages = ['Нагреватель бризера в спальне все еще работает!',
@@ -544,7 +540,7 @@ bedroom_air:
             - timer.bedroom_airpurifier_heater_turn_off
         - service: timer.start
           entity_id: timer.bedroom_airpurifier_heater_cooldown
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set messages = ['Нагреватель бризера в спальне выключен!',
@@ -582,7 +578,7 @@ bedroom_air:
               entity_id: fan.mijia_airpurifier_bedroom
               state: 'on'
           then:
-            - service: notify.tg
+            - service: notify.tg_bot
               data:
                 message: |
                   {{ '\U0001F4A8' }} Бризер в спальне включен.
@@ -623,14 +619,14 @@ bedroom_air:
               entity_id: fan.mijia_airpurifier_bedroom
               state: 'off'
           then:
-            - service: notify.tg
+            - service: notify.tg_bot
               data:
                 message: |
                   {{ '\U0001F4A8' }} Бризер в спальне выключен.
                   {{ '\U0001F321' }} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
                   {{ '\U0000269B' }} CO2 {{ states('sensor.cleargrass_air_co2') | int }}ppm
           else:
-            - service: notify.tg
+            - service: notify.tg_bot
               data:
                 message: |
                   {{ '\U000026A0' }} Не получилось выключить бризер в спальне, статус {{ states('fan.mijia_airpurifier_bedroom') }}.
@@ -643,7 +639,7 @@ bedroom_air:
           entity_id: fan.mijia_airpurifier_bedroom
           from: 'on'
           for:
-            hours: 12
+            hours: 24
       condition:
         - condition: state
           entity_id: switch.somebody_home
@@ -654,5 +650,3 @@ bedroom_air:
       action:
         - service: switch.turn_on
           entity_id: switch.bedroom_airpurifier_forced_ventilation
-        - service: timer.start
-          entity_id: timer.bedroom_periodic_ventilation

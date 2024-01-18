@@ -9,7 +9,7 @@ tg_common:
           event_data:
             command: '/start'
       action:
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: |
               {% set messages = ['Привет!',
@@ -17,7 +17,7 @@ tg_common:
                                  'Милорд.',
                                  'Приступим!'] %}
               {{ messages | random }}
-              
+
               Доступные команды:
             data:
               keyboard:
@@ -33,7 +33,7 @@ tg_common:
           event_data:
             text: 'Управление'
       action:
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: |
               {% set messages = ['Панель управления',
@@ -42,7 +42,44 @@ tg_common:
             data:
               inline_keyboard:
                 - 'Свет:/lights, Отопление:/heaters'
+                - 'Вода:/valves'
                 - 'Статус:/status'
+
+    - id: 'Управление кранами в боте'
+      alias: telegram_valves_control
+      initial_state: true
+      trigger:
+        - platform: event
+          event_type: telegram_callback
+          event_data:
+            data: '/valves'
+      action:
+        - service: telegram_bot.answer_callback_query
+          data_template:
+            callback_query_id: '{{ trigger.event.data.id }}'
+            message: 'Что нужно сделать с кранами?'
+        - service: notify.tg_bot
+          data:
+            message: 'Управляем кранами..'
+            data:
+              inline_keyboard:
+                - 'Перекрыть краны:/close_valves'
+
+    - id: 'Перекрытие кранов через бот'
+      alias: telegram_valves_close
+      initial_state: true
+      trigger:
+        platform: event
+        event_type: telegram_callback
+        event_data:
+          data: '/close_valves'
+      action:
+        - service: telegram_bot.answer_callback_query
+          data_template:
+            callback_query_id: '{{ trigger.event.data.id }}'
+            message: 'Перекрываем краны'
+        - service: script.turn_on
+          entity_id: script.close_bathroom_valves
 
     - id: 'Прогноз погоды в боте'
       alias: telegram_weather_forecast

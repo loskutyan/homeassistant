@@ -1,4 +1,12 @@
 kidsroom_humidity:
+  input_select:
+    kidsroom_humidifier_mode:
+      name: 'Режим работы увлажнителя в детской'
+      options:
+        - Silent
+        - Medium
+        - High
+
   timer:
     kidsroom_humidifier_fixed_mode:
       name: 'Фиксированный режим увлажнителя в детской, осталось '
@@ -37,6 +45,33 @@ kidsroom_humidity:
             {% endif %}
 
   automation:
+    - id: 'Выбор режима работы увлажнителя в детской'
+      alias: select_kidsroom_humidifier_mode
+      trigger:
+        - entity_id: input_select.kidsroom_humidifier_mode
+          platform: state
+      action:
+        - service: humidifier.set_mode
+          entity_id: humidifier.kidsroom_smartmi_humidifier
+          data_template:
+            mode: '{{ trigger.to_state.state }}'
+
+    - id: 'Отслеживание режима работы увлажнителя в детской'
+      alias: tracking_kidsroom_humidifier_mode
+      trigger:
+        - platform: state
+          entity_id: humidifier.kidsroom_smartmi_humidifier
+          attribute: mode
+          for: '00:00:01'
+      condition:
+        - condition: template
+          value_template: "{{ trigger.to_state.attributes.mode not in ['unknown', 'unavailable'] }}"
+      action:
+        - service: input_select.select_option
+          entity_id: input_select.kidsroom_humidifier_mode
+          data_template:
+            option: '{{ trigger.to_state.attributes.mode }}'
+
     - id: 'Выключение звука увлажнителя в детской'
       alias: kidsroom_humidifier_buzzer_turn_off
       initial_state: true
@@ -60,6 +95,13 @@ kidsroom_humidity:
           entity_id: timer.kidsroom_humidifier_fixed_mode
           from: 'active'
           to: 'idle'
+        - platform: state
+          entity_id: sensor.kidsroom_humidifier_mode_needs_changes
+          from: 'keep'
+          not_to:
+            - 'unknown'
+            - 'unavailable'
+          for: '00:01:00'
       condition:
         - condition: state
           entity_id: timer.kidsroom_humidifier_fixed_mode
@@ -104,7 +146,7 @@ kidsroom_humidity:
             {% set delta_minutes = (now - last_triggered).total_seconds() / 60 if last_triggered != none else 1000 %}
             {{ delta_minutes > 90 }}
       action:
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set hum = states('sensor.kidsroom_average_humidity') %}
@@ -136,11 +178,11 @@ kidsroom_humidity:
             {% set delta_hours = (now - last_triggered).total_seconds() / 3600 if last_triggered != none else 1000 %}
             {{ delta_hours > 8 }}
       action:
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set lvl = states('sensor.kidsroom_smartmi_humidifier_water_level') %}
               {% set messages = ['Вода в увлажнителе в детской кончается!',
                                  'Вода для увлажнения в детской на исходе, милорд!',
-                                 'Нужно долить воды в увлажнитель в детской'] %}
+                                 'Нужно долить воды в увлажнитель в детской.'] %}
               {{ '\U0001F6B1' }} {{ messages | random }} Осталось всего {{ lvl }}%. {{ states('sensor.time_date') }}

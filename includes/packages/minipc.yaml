@@ -1,18 +1,6 @@
 minipc:
-  sensor:
-    - platform: systemmonitor
-      resources:
-        - type: processor_use
-        - type: disk_use_percent
-          arg: /
-        - type: memory_use_percent
-        - type: last_boot
-        - type: disk_free
-          arg: /
-
-
   command_line:
-    - sensor: 
+    - sensor:
         name: 'CPU Temperature'
         unit_of_measurement: '°C'
         command: 'cat /sys/class/thermal/thermal_zone2/temp'

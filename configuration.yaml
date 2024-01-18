@@ -82,10 +82,22 @@ telegram_bot:
   - platform: polling
     api_key: !secret tg_bot_api_key
     allowed_chat_ids:
-      - !secret chat_id_loskutyan
+      - !secret tg_chat_id_loskutyan
+      - !secret tg_chat_id_unraid_media_group
+      - !secret tg_chat_id_ha_urgent_group
 
 smartir:
   check_updates: false
+
+# camera:
+#   - platform: xiaomi_cloud_map_extractor
+#     host: !secret roborock_vacuum_s5e_host
+#     token: !secret roborock_vacuum_s5e_token
+#     username: !secret xiaomi_cloud_username
+#     password: !secret xiaomi_cloud_password
+#     draw: ['all']
+#     attributes:
+#       - calibration_points
 
 notify: !include includes/notify.yaml
 recorder: !include includes/recorder.yaml

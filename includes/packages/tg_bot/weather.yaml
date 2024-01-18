@@ -76,12 +76,11 @@ tg_weather:
             } %}
             {{ friendly_wind_bearings | to_json(ensure_ascii=False) }}
 
-
   script:
     sending_yandex_weather_forecast:
       alias: 'Отправка прогноза погоды'
       sequence:
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: |
               {% set condition = states('weather.yandex_weather') %}
@@ -112,7 +111,7 @@ tg_weather:
               Ветер {{ friendly_wind_bearing }}, со скоростью {{ (state_attr('weather.yandex_weather', 'wind_speed') | float(0) / 3.6) | round(1) }} м/с.
               Давление {{ states('sensor.yandex_weather_pressure_mmhg') }} мм рт.ст.
         - delay: 00:00:15
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: |
               {% set temp_min = state_attr('weather.yandex_weather', 'forecast')[0]['templow'] %}
@@ -146,7 +145,7 @@ tg_weather:
               Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[0]['precipitation_probability'] }}%.
               Ветер {{ friendly_wind_bearing }}, со скоростью {{ (state_attr('weather.yandex_weather', 'forecast')[0]['wind_speed'] | float(0) / 3.6) | round(1) }} м/с.
         - delay: 00:00:15
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: |
               {% set temp_min = state_attr('weather.yandex_weather', 'forecast')[1]['templow'] %}
@@ -176,14 +175,13 @@ tg_weather:
               Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[1]['precipitation_probability'] }}%.
               Ветер {{ friendly_wind_bearing }}, скорость {{ (state_attr('weather.yandex_weather', 'forecast')[1]['wind_speed'] | float(0) / 3.6) | round(1) }} м/с.
 
-
-  automation: 
+  automation:
     - id: 'Прогноз погоды на день'
       alias: telegram_morning_weather_forecast
       initial_state: true
       trigger:
         - platform: time
-          at: '09:30:00'
+          at: '08:00:00'
       action:
         - service: script.turn_on
           entity_id: script.sending_yandex_weather_forecast

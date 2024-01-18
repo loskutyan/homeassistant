@@ -3,7 +3,7 @@ tg_climate_status:
     telegram_climate_report:
       alias: 'Отправка отчета о состоянии воздуха'
       sequence:
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: |
               {% set bedroom_hum_status = states('humidifier.bedroom_smartmi_humidifier') %}

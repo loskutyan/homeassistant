@@ -13,7 +13,7 @@ tg_lights_control:
           data_template:
             callback_query_id: '{{ trigger.event.data.id }}'
             message: 'Что нужно сделать со светом?'  
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: 'Управляем светом..'
             data:

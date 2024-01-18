@@ -155,12 +155,6 @@ cubeserver:
           database: 'cubeserver_telegraf'
 
   binary_sensor:
-    - platform: ping
-      name: cubeserver_vm_windows10_ping
-      host: !secret cubeserver_windows10_vm_ip
-      scan_interval: 20
-      count: 2
-
     - platform: template
       sensors:
         cubeserver_parity_check_in_progress:
@@ -258,7 +252,7 @@ cubeserver:
           value_template: >
             {% set ping_status = states('binary_sensor.cubeserver_vm_windows10_ping') %}
             {% set virsh_status = states('binary_sensor.cubeserver_vm_windows10_virsh_status') %}
-            {{ ping_status and virsh_status }}
+            {{ ping_status or virsh_status }}
           turn_on:
             service: shell_command.run_cubeserver_vm_windows10
           turn_off:
@@ -280,7 +274,7 @@ cubeserver:
             - 'on'
           for: '00:01:00'
       action:
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: |
               {% set overheat = trigger.to_state.state | bool %}
@@ -317,7 +311,7 @@ cubeserver:
             - 'on'
           for: '00:00:10'
       action:
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set in_progress = trigger.to_state.state | bool %}
@@ -342,7 +336,7 @@ cubeserver:
             - 'on'
           for: '00:00:10'
       action:
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set paused = trigger.to_state.state | bool %}
@@ -361,7 +355,7 @@ cubeserver:
         - platform: event
           event_type: transmission_started_torrent
       action:
-        - service: notify.tg
+        - service: notify.tg_media
           data:
             message: >
               {{ '\U00002B07' }} Cubeserver: Началась загрузка торрента. {{ trigger.event.data.name }}
@@ -373,7 +367,7 @@ cubeserver:
         - platform: event
           event_type: transmission_downloaded_torrent
       action:
-        - service: notify.tg
+        - service: notify.tg_media
           data:
             message: >
               {{ '\U00002705' }} Cubeserver: Завершена загрузка торрента. {{ trigger.event.data.name }}

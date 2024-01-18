@@ -8,11 +8,9 @@ alarm:
       name: 'Надежно закрыть дверь через '
       duration: 20
 
-
   input_boolean:
     bathroom_valves:
       name: 'Шаровые краны в ванной'
-
 
   sensor:
     - platform: template
@@ -45,7 +43,6 @@ alarm:
               | map(attribute='name')
               | join(', ')
               | lower }}
-
 
   binary_sensor:
     - platform: template
@@ -129,7 +126,6 @@ alarm:
               mdi:power-plug
             {% endif %}
 
-
   alert:
     water_leak_detected:
       name: 'Протечка воды'
@@ -141,7 +137,7 @@ alarm:
       repeat: 5
       can_acknowledge: true
       notifiers:
-        - tg
+        - tg_urgent
 
     smoke_detected:
       name: 'Задымление'
@@ -153,7 +149,7 @@ alarm:
       repeat: 5
       can_acknowledge: true
       notifiers:
-        - tg
+        - tg_urgent
 
     fridge_door_left_opened:
       name: 'Дверь холодильника не закрыта'
@@ -164,7 +160,7 @@ alarm:
       message: >
         {{ '\U00002744' }} Дверь холодильника не закрыта!
       notifiers:
-        - tg
+        - tg_urgent
 
     ups_power_went_down:
       name: 'ИБП работает от аккумулятора'
@@ -174,7 +170,7 @@ alarm:
       message: >
         {{ '\U0001F50B' }} ИБП работает от аккумулятора! {{ states('sensor.time_date') }}
       notifiers:
-        - tg
+        - tg_urgent
 
     ups_is_not_fine:
       name: 'Проблема с ИБП'
@@ -184,7 +180,7 @@ alarm:
       message: >
         {{ '\U000026A0' }} Проблема с ИБП, статус {{ states('sensor.ups_status') }}. {{ states('sensor.time_date') }}
       notifiers:
-        - tg
+        - tg_urgent
 
     bedroom_ac_plug_overload:
       name: 'Перегрузка розетки кондиционера в спальне'
@@ -194,7 +190,7 @@ alarm:
       message: >
         {{ '\U000026A0' }} Перегрузка розетки в спальне, потребление {{ states('sensor.bedroom_ac_plug_power') }}Вт, температура {{ states('sensor.bedroom_ac_plug_device_temperature') }}
       notifiers:
-        - tg
+        - tg_urgent
 
     kidsroom_ac_plug_overload:
       name: 'Перегрузка розетки кондиционера в спальне'
@@ -204,8 +200,7 @@ alarm:
       message: >
         {{ '\U000026A0' }} Перегрузка розетки в детской, потребление {{ states('sensor.kidsroom_ac_plug_power') }}Вт, температура {{ states('sensor.kidsroom_ac_plug_device_temperature') }}
       notifiers:
-        - tg
-
+        - tg_urgent
 
   script:
     close_bathroom_valves:
@@ -220,7 +215,7 @@ alarm:
           data_template:
             entity_id: switch.bathroom_valves_relay_right
           continue_on_error: true
-        - service: notify.tg
+        - service: notify.tg_urgent
           data:
             message: >
               {{ '\U0001F6B1' }} Краны перекрыты! {{ states('sensor.time_date') }}
@@ -240,14 +235,13 @@ alarm:
           data_template:
             entity_id: switch.bathroom_valves_relay_left
           continue_on_error: true
-        - service: notify.tg
+        - service: notify.tg_urgent
           data:
             message: >
               {{ '\U0001F6B0' }} Краны открыты! {{ states('sensor.time_date') }}
           continue_on_error: true
         - service: input_boolean.turn_on
           entity_id: input_boolean.bathroom_valves
-
 
   switch:
     - platform: template
@@ -268,7 +262,6 @@ alarm:
             {% else %}
               mdi:valve-closed
             {% endif %}
-
 
   automation:
     - id: 'Протечка воды'
@@ -297,7 +290,7 @@ alarm:
           entity_id: binary_sensor.ups_not_fine
           state: 'off'
       action:
-        - service: notify.tg
+        - service: notify.tg_urgent
           data:
             message: >
               {{ '\U0001F50C' }} ИБП снова работает от сети! {{ states('sensor.time_date') }}
@@ -311,7 +304,7 @@ alarm:
       action:
         - service: switch.turn_off
           entity_id: switch.bedroom_ac_plug
-        - service: notify.tg
+        - service: notify.tg_urgent
           data:
             message: >
               {{ '\U0001F50C' }} Розетка в спальне выключена! {{ states('sensor.time_date') }}
@@ -325,7 +318,7 @@ alarm:
       action:
         - service: switch.turn_off
           entity_id: switch.kidsroom_ac_plug
-        - service: notify.tg
+        - service: notify.tg_urgent
           data:
             message: >
               {{ '\U0001F50C' }} Розетка в детской выключена! {{ states('sensor.time_date') }}
@@ -342,7 +335,7 @@ alarm:
           entity_id: timer.hallway_door_time_to_close
           state: 'idle'
       action:
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set messages = ['Входная дверь открыта в',
@@ -367,7 +360,7 @@ alarm:
           entity_id: binary_sensor.hallway_door_sensor_contact
           state: 'on'
       action:
-        - service: notify.tg
+        - service: notify.tg_urgent
           data:
             message: >
               {% set messages = ['входная дверь все еще открыта!',

@@ -76,7 +76,7 @@ aqara_hub:
                 media_content_type: 'music'
                 media_content_id: 10
           continue_on_error: true
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set messages = ['Кто-то позвонил в дверь в',

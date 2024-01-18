@@ -79,10 +79,11 @@ cards:
               name: 'Заданная скорость'
               layout: horizontal
               icon_color: amber
-              style: |
-                ha-card { 
-                  border-width: 0;
-                }
+              card_mod:
+                style: |
+                  ha-card { 
+                    border-width: 0;
+                  }
 
           - type: horizontal-stack
             cards:
@@ -133,10 +134,11 @@ cards:
                     name: 'Автом. охлаждение'
                     tap_action:
                       action: toggle
-                    style: |
-                      ha-card { 
-                        border-width: 0;
-                      }
+                    card_mod:
+                      style: |
+                        ha-card { 
+                          border-width: 0;
+                        }
 
                 - type: conditional
                   conditions:
@@ -153,10 +155,11 @@ cards:
                     secondary_info: none
                     display_mode: buttons
                     icon: mdi:thermometer-auto
-                    style: |
-                      ha-card { 
-                        border-width: 0;
-                      }
+                    card_mod:
+                      style: |
+                        ha-card { 
+                          border-width: 0;
+                        }
 
                 - type: conditional
                   conditions:
@@ -173,10 +176,11 @@ cards:
                     show_temperature_control: true
                     display_mode: buttons
                     icon: mdi:thermometer
-                    style: |
-                      ha-card { 
-                        border-width: 0;
-                      }
+                    card_mod:
+                      style: |
+                        ha-card { 
+                          border-width: 0;
+                        }
 
             - type: custom:mushroom-select-card
               entity: input_select.kidsroom_ac_fan_mode
@@ -197,14 +201,60 @@ cards:
                   entity: sensor.kidsroom_ac_plug_power
                   name: 'Мощность'
 
-            # - type: conditional
-            #   conditions:
-            #     - entity: input_select.kidsroom_ac_mode
-            #       state: 'fan_only'
-            #   row:
-            #     entity: input_select.kidsroom_ac_fan_swing_mode
-            #     name: 'Направление обдува'
-            #     hide_state: false
+      - type: conditional
+        conditions:
+          - entity: switch.warm_season
+            state: 'off'
+        card:
+          type: custom:vertical-stack-in-card
+          title: 'Увлажнитель'
+          cards:
+            - type: horizontal-stack
+              cards:
+                - type: custom:mushroom-humidifier-card
+                  entity: humidifier.kidsroom_smartmi_humidifier
+                  name: 'Состояние'
+                  layout: horizontal
+                  collapsible_controls: true
+                  tap_action:
+                    action: more-info
+
+                - type: custom:button-card
+                  template: mushroom_mode_control_3buttons
+                  entity: input_select.kidsroom_humidifier_mode
+                  variables:
+                    mode1_value: 'High'
+                    mode1_icon: mdi:menu
+                    mode1_color: rgb(156, 39, 176)
+                    mode1_background_color: rgba(156, 39, 176, 0.2)
+                    mode2_value: 'Medium'
+                    mode2_icon: mdi:equal
+                    mode2_color: rgb(156, 39, 176)
+                    mode2_background_color: rgba(156, 39, 176, 0.2)
+                    mode3_value: 'Silent'
+                    mode3_icon: mdi:minus
+                    mode3_color: rgb(156, 39, 176)
+                    mode3_background_color: rgba(156, 39, 176, 0.2)
+
+            - type: horizontal-stack
+              cards:
+                - type: custom:mushroom-entity-card
+                  entity: sensor.kidsroom_smartmi_humidifier_water_level
+                  name: 'Уровень воды'
+                  layout: horizontal
+                  icon_color: purple
+
+                - type: custom:mushroom-entity-card
+                  entity: binary_sensor.kidsroom_smartmi_humidifier_water_tank
+                  name: 'Контейнер'
+                  layout: horizontal
+                  icon_color: purple
+
+            - type: custom:mushroom-entity-card
+              entity: sensor.kidsroom_smartmi_humidifier_motor_speed
+              name: 'Cкорость'
+              layout: horizontal
+              icon_color: purple
 
   - type: vertical-stack
     title: 'Свет'

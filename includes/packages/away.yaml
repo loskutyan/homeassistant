@@ -9,6 +9,17 @@ away:
       name: 'Проверка присутствия телефона в сети в течение '
       duration: 1800
 
+  template:
+    - trigger:
+        - platform: state
+          entity_id: person.ekaterina
+          from: 'home'
+      sensor:
+        - name: 'Последний раз Екатерина была дома, время'
+          unique_id: ekaterina_last_time_left_home_timestamp
+          device_class: timestamp
+          state: '{{ now() }}'
+
   sensor:
     - platform: template
       sensors:
@@ -61,6 +72,12 @@ away:
               | list
               | to_json(ensure_ascii=False) }}
 
+        ekaterina_since_last_time_at_home_hours:
+          friendly_name: 'Екатерина ушла, часов назад'
+          value_template: >
+            {% set last_at_home = states('sensor.ekaterina_last_time_left_home_timestamp') %}
+            {{ (now().timestamp() - as_timestamp(last_at_home)) / 3600 }}
+
   binary_sensor:
     - platform: template
       sensors:
@@ -69,6 +86,14 @@ away:
           device_class: presence
           value_template: >
             {% set mac = states('sensor.phone_mac_address') %}
+            {{ states('device_tracker.' ~ mac) == 'home' }}
+          icon_template: mdi:cellphone
+
+        sisters_phone_presence:
+          friendly_name: 'Телефон Кати дома'
+          device_class: presence
+          value_template: >
+            {% set mac = states('sensor.sisters_phone_mac_address') %}
             {{ states('device_tracker.' ~ mac) == 'home' }}
           icon_template: mdi:cellphone
 
@@ -131,7 +156,7 @@ away:
           data_template:
             entity_id: >-
               {{ states('sensor.lights_switches_list_turned_on') | from_json }}
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set messages = ['Весь свет выключен',
@@ -146,7 +171,7 @@ away:
           data_template:
             entity_id: >-
               {{ states('sensor.heaters_list_turned_on') | from_json }}
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set messages = ['Все обогреватели выключены',
@@ -196,9 +221,10 @@ away:
         - service: media_player.turn_off
           entity_id: media_player.sony_xr_65a80j
         - service: media_player.media_pause
-          entity_id: media_player.homepod_mini_kidsroom
-        - service: media_player.media_pause
-          entity_id: media_player.homepod_mini_bedroom
+          entity_id:
+            - media_player.bedroom_homepod_mini_left
+            - media_player.bedroom_homepod_mini_right
+            - media_player.kidsroom_homepod_mini
 
     - id: 'Входная дверь закрылась, запуск таймера проверки отсутствия'
       alias: left_home_check_timer_start
@@ -208,9 +234,13 @@ away:
           from: 'on'
           to: 'off'
       condition:
-        - condition: state
-          entity_id: binary_sensor.phone_presence
-          state: 'on'
+        - or:
+            - condition: state
+              entity_id: binary_sensor.phone_presence
+              state: 'on'
+            - condition: state
+              entity_id: binary_sensor.sisters_phone_presence
+              state: 'on'
         - condition: state
           entity_id: timer.left_home_by_phone_presence_after_door_closed
           state: 'idle'
@@ -222,10 +252,17 @@ away:
       alias: phone_left_home_after_door_was_closed
       trigger:
         - platform: state
-          entity_id: binary_sensor.phone_presence
+          entity_id:
+            - binary_sensor.phone_presence
+            - binary_sensor.sisters_phone_presence
           from: 'on'
           to: 'off'
       condition:
+        - condition: state
+          entity_id:
+            - binary_sensor.phone_presence
+            - binary_sensor.sisters_phone_presence
+          state: 'off'
         - condition: state
           entity_id: timer.left_home_by_phone_presence_after_door_closed
           state: 'active'
@@ -274,7 +311,9 @@ away:
           entity_id: binary_sensor.hallway_door_sensor_contact
           to: 'on'
         - platform: state
-          entity_id: binary_sensor.phone_presence
+          entity_id:
+            - binary_sensor.phone_presence
+            - binary_sensor.sisters_phone_presence
           from: 'off'
           to: 'on'
       condition:
@@ -284,7 +323,7 @@ away:
       action:
         - service: input_boolean.turn_on
           entity_id: input_boolean.somebody_home
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set messages = ['С возвращением!',

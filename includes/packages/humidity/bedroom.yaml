@@ -1,4 +1,12 @@
 bedroom_humidity:
+  input_select:
+    bedroom_humidifier_mode:
+      name: 'Режим работы увлажнителя в спальне'
+      options:
+        - Silent
+        - Medium
+        - High
+
   timer:
     bedroom_humidifier_fixed_mode:
       name: 'Фиксированный режим увлажнителя в спальне, осталось '
@@ -38,6 +46,33 @@ bedroom_humidity:
             {% endif %}
 
   automation:
+    - id: 'Выбор режима работы увлажнителя в спальне'
+      alias: select_bedroom_humidifier_mode
+      trigger:
+        - entity_id: input_select.bedroom_humidifier_mode
+          platform: state
+      action:
+        - service: humidifier.set_mode
+          entity_id: humidifier.bedroom_smartmi_humidifier
+          data_template:
+            mode: '{{ trigger.to_state.state }}'
+
+    - id: 'Отслеживание режима работы увлажнителя в спальне'
+      alias: tracking_bedroom_humidifier_mode
+      trigger:
+        - platform: state
+          entity_id: humidifier.bedroom_smartmi_humidifier
+          attribute: mode
+          for: '00:00:01'
+      condition:
+        - condition: template
+          value_template: "{{ trigger.to_state.attributes.mode not in ['unknown', 'unavailable'] }}"
+      action:
+        - service: input_select.select_option
+          entity_id: input_select.bedroom_humidifier_mode
+          data_template:
+            option: '{{ trigger.to_state.attributes.mode }}'
+
     - id: 'Выключение звука увлажнителя в спальне'
       alias: bedroom_humidifier_buzzer_turn_off
       initial_state: true
@@ -61,6 +96,13 @@ bedroom_humidity:
           entity_id: timer.bedroom_humidifier_fixed_mode
           from: 'active'
           to: 'idle'
+        - platform: state
+          entity_id: sensor.bedroom_humidifier_mode_needs_changes
+          from: 'keep'
+          not_to:
+            - 'unknown'
+            - 'unavailable'
+          for: '00:01:00'
       condition:
         - condition: state
           entity_id: timer.bedroom_humidifier_fixed_mode
@@ -105,7 +147,7 @@ bedroom_humidity:
             {% set delta_minutes = (now - last_triggered).total_seconds() / 60 if last_triggered != none else 1000 %}
             {{ delta_minutes > 90 }}
       action:
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set hum = states('sensor.bedroom_average_humidity') %}
@@ -137,11 +179,11 @@ bedroom_humidity:
             {% set delta_hours = (now - last_triggered).total_seconds() / 3600 if last_triggered != none else 1000 %}
             {{ delta_hours > 8 }}
       action:
-        - service: notify.tg
+        - service: notify.tg_bot
           data:
             message: >
               {% set lvl = states('sensor.bedroom_smartmi_humidifier_water_level') %}
               {% set messages = ['Вода в увлажнителе в спальне кончается!',
                                  'Вода для увлажнения в спальне на исходе, милорд!',
-                                 'Нужно долить воды в увлажнитель в спальне'] %}
+                                 'Нужно долить воды в увлажнитель в спальне.'] %}
               {{ '\U0001F6B1' }} {{ messages | random }} Осталось всего {{ lvl }}%. {{ states('sensor.time_date') }}

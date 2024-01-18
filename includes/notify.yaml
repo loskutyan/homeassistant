@@ -1,3 +1,11 @@
-- name: tg
+- name: tg_bot
   platform: telegram
-  chat_id: !secret chat_id_loskutyan
+  chat_id: !secret tg_chat_id_loskutyan
+
+- name: tg_media
+  platform: telegram
+  chat_id: !secret tg_chat_id_unraid_media_group
+
+- name: tg_urgent
+  platform: telegram
+  chat_id: !secret tg_chat_id_ha_urgent_group
