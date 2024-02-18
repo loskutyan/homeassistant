@@ -602,7 +602,6 @@ kidsroom_air:
         - condition: state
           entity_id:
             - timer.kidsroom_airpurifier_fixed_speed
-            - timer.kidsroom_periodic_ventilation
           state: 'idle'
       action:
         - service: switch.turn_off

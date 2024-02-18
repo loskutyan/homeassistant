@@ -29,6 +29,7 @@
       - switch.bathroom_valves
       - switch.bedroom_cooling
       - switch.kidsroom_cooling
+      - media_player.kidsroom_mi_tv_stick
     include_entity_globs:
       - binary_sensor.*_water_leak
       - binary_sensor.*_sensor_smoke
@@ -105,3 +106,5 @@
       name: 'Охлаждение'
     switch.kidsroom_cooling:
       name: 'Охлаждение'
+    media_player.kidsroom_mi_tv_stick:
+      name: 'Телевизор'

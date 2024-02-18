@@ -605,7 +605,6 @@ bedroom_air:
         - condition: state
           entity_id:
             - timer.bedroom_airpurifier_fixed_speed
-            - timer.bedroom_periodic_ventilation
           state: 'idle'
       action:
         - service: switch.turn_off

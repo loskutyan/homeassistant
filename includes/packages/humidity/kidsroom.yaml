@@ -186,3 +186,34 @@ kidsroom_humidity:
                                  'Вода для увлажнения в детской на исходе, милорд!',
                                  'Нужно долить воды в увлажнитель в детской.'] %}
               {{ '\U0001F6B1' }} {{ messages | random }} Осталось всего {{ lvl }}%. {{ states('sensor.time_date') }}
+
+    - id: 'Кончилась вода в увлажнителе в детской - уведомление'
+      alias: telegram_kidsroom_humidifier_no_water
+      initial_state: true
+      trigger:
+        - platform: numeric_state
+          entity_id: sensor.kidsroom_smartmi_humidifier_water_level
+          below: 20
+          for:
+            minutes: 5
+      condition:
+        - condition: state
+          entity_id: humidifier.kidsroom_smartmi_humidifier
+          state: 'on'
+        - condition: numeric_state
+          entity_id: sensor.kidsroom_smartmi_humidifier_motor_speed
+          above: 1
+        - condition: template
+          value_template: >
+            {% set last_triggered = state_attr('automation.telegram_kidsroom_humidifier_no_water', 'last_triggered') %}
+            {% set now = utcnow() %}
+            {% set delta_hours = (now - last_triggered).total_seconds() / 3600 if last_triggered != none else 1000 %}
+            {{ delta_hours > 8 }}
+      action:
+        - service: notify.tg_urgent
+          data:
+            message: >
+              {% set lvl = states('sensor.kidsroom_smartmi_humidifier_water_level') %}
+              {% set messages = ['Вода в увлажнителе в детской кончилась!',
+                                 'Нужно долить воды в увлажнитель в детской.'] %}
+              {{ '\U0001F6B1' }} {{ messages | random }} Уровень {{ lvl }}%. {{ states('sensor.time_date') }}

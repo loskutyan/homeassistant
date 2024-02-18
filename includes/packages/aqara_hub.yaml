@@ -7,15 +7,14 @@ aqara_hub:
       step: 1
       icon: mdi:volume-high
 
-
   sensor:
     - platform: template
       sensors:
         aqara_hub_volume:
           friendly_name: 'Aqara Hub Громкость'
           unit_of_measurement: '%'
-          value_template: '{{ (state_attr(''media_player.miio_gateway'', ''volume_level'') | float * 100) | int }}'
-          availability_template: '{{ state_attr(''media_player.miio_gateway'', ''volume_level'') | float(-1) >= 0 }}'
+          value_template: "{{ (state_attr('media_player.miio_gateway', 'volume_level') | float * 100) | int }}"
+          availability_template: "{{ state_attr('media_player.miio_gateway', 'volume_level') | float(-1) >= 0 }}"
           icon_template: >
             {% set vol = states('sensor.aqara_hub_volume') | int(0) %}
             {% if vol > 60  %}
@@ -27,7 +26,6 @@ aqara_hub:
             {% else %}
               mdi: volume-mute
             {% endif %}
-
 
   automation:
     - id: 'Выбор громкости хаба Aqara'
@@ -48,22 +46,20 @@ aqara_hub:
           entity_id: sensor.aqara_hub_volume
       condition:
         - condition: template
-          value_template: '{{ state_attr(''media_player.miio_gateway'', ''volume_level'') | float(-1) >= 0 }}'
+          value_template: "{{ state_attr('media_player.miio_gateway', 'volume_level') | float(-1) >= 0 }}"
       action:
         - service: input_number.set_value
           entity_id: input_number.aqara_hub_volume
           data_template:
-            value: '{{ (state_attr(''media_player.miio_gateway'', ''volume_level'') | float * 100) | int }}'
+            value: "{{ (state_attr('media_player.miio_gateway', 'volume_level') | float * 100) | int }}"
 
     - id: 'Звонок в дверь'
       alias: elevator_hall_doorbell_rings
       initial_state: true
       trigger:
         - platform: state
-          entity_id: sensor.elevator_hall_aqara_button_action
-          to:
-            - 'single'
-            - 'double'
+          entity_id: binary_sensor.elevator_hall_button_press_sensor_contact
+          to: 'off'
       action:
         - if:
             - condition: time
@@ -76,7 +72,7 @@ aqara_hub:
                 media_content_type: 'music'
                 media_content_id: 10
           continue_on_error: true
-        - service: notify.tg_bot
+        - service: notify.tg_urgent
           data:
             message: >
               {% set messages = ['Кто-то позвонил в дверь в',
