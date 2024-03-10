@@ -292,11 +292,14 @@ cards:
           type: custom:mini-graph-card
           entities:
             - entity: sensor.bedroom_average_humidity
-              name: 'Влажность в спальне'
-              show_legend: false
+              name: 'Спальня'
+              show_legend: true
             - entity: sensor.kidsroom_average_humidity
-              name: 'Влажность в детской'
-              show_legend: false
+              name: 'Детская'
+              show_state: true
+              show_legend: true
+          name: 'Влажность'
+          align_state: 'center'
           lower_bound: 15
           upper_bound: 75
           color_thresholds:
@@ -319,11 +322,14 @@ cards:
       - type: custom:mini-graph-card
         entities:
           - entity: sensor.bedroom_average_temperature
-            name: 'Температура в спальне'
-            show_legend: false
+            name: 'Спальня'
+            show_legend: true
           - entity: sensor.kidsroom_average_temperature
-            name: 'Температура в детской'
-            show_legend: false
+            name: 'Детская'
+            show_state: true
+            show_legend: true
+        name: 'Температура'
+        align_state: 'center'
         lower_bound: 18
         upper_bound: 32
         color_thresholds:
@@ -348,11 +354,14 @@ cards:
       - type: custom:mini-graph-card
         entities:
           - entity: sensor.cleargrass_air_co2
-            name: 'CO² Спальня'
-            show_legend: false
+            name: 'Спальня'
+            show_legend: true
           - entity: sensor.qingping_air_lite_co2
-            name: 'CO² Детская'
-            show_legend: false
+            name: 'Детская'
+            show_state: true
+            show_legend: true
+        name: 'CO²'
+        align_state: 'center'
         lower_bound: 400
         upper_bound: 1200
         color_thresholds:
@@ -379,11 +388,14 @@ cards:
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.cleargrass_air_pm25
-                name: 'PM2.5 Спальня'
-                show_legend: false
+                name: 'Спальня'
+                show_legend: true
               - entity: sensor.qingping_air_lite_pm25
-                name: 'PM2.5 Детская'
-                show_legend: false
+                name: 'Детская'
+                show_state: true
+                show_legend: true
+            name: 'PM2.5'
+            align_state: 'center'
             lower_bound: 0.0
             upper_bound: 20.0
             color_thresholds:

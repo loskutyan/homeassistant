@@ -2,6 +2,7 @@ minipc:
   command_line:
     - sensor:
         name: 'CPU Temperature'
+        device_class: temperature
         unit_of_measurement: '°C'
-        command: 'cat /sys/class/thermal/thermal_zone2/temp'
+        command: 'cat /sys/class/thermal/thermal_zone0/temp'
         value_template: '{{ value | multiply(0.001) | round(1) }}'

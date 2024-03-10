@@ -1,0 +1,108 @@
+games_signal:
+  binary_sensor:
+    - platform: rest
+      name: signal_rocketleague_cyclops
+      resource: https://signal.valiev.one/rocketleague/cyclops
+      authentication: basic
+      username: !secret games_signal_username
+      password: !secret games_signal_password
+      icon: mdi:car
+      value_template: '{{ value_json is not none and value_json.active == true }}'
+      headers:
+        Content-Type: application/json
+
+  switch:
+    - platform: rest
+      name: signal_rocketleague_jubilee
+      resource: https://signal.valiev.one/rocketleague/jubilee
+      username: !secret games_signal_username
+      password: !secret games_signal_password
+      body_on: '{"active": true}'
+      body_off: '{"active": false}'
+      is_on_template: '{{ value_json is not none and value_json.active == true }}'
+      icon: mdi:car
+      headers:
+        Content-Type: application/json
+
+  script:
+    aqara_hub_gaming_sound_notification:
+      alias: 'Тихое звуковое уведомление Aqara Hub'
+      sequence:
+        - service: scene.create
+          data:
+            scene_id: aqara_hub_state_revert
+            snapshot_entities: 'media_player.miio_gateway'
+        - service: media_player.volume_set
+          entity_id: media_player.miio_gateway
+          data_template:
+            volume_level: 0.05
+          continue_on_error: true
+        - delay: 00:00:03
+        - repeat:
+            count: 2
+            sequence:
+              - service: media_player.play_media
+                entity_id: media_player.miio_gateway
+                data:
+                  media_content_type: 'music'
+                  media_content_id: 11
+                continue_on_error: true
+              - delay: 00:00:05
+        - service: scene.turn_on
+          data:
+            entity_id: scene.aqara_hub_state_revert
+
+    aqara_hub_light_flashes_notification:
+      alias: 'Световое уведомление Aqara Hub'
+      sequence:
+        - repeat:
+            count: 5
+            sequence:
+              - repeat:
+                  for_each:
+                    - 'white'
+                    - 'sandybrown'
+                    - 'yellow'
+                    - 'gold'
+                    - 'orange'
+                    - 'orangered'
+                    - 'red'
+                    - 'orangered'
+                    - 'orange'
+                    - 'gold'
+                    - 'yellow'
+                    - 'sandybrown'
+                    - 'white'
+                  sequence:
+                    - service: light.turn_on
+                      entity_id: light.miio_gateway
+                      data:
+                        color_name: '{{ repeat.item }}'
+                        brightness_pct: 100
+                      continue_on_error: true
+                    - delay: 00:00:01
+              - service: light.turn_off
+                entity_id: light.miio_gateway
+              - delay: 00:00:02
+
+  automation:
+    - id: 'Циклопы готовы к РЛ - уведомление'
+      alias: cyclops_is_rocketleague_ready_notify
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.signal_rocketleague_cyclops
+          to: 'on'
+      action:
+        - service: notify.tg_urgent
+          data:
+            message: >
+              {{ '\U0001F3CE' }} Циклопы готовы к РЛ!
+        - service: script.turn_on
+          entity_id: script.aqara_hub_light_flashes_notification
+        - if:
+            - condition: time
+              after: '09:00:00'
+              before: '23:50:00'
+          then:
+            service: script.turn_on
+            entity_id: script.aqara_hub_gaming_quiet_notification
