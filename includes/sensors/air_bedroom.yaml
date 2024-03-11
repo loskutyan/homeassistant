@@ -7,27 +7,27 @@
       availability_template: >
         {% set value = states('sensor.cgllc_s1_04e8_co2_density') | float(0) %}
         {{ value > 0 and value < 10000 }}
-      value_template: '{{ states(''sensor.cgllc_s1_04e8_co2_density'') }}'
+      value_template: "{{ states('sensor.cgllc_s1_04e8_co2_density') }}"
       icon_template: mdi:molecule-co2
 
     cleargrass_air_tvoc:
       friendly_name: 'Cleargrass air tVOC'
-      device_class: volatile_organic_compounds
+      device_class: volatile_organic_compounds_parts
       unit_of_measurement: 'ppb'
       availability_template: >
         {% set value = states('sensor.cgllc_s1_04e8_tvoc_density') | float(0) %}
         {{ value > 0 and value < 10000 }}
-      value_template: '{{ states(''sensor.cgllc_s1_04e8_tvoc_density'') }}'
+      value_template: "{{ states('sensor.cgllc_s1_04e8_tvoc_density') }}"
       icon_template: mdi:atom
 
     cleargrass_air_pm25:
       friendly_name: 'Cleargrass air PM2.5'
       device_class: pm25
-      unit_of_measurement: 'ppm'
+      unit_of_measurement: 'µg/m³'
       availability_template: >
         {% set value = states('sensor.cgllc_s1_04e8_pm25_density') | float(-1) %}
         {{ value >= 0 and value < 1000 }}
-      value_template: '{{ states(''sensor.cgllc_s1_04e8_pm25_density'') }}'
+      value_template: "{{ states('sensor.cgllc_s1_04e8_pm25_density') }}"
       icon_template: mdi:molecule
 
     cleargrass_air_temperature:
@@ -37,7 +37,7 @@
       availability_template: >
         {% set value = states('sensor.cgllc_s1_04e8_temperature') | float(0) %}
         {{ value > 0 and value < 100 }}
-      value_template: '{{ states(''sensor.cgllc_s1_04e8_temperature'') }}'
+      value_template: "{{ states('sensor.cgllc_s1_04e8_temperature') }}"
 
     cleargrass_air_humidity:
       friendly_name: 'Cleargrass air Влажность'
@@ -46,13 +46,13 @@
       availability_template: >
         {% set value = states('sensor.cgllc_s1_04e8_environment') | float(0) %}
         {{ value > 0 and value < 100 }}
-      value_template: '{{ states(''sensor.cgllc_s1_04e8_environment'') }}'
+      value_template: "{{ states('sensor.cgllc_s1_04e8_environment') }}"
 
     bedroom_aqara_temperature:
       friendly_name: 'Bedroom aqara Температура'
       device_class: temperature
       unit_of_measurement: '°C'
-      value_template: '{{ states(''sensor.bedroom_aqara_air_sensor_temperature'') }}'
+      value_template: "{{ states('sensor.bedroom_aqara_air_sensor_temperature') }}"
       availability_template: >
         {% set value = states('sensor.bedroom_aqara_air_sensor_temperature') | float(0) %}
         {{ value > 10 and value < 100 }}
@@ -61,11 +61,11 @@
       friendly_name: 'Bedroom aqara Влажность'
       device_class: humidity
       unit_of_measurement: '%'
-      value_template: '{{ states(''sensor.bedroom_aqara_air_sensor_humidity'') }}'
+      value_template: "{{ states('sensor.bedroom_aqara_air_sensor_humidity') }}"
       availability_template: >
         {% set value = states('sensor.bedroom_aqara_air_sensor_humidity') | float(0) %}
         {{ value > 5 and value < 100 }}
-  
+
     bedroom_average_temperature:
       friendly_name: 'Температура'
       device_class: temperature

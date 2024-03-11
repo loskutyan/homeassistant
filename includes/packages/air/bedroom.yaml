@@ -153,11 +153,15 @@ bedroom_air:
 
         bedroom_airpurifier_current_speed:
           friendly_name: 'Mi Fresh Air Bedroom Текущая скорость'
+          device_class: volume_flow_rate
+          unit_of_measurement: 'm³/h'
           value_template: "{{ state_attr('fan.mijia_airpurifier_bedroom', 'control_speed') }}"
           icon_template: mdi:speedometer
 
         bedroom_airpurifier_favorite_speed:
           friendly_name: 'Mi Fresh Air Bedroom Установленная скорость'
+          device_class: volume_flow_rate
+          unit_of_measurement: 'm³/h'
           value_template: "{{ state_attr('fan.mijia_airpurifier_bedroom', 'favorite_speed') }}"
           icon_template: mdi:speedometer
 

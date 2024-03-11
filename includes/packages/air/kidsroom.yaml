@@ -153,11 +153,15 @@ kidsroom_air:
 
         kidsroom_airpurifier_current_speed:
           friendly_name: 'Mi Fresh Air Kidsroom Текущая скорость'
+          device_class: volume_flow_rate
+          unit_of_measurement: 'm³/h'
           value_template: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'control_speed') }}"
           icon_template: mdi:speedometer
 
         kidsroom_airpurifier_favorite_speed:
           friendly_name: 'Mi Fresh Air Kidsroom Установленная скорость'
+          device_class: volume_flow_rate
+          unit_of_measurement: 'm³/h'
           value_template: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'favorite_speed') }}"
           icon_template: mdi:speedometer
 

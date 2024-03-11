@@ -106,3 +106,22 @@ games_signal:
           then:
             service: script.turn_on
             entity_id: script.aqara_hub_gaming_quiet_notification
+
+    - id: 'Циклопы готовы к РЛ - освещение'
+      alias: cyclops_is_rocketleague_ready_lights_toggle
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.signal_rocketleague_cyclops
+          from:
+            - 'on'
+            - 'off'
+          to:
+            - 'on'
+            - 'off'
+      action:
+        - delay: 00:02:00
+        - service: light.turn_{{trigger.to_state.state}}
+          entity_id: light.miio_gateway
+          data:
+            color_name: green
+            brightness_pct: 100
