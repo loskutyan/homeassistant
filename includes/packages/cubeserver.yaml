@@ -154,6 +154,51 @@ cubeserver:
           field: 'temp_c'
           database: 'cubeserver_telegraf'
 
+        - name: 'Cubeserver parity common size raw'
+          unit_of_measurement: 'B'
+          value_template: '{{ value }}'
+          group_function: last
+          where: '"host" = ''cubeserver'''
+          measurement: '"mdcmd"'
+          field: 'mdResyncSize'
+          database: 'cubeserver_telegraf'
+
+        - name: 'Cubeserver parity size raw'
+          unit_of_measurement: 'B'
+          value_template: '{{ value }}'
+          group_function: last
+          where: '"host" = ''cubeserver'''
+          measurement: '"mdcmd"'
+          field: 'mdResync'
+          database: 'cubeserver_telegraf'
+
+        - name: 'Cubeserver parity pos raw'
+          unit_of_measurement: 'B'
+          value_template: '{{ value }}'
+          group_function: last
+          where: '"host" = ''cubeserver'''
+          measurement: '"mdcmd"'
+          field: 'mdResyncPos'
+          database: 'cubeserver_telegraf'
+
+        - name: 'Cubeserver parity dt raw'
+          unit_of_measurement: 's'
+          value_template: '{{ value }}'
+          group_function: last
+          where: '"host" = ''cubeserver'''
+          measurement: '"mdcmd"'
+          field: 'mdResyncDt'
+          database: 'cubeserver_telegraf'
+
+        - name: 'Cubeserver parity db raw'
+          unit_of_measurement: 'B'
+          value_template: '{{ value }}'
+          group_function: last
+          where: '"host" = ''cubeserver'''
+          measurement: '"mdcmd"'
+          field: 'mdResyncDb'
+          database: 'cubeserver_telegraf'
+
   binary_sensor:
     - platform: template
       sensors:
@@ -201,31 +246,6 @@ cubeserver:
             {{ parity or disk1 or disk2 }}
 
   command_line:
-    # - sensor:
-    #     unique_id: cubeserver_parity_common_size_raw
-    #     name: 'Cubeserver Parity Common Size Raw'
-    #     command: "ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} mdcmd status | sed -n 's/mdResyncSize=//p'"
-
-    # - sensor:
-    #     unique_id: cubeserver_parity_size_raw
-    #     name: 'Cubeserver Parity Size Raw'
-    #     command: "ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} mdcmd status | sed -n 's/mdResync=//p'"
-
-    # - sensor:
-    #     unique_id: cubeserver_parity_pos_row
-    #     name: 'Cubeserver Parity Pos Raw'
-    #     command: "ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} mdcmd status | sed -n 's/mdResyncPos=//p'"
-
-    # - sensor:
-    #     unique_id: cubeserver_parity_dt_raw
-    #     name: 'Cubeserver Parity Dt Raw'
-    #     command: "ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} mdcmd status | sed -n 's/mdResyncDt=//p'"
-
-    # - sensor:
-    #     unique_id: cubeserver_parity_db_raw
-    #     name: 'Cubeserver Parity Db Raw'
-    #     command: "ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} mdcmd status | sed -n 's/mdResyncDb=//p'"
-
     # - binary_sensor:
     #     unique_id: cubeserver_vm_windows10_virsh_status
     #     name: 'Cubeserver VM Windows10 Virsh Status'
