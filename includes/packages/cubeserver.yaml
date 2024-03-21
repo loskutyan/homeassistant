@@ -245,18 +245,20 @@ cubeserver:
             {% set disk2 = is_state('binary_sensor.cubeserver_disk_2_overheat', 'on') %}
             {{ parity or disk1 or disk2 }}
 
-  command_line:
-    # - binary_sensor:
-    #     unique_id: cubeserver_vm_windows10_virsh_status
-    #     name: 'Cubeserver VM Windows10 Virsh Status'
-    #     command: "if test $(ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh list --all | grep 'Windows 10' | awk '{print $4}') == running; then echo running; else echo 'not running'; fi"
-    #     device_class: connectivity
-    #     payload_on: 'running'
-    #     payload_off: 'not running'
+  # command_line:
+  #   - binary_sensor:
+  #       unique_id: cubeserver_vm_windows10_virsh_status
+  #       name: 'Cubeserver VM Windows10 Virsh Status'
+  #       command: "if test $(ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh list --all | grep 'Windows 10' | awk '{print $4}') == running; then echo running; else echo 'not running'; fi"
+  #       device_class: connectivity
+  #       payload_on: 'running'
+  #       payload_off: 'not running'
 
   shell_command:
     run_cubeserver_vm_windows10: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} virsh start ''Windows\ 10'''
     shutdown_cubeserver_vm_windows10: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} virsh shutdown ''Windows\ 10'''
+    run_cubeserver_vm_ubuntuyadisk: "ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh start 'Ubuntu'"
+    shutdown_cubeserver_vm_ubuntuyadisk: "ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh shutdown 'Ubuntu'"
 
   script:
     shutdown_cubeserver_vm_windows10:
@@ -277,7 +279,17 @@ cubeserver:
             service: shell_command.run_cubeserver_vm_windows10
           turn_off:
             service: shell_command.shutdown_cubeserver_vm_windows10
-          icon_template: mdi:desktop-classic
+          icon_template: mdi:microsoft-windows
+
+        cubeserver_vm_ubuntuyadisk:
+          friendly_name: 'VM Ubuntu YaDisk'
+          value_template: >
+            {{ states('binary_sensor.cubeserver_vm_ubuntuyadisk_ping') }}
+          turn_on:
+            service: shell_command.run_cubeserver_vm_ubuntuyadisk
+          turn_off:
+            service: shell_command.shutdown_cubeserver_vm_ubuntuyadisk
+          icon_template: mdi:ubuntu
 
   automation:
     - id: 'Перегрев дисков - уведомление'

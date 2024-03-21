@@ -167,6 +167,8 @@ cards:
         entities:
           - entity: switch.cubeserver_vm_windows10
             name: 'Windows 10 VM'
+          - entity: switch.cubeserver_vm_ubuntuyadisk
+            name: 'Ubuntu YaDisk VM'
 
       - type: entities
         entities:
