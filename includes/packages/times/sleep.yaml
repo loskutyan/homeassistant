@@ -13,12 +13,13 @@ sleep_time:
     - platform: template
       sensors:
         kidsroom_wakeup_time:
+          device_class: timestamp
           value_template: >
             {% set is_weekend = is_state('binary_sensor.workday_sensor', 'on') %}
             {% if is_weekend %}
-              '10:30'
+              {{ today_at('10:30').isoformat() }}
             {% else %}
-              '07:50'
+              {{ today_at('07:50').isoformat() }}
             {% endif %}
 
   switch:
@@ -123,7 +124,7 @@ sleep_time:
       initial_state: true
       trigger:
         - platform: time
-          at: '07:50'
+          at: sensor.kidsroom_wakeup_time
         - platform: state
           entity_id: sensor.kidsroom_lights_common_switch_action
           to: 'double_right'

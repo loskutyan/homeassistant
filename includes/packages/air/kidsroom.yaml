@@ -190,8 +190,8 @@ kidsroom_air:
         kidsroom_airpurifier_target_co2_delta:
           friendly_name: 'Поправка к скорости бризера в детской'
           value_template: >
-            {% set delta_ct = states('sensor.kidsroom_current_target_temperature_delta') | float %}
-            {% set delta_ot = states('sensor.outside_target_temperature_delta') | float %}
+            {% set delta_ct = states('sensor.kidsroom_current_target_temperature_delta') | float(1) %}
+            {% set delta_ot = states('sensor.outside_target_temperature_delta') | float(1) %}
             {{ (delta_ct * delta_ot / ((delta_ct * delta_ot) | abs)) * min(150, ((delta_ct | abs)**1.5 * sin((min(20, delta_ot | abs)) / 20 * 3.1415926)) | round * 10) }}
 
         kidsroom_airpurifier_speed_min_co2:
@@ -570,6 +570,9 @@ kidsroom_air:
         - condition: numeric_state
           entity_id: sensor.qingping_air_lite_co2
           above: 650
+        - condition: state
+          entity_id: switch.kidsroom_airpurifier_favourite_speed_smart_control
+          state: 'on'
       action:
         - service: fan.turn_on
           entity_id: fan.mijia_airpurifier_kidsroom
@@ -607,6 +610,16 @@ kidsroom_air:
           entity_id:
             - timer.kidsroom_airpurifier_fixed_speed
           state: 'idle'
+        - condition: state
+          entity_id: switch.kidsroom_airpurifier_favourite_speed_smart_control
+          state: 'on'
+        - condition: template
+          value_template: >
+            {% set outside_target_delta = states('sensor.outside_target_temperature_delta') | float(-99) %}
+            {% set inside_target_delta = states('sensor.kidsroom_current_target_temperature_delta') | float(99) %}
+            {% set somebody_home = states('switch.somebody_home') | bool(True) %}
+            {% set needs_cooling_from_outside = outside_target_delta < -10 and inside_target_delta > 1.5 and somebody_home %}
+            {{ not needs_cooling_from_outside }}
       action:
         - service: switch.turn_off
           entity_id: switch.kidsroom_airpurifier_ptc
@@ -647,6 +660,9 @@ kidsroom_air:
         - condition: state
           entity_id: fan.mijia_airpurifier_kidsroom
           state: 'off'
+        - condition: state
+          entity_id: switch.kidsroom_airpurifier_favourite_speed_smart_control
+          state: 'on'
       action:
         - service: switch.turn_on
           entity_id: switch.kidsroom_airpurifier_forced_ventilation

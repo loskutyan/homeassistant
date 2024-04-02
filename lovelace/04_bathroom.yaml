@@ -1,0 +1,27 @@
+title: 'Ванная'
+icon: mdi:shower
+
+cards:
+  - type: vertical-stack
+    title: 'Свет'
+    cards:
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-light-card
+                entity: switch.bathroom_lights_switch
+                name: 'Свет'
+                icon: mdi:ceiling-light-multiple
+
+  - type: vertical-stack
+    title: 'Безопасность'
+    cards:
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: switch.bathroom_valves
+                name: 'Шаровые краны'
+                layout: horizontal

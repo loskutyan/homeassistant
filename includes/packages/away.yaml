@@ -76,7 +76,7 @@ away:
           friendly_name: 'Екатерина ушла, часов назад'
           value_template: >
             {% set last_at_home = states('sensor.ekaterina_last_time_left_home_timestamp') %}
-            {{ (now().timestamp() - as_timestamp(last_at_home)) / 3600 }}
+            {{ (now().timestamp() - as_timestamp(last_at_home, default=0)) / 3600 }}
 
   binary_sensor:
     - platform: template
