@@ -59,9 +59,9 @@
     switch.kidsroom_lights_common_switch_left:
       name: 'Люстра'
     light.kidsroom_wall_aqara_led_bulbs:
-      name: 'Бра'
+      name: 'Настеннные светильники'
     switch.kitchen_lights_switch_left:
-      name: 'Бра'
+      name: 'Настеннный светильник'
     switch.kitchen_lights_switch_right:
       name: 'Люстра'
     switch.kitchen_led_strip_switch:

@@ -15,11 +15,11 @@ sleep_time:
         kidsroom_wakeup_time:
           device_class: timestamp
           value_template: >
-            {% set is_weekend = is_state('binary_sensor.workday_sensor', 'on') %}
-            {% if is_weekend %}
-              {{ today_at('10:30').isoformat() }}
-            {% else %}
+            {% set is_workday = is_state('binary_sensor.workday_sensor', 'on') %}
+            {% if is_workday %}
               {{ today_at('07:50').isoformat() }}
+            {% else %}
+              {{ today_at('10:30').isoformat() }}
             {% endif %}
 
   switch:

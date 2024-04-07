@@ -133,7 +133,8 @@ alarm:
       state: 'on'
       message: >
         {{ '\U0001F30A' }} Протечка воды: {{ states('sensor.found_water_leaks') }}
-      done_message: '{{ ''\U0001F3DC'' }} Протечка воды устранена'
+      done_message: >
+        {{ '\U0001F3DC' }} Протечка воды устранена
       repeat: 5
       can_acknowledge: true
       notifiers:
@@ -145,7 +146,8 @@ alarm:
       state: 'on'
       message: >
         {{ '\U0001F525' }} Задымление: {{ states('sensor.found_smokes') }}
-      done_message: '{{ ''\U0001F9EF'' }} Задымление устранено'
+      done_message: >
+        {{ '\U0001F9EF' }} Задымление устранено
       repeat: 5
       can_acknowledge: true
       notifiers:
@@ -179,6 +181,8 @@ alarm:
       repeat: 60
       message: >
         {{ '\U000026A0' }} Проблема с ИБП, статус {{ states('sensor.ups_status') }}. {{ states('sensor.time_date') }}
+      done_message: >
+        {{ '\U0001F50B' }} Проблема с ИБП устранена, статус {{ states('sensor.ups_status') }}
       notifiers:
         - tg_urgent
 

@@ -574,7 +574,7 @@ bedroom_air:
           entity_id: sensor.cleargrass_air_co2
           above: 650
         - condition: state
-          entity_id: switch.bedroom_airpurifier_favourite_speed_smart_control
+          entity_id: input_boolean.bedroom_airpurifier_favourite_speed_smart_control
           state: 'on'
       action:
         - service: fan.turn_on
