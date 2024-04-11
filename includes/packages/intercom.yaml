@@ -1,0 +1,17 @@
+intercom:
+  automation:
+    - id: 'Звонок в домофон - уведомление'
+      alias: intercom_rings_notify
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.smartintercom_vkhodiashchii_zvonok
+          from: 'off'
+          to: 'on'
+      action:
+        - service: notify.tg_urgent
+          data:
+            message: >
+              {% set messages = ['Кто-то позвонил в домофон!',
+                                 'Кажется, кто-то пришел и звонит в домофон.',
+                                 'Внизу люди! Звонят в домофон.'] %}
+              {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}

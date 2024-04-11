@@ -89,6 +89,11 @@ cards:
                 icon_color: orange
 
           - type: custom:mushroom-entity-card
+            entity: switch.smartintercom_otkryvat_na_sleduiushchii_zvonok
+            name: 'След. автооткрытие домофона'
+            secondary_info: last-changed
+
+          - type: custom:mushroom-entity-card
             entity: switch.bathroom_valves
             layout: horizontal
 

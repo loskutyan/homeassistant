@@ -75,7 +75,7 @@ aqara_hub:
         - service: notify.tg_urgent
           data:
             message: >
-              {% set messages = ['Кто-то позвонил в дверь в',
-                                 'Кажется, кто-то пришел и звонит в дверь',
+              {% set messages = ['Кто-то позвонил в дверь!',
+                                 'Кажется, кто-то пришел и звонит в дверь.',
                                  'Билим-билим!'] %}
               {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}
