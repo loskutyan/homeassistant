@@ -321,12 +321,16 @@ away:
           entity_id: input_boolean.somebody_home
           state: 'off'
       action:
-        - service: input_boolean.turn_on
-          entity_id: input_boolean.somebody_home
-        - service: notify.tg_bot
+        # - service: input_boolean.turn_on
+        #   entity_id: input_boolean.somebody_home
+        # - service: notify.tg_bot
+        #   data:
+        #     message: >
+        #       {% set messages = ['С возвращением!',
+        #                          'Welcome back',
+        #                          'И снова здравствуйте!'] %}
+        #       {{ '\U0001F596' }} {{ messages | random }} {{ '\U0001F60A' }}
+        - service: mqtt.publish
           data:
-            message: >
-              {% set messages = ['С возвращением!',
-                                 'Welcome back',
-                                 'И снова здравствуйте!'] %}
-              {{ '\U0001F596' }} {{ messages | random }} {{ '\U0001F60A' }}
+            topic: 'zigbee2mqtt/Hallway Duty Aqara LED Strip/set'
+            payload: '{"preset": {{range(1, 7) | random}}}'
