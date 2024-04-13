@@ -144,6 +144,8 @@ games_signal:
             - 'off'
       action:
         - service: script.turn_off
-          entity_id: 'script.aqara_hub_signal_light_turn_{{ trigger.from_state.state }}'
+          target:
+            entity_id: 'script.aqara_hub_signal_light_turn_{{ trigger.from_state.state }}'
         - service: script.turn_on
-          entity_id: 'script.aqara_hub_signal_light_turn_{{ trigger.to_state.state }}'
+          target:
+            entity_id: 'script.aqara_hub_signal_light_turn_{{ trigger.to_state.state }}'
