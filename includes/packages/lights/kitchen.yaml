@@ -98,16 +98,13 @@ kitchen_lights:
         - condition: state
           entity_id: binary_sensor.kitchen_motion_sensor_occupancy
           state: 'on'
-        - or:
-            - condition: state
-              entity_id: switch.kitchen_lights_switch_left
-              state: 'on'
-            - condition: state
-              entity_id: switch.kitchen_lights_switch_right
-              state: 'on'
-            - condition: state
-              entity_id: switch.kitchen_led_strip_switch
-              state: 'on'
+        - condition: state
+          entity_id:
+            - switch.kitchen_lights_switch_left
+            - switch.kitchen_lights_switch_right
+            - switch.kitchen_led_strip_switch
+          state: 'on'
+          match: any
       action:
         - service: timer.start
           entity_id: timer.kitchen_lights_turn_off_without_motion
@@ -121,19 +118,16 @@ kitchen_lights:
           from: 'active'
           to: 'idle'
       condition:
-        - or:
-            - condition: state
-              entity_id: switch.kitchen_lights_switch_left
-              state: 'on'
-            - condition: state
-              entity_id: switch.kitchen_lights_switch_right
-              state: 'on'
-            - condition: state
-              entity_id: switch.kitchen_led_strip_switch
-              state: 'on'
         - condition: state
           entity_id: binary_sensor.kitchen_motion_sensor_occupancy
           state: 'off'
+        - condition: state
+          entity_id:
+            - switch.kitchen_lights_switch_left
+            - switch.kitchen_lights_switch_right
+            - switch.kitchen_led_strip_switch
+          state: 'on'
+          match: any
       action:
         - service: switch.turn_off
           entity_id:

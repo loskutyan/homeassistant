@@ -25,8 +25,8 @@ games_signal:
         Content-Type: application/json
 
   script:
-    aqara_hub_gaming_sound_notification:
-      alias: 'Тихое звуковое уведомление Aqara Hub'
+    signal_aqara_hub_quiet_sound_notification:
+      alias: 'Тихое звуковое уведомление Aqara Hub signal'
       sequence:
         - service: scene.create
           data:
@@ -52,8 +52,8 @@ games_signal:
           data:
             entity_id: scene.aqara_hub_state_revert
 
-    aqara_hub_light_flashes_notification:
-      alias: 'Световое уведомление Aqara Hub'
+    signal_light_flashes_notification:
+      alias: 'Световое уведомление signal'
       sequence:
         - repeat:
             count: 5
@@ -74,16 +74,26 @@ games_signal:
                     - 'sandybrown'
                     - 'white'
                   sequence:
-                    - service: light.turn_on
-                      entity_id: light.miio_gateway
-                      data:
-                        color_name: '{{ repeat.item }}'
-                        brightness_pct: 100
-                      continue_on_error: true
+                    - parallel:
+                        - service: light.turn_on
+                          entity_id:
+                            - light.miio_gateway
+                          data:
+                            color_name: '{{ repeat.item }}'
+                            brightness_pct: 100
+                          continue_on_error: true
+                        - service: light.turn_on
+                          entity_id:
+                            - light.hallway_duty_aqara_led_strip
+                          data:
+                            color_name: '{{ repeat.item }}'
+                            brightness_pct: 40
+                          continue_on_error: true
                     - delay: 00:00:01
               - service: light.turn_off
-                entity_id: light.miio_gateway
-              - delay: 00:00:02
+                entity_id:
+                  - light.miio_gateway
+                  - light.hallway_duty_aqara_led_strip
 
     aqara_hub_signal_light_turn_on:
       sequence:
@@ -111,15 +121,15 @@ games_signal:
           data:
             message: >
               {{ '\U0001F3CE' }} Циклопы готовы к РЛ!
-        - service: script.turn_on
-          entity_id: script.aqara_hub_light_flashes_notification
         - if:
             - condition: time
               after: '09:00:00'
               before: '23:50:00'
           then:
             service: script.turn_on
-            entity_id: script.aqara_hub_gaming_quiet_notification
+            entity_id: script.signal_aqara_hub_quiet_sound_notification
+        - service: script.turn_on
+          entity_id: script.signal_light_flashes_notification
 
     - id: 'Циклопы готовы к РЛ - освещение'
       alias: cyclops_is_rocketleague_ready_lights_toggle
@@ -134,8 +144,6 @@ games_signal:
             - 'off'
       action:
         - service: script.turn_off
-          target:
-            entity_id: 'script.aqara_hub_signal_light_turn_{{ trigger.from_state.state }}'
+          entity_id: 'script.aqara_hub_signal_light_turn_{{ trigger.from_state.state }}'
         - service: script.turn_on
-          target:
-            entity_id: 'script.aqara_hub_signal_light_turn_{{ trigger.to_state.state }}'
+          entity_id: 'script.aqara_hub_signal_light_turn_{{ trigger.to_state.state }}'

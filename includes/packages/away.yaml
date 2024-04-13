@@ -49,7 +49,8 @@ away:
               'light.bedroom_floor_aqara_led_bulb',
               'light.bedroom_nightstand_aqara_led_bulb',
               'light.kidsroom_wall_aqara_led_bulbs',
-              'light.hallway_lights_switch'
+              'light.hallway_lights_switch',
+              'light.hallway_duty_aqara_led_strip'
             ] %}
             {{ states.light
               | selectattr('entity_id', 'in', lights_entities_ids)
@@ -234,13 +235,12 @@ away:
           from: 'on'
           to: 'off'
       condition:
-        - or:
-            - condition: state
-              entity_id: binary_sensor.phone_presence
-              state: 'on'
-            - condition: state
-              entity_id: binary_sensor.sisters_phone_presence
-              state: 'on'
+        - condition: state
+          entity_id:
+            - binary_sensor.phone_presence
+            - binary_sensor.sisters_phone_presence
+          state: 'on'
+          match: any
         - condition: state
           entity_id: timer.left_home_by_phone_presence_after_door_closed
           state: 'idle'
@@ -321,16 +321,17 @@ away:
           entity_id: input_boolean.somebody_home
           state: 'off'
       action:
-        # - service: input_boolean.turn_on
-        #   entity_id: input_boolean.somebody_home
-        # - service: notify.tg_bot
-        #   data:
-        #     message: >
-        #       {% set messages = ['С возвращением!',
-        #                          'Welcome back',
-        #                          'И снова здравствуйте!'] %}
-        #       {{ '\U0001F596' }} {{ messages | random }} {{ '\U0001F60A' }}
+        - service: input_boolean.turn_on
+          entity_id: input_boolean.somebody_home
+        - service: notify.tg_bot
+          data:
+            message: >
+              {% set messages = ['С возвращением!',
+                                 'Welcome back',
+                                 'И снова здравствуйте!'] %}
+              {{ '\U0001F596' }} {{ messages | random }} {{ '\U0001F60A' }}
+          continue_on_error: true
         - service: mqtt.publish
           data:
             topic: 'zigbee2mqtt/Hallway Duty Aqara LED Strip/set'
-            payload: '{"preset": {{range(1, 7) | random}}}'
+            payload: '{"preset": {{range(1, 7) | random}}, "brightness": 64}'

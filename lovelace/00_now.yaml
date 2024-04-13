@@ -88,10 +88,21 @@ cards:
                 entity: switch.kidsroom_asleep
                 icon_color: orange
 
-          - type: custom:mushroom-entity-card
-            entity: switch.smartintercom_otkryvat_na_sleduiushchii_zvonok
-            name: 'След. автооткрытие домофона'
-            secondary_info: last-changed
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: switch.smartintercom_otkryvat_na_sleduiushchii_zvonok
+                name: 'След. автооткрытие домофона'
+                secondary_info: last-changed
+                tap_action:
+                  action: toggle
+
+              - type: custom:mushroom-entity-card
+                entity: switch.smartintercom_otkliuchit_trubku_domofona
+                name: 'Беззвучный режим'
+                secondary_info: last-changed
+                tap_action:
+                  action: toggle
 
           - type: custom:mushroom-entity-card
             entity: switch.bathroom_valves
@@ -131,6 +142,8 @@ cards:
         conditions:
           - entity: binary_sensor.bedroom_smartmi_humidifier_water_tank
             state: 'on'
+          - entity: switch.warm_season
+            state: 'off'
         card:
           type: custom:auto-entities
           card:
@@ -146,6 +159,8 @@ cards:
         conditions:
           - entity: binary_sensor.kidsroom_smartmi_humidifier_water_tank
             state: 'on'
+          - entity: switch.warm_season
+            state: 'off'
         card:
           type: custom:auto-entities
           card:
