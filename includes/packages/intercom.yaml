@@ -8,7 +8,7 @@ intercom:
       binary_sensor:
         - name: 'Intercom Rings'
           state: 'on'
-          delay_off: '00:00:10'
+          auto_off: '00:00:10'
 
     - trigger:
         - platform: state
@@ -18,7 +18,7 @@ intercom:
       binary_sensor:
         - name: 'Intercom Lock Opened'
           state: 'on'
-          delay_off: '00:00:05'
+          auto_off: '00:00:05'
           device_class: lock
 
   script:
