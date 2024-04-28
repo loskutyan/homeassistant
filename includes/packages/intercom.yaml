@@ -8,7 +8,7 @@ intercom:
       binary_sensor:
         - name: 'Intercom Rings'
           state: 'on'
-          auto_off: '00:00:10'
+          auto_off: '00:00:15'
 
     - trigger:
         - platform: state
@@ -34,7 +34,7 @@ intercom:
           data_template:
             volume_level: 0.05
           continue_on_error: true
-        - delay: 00:00:03
+        - delay: 00:00:01
         - repeat:
             count: 2
             sequence:
@@ -54,6 +54,9 @@ intercom:
       sequence:
         - service: script.turn_off
           entity_id: script.intercom_rings_aqara_hub_quiet_sound_notification
+        - service: scene.turn_on
+          data:
+            entity_id: scene.aqara_hub_state_revert
         - service: scene.create
           data:
             scene_id: aqara_hub_state_revert
@@ -63,14 +66,14 @@ intercom:
           data_template:
             volume_level: 0.05
           continue_on_error: true
-        - delay: 00:00:03
+        - delay: 00:00:01
         - service: media_player.play_media
           entity_id: media_player.miio_gateway
           data:
             media_content_type: 'music'
             media_content_id: 14
           continue_on_error: true
-        - delay: 00:00:05
+        - delay: 00:00:08
         - service: scene.turn_on
           data:
             entity_id: scene.aqara_hub_state_revert
@@ -148,7 +151,7 @@ intercom:
             message: >
               {% set messages = ['Дверь домофона открыта!',
                                  'Замок внизу открыт!',
-                                 'Люди '] %}
+                                 'Люди впущены!'] %}
               {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}
           continue_on_error: true
         - service: script.turn_on
