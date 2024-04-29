@@ -18,7 +18,7 @@ intercom:
       binary_sensor:
         - name: 'Intercom Lock Opened'
           state: 'on'
-          auto_off: '00:00:05'
+          auto_off: '00:00:10'
           device_class: lock
 
   script:

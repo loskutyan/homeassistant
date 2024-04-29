@@ -1,0 +1,127 @@
+remotes_learning:
+  script:
+    bedroom_air_conditioner_leaning_cooling_fan:
+      alias: 'Обучение кондиционера: вентиляция'
+      sequence:
+        - service: remote.learn_command
+          target:
+            entity_id: remote.bedroom_broadlink_rm4mini_remote
+          data:
+            device: conditioner
+            command:
+              - vent_auto_auto
+              - vent_auto_1
+              - vent_auto_swing
+              - vent_low_auto
+              - vent_low_1
+              - vent_low_swing
+              - vent_medium_auto
+              - vent_medium_1
+              - vent_medium_swing
+              - vent_high_auto
+              - vent_high_1
+              - vent_high_swing
+
+    bedroom_air_conditioner_leaning_cool_auto_swing:
+      alias: 'Обучение кондиционера: охлаждение auto swing'
+      sequence:
+        - service: remote.learn_command
+          target:
+            entity_id: remote.bedroom_broadlink_rm4mini_remote
+          data:
+            device: conditioner
+            command:
+              - cool_16_auto_swing
+              - cool_17_auto_swing
+              - cool_18_auto_swing
+              - cool_19_auto_swing
+              - cool_20_auto_swing
+              - cool_21_auto_swing
+              - cool_22_auto_swing
+              - cool_23_auto_swing
+              - cool_24_auto_swing
+              - cool_25_auto_swing
+              - cool_26_auto_swing
+              - cool_27_auto_swing
+              - cool_28_auto_swing
+              - cool_29_auto_swing
+              - cool_30_auto_swing
+              - cool_31_auto_swing
+
+    bedroom_air_conditioner_leaning_cool_low_swing:
+      alias: 'Обучение кондиционера: охлаждение low swing'
+      sequence:
+        - service: remote.learn_command
+          target:
+            entity_id: remote.bedroom_broadlink_rm4mini_remote
+          data:
+            device: conditioner
+            command:
+              - cool_31_low_swing
+              - cool_30_low_swing
+              - cool_29_low_swing
+              - cool_28_low_swing
+              - cool_27_low_swing
+              - cool_26_low_swing
+              - cool_25_low_swing
+              - cool_24_low_swing
+              - cool_23_low_swing
+              - cool_22_low_swing
+              - cool_21_low_swing
+              - cool_20_low_swing
+              - cool_19_low_swing
+              - cool_18_low_swing
+              - cool_17_low_swing
+              - cool_16_low_swing
+
+    bedroom_air_conditioner_leaning_cool_medium_swing:
+      alias: 'Обучение кондиционера: охлаждение medium swing'
+      sequence:
+        - service: remote.learn_command
+          target:
+            entity_id: remote.bedroom_broadlink_rm4mini_remote
+          data:
+            device: conditioner
+            command:
+              - cool_16_medium_swing
+              - cool_17_medium_swing
+              - cool_18_medium_swing
+              - cool_19_medium_swing
+              - cool_20_medium_swing
+              - cool_21_medium_swing
+              - cool_22_medium_swing
+              - cool_23_medium_swing
+              - cool_24_medium_swing
+              - cool_25_medium_swing
+              - cool_26_medium_swing
+              - cool_27_medium_swing
+              - cool_28_medium_swing
+              - cool_29_medium_swing
+              - cool_30_medium_swing
+              - cool_31_medium_swing
+
+    bedroom_air_conditioner_leaning_cool_high_swing:
+      alias: 'Обучение кондиционера: охлаждение high swing'
+      sequence:
+        - service: remote.learn_command
+          target:
+            entity_id: remote.bedroom_broadlink_rm4mini_remote
+          data:
+            device: conditioner
+            command:
+              - cool_31_high_swing
+              - cool_30_high_swing
+              - cool_29_high_swing
+              - cool_28_high_swing
+              - cool_27_high_swing
+              - cool_26_high_swing
+              - cool_25_high_swing
+              - cool_24_high_swing
+              - cool_23_high_swing
+              - cool_22_high_swing
+              - cool_21_high_swing
+              - cool_20_high_swing
+              - cool_19_high_swing
+              - cool_18_high_swing
+              - cool_17_high_swing
+              - cool_16_high_swing
