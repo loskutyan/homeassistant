@@ -13,6 +13,9 @@ conditioning_bedroom:
     bedroom_auto_conditioning:
       name: 'Автоматическое охлаждение воздуха в спальне'
 
+    bedroom_ac_swing_mode:
+      name: 'Режим качания жалюзи кондиционера в спальне'
+
   input_number:
     bedroom_ac_temperature:
       name: 'Установленная температура кондиционера в спальне'
@@ -202,6 +205,17 @@ conditioning_bedroom:
           data_template:
             fan_mode: '{{ trigger.to_state.state }}'
 
+    - id: 'Выбор режима качания халюзи кондиционера в спальне'
+      alias: select_bedroom_ac_swing_mode
+      trigger:
+        - platform: state
+          entity_id: input_boolean.bedroom_ac_swing_mode
+      action:
+        - service: climate.set_swing_mode
+          entity_id: climate.bedroom_ac
+          data_template:
+            swing_mode: '{{ trigger.to_state.state }}'
+
     - id: 'Отслеживание режима работы кондиционера в спальне'
       alias: tracking_bedroom_ac_mode
       trigger:
@@ -246,6 +260,19 @@ conditioning_bedroom:
           entity_id: input_select.bedroom_ac_fan_mode
           data_template:
             option: '{{ trigger.to_state.attributes.fan_mode }}'
+
+    - id: 'Отслеживание режима качания халюзи кондиционера в спальне'
+      alias: tracking_bedroom_ac_swing_mode
+      trigger:
+        - platform: state
+          entity_id: climate.bedroom_ac
+          attribute: swing_mode
+      condition:
+        - condition: template
+          value_template: "{{ trigger.to_state.attributes.swing_mode not in ['unknown', 'unavailable'] }}"
+      action:
+        - service: input_boolean.turn_{{ trigger.to_state.attributes.swing_mode }}
+          entity_id: input_boolean.bedroom_ac_swing_mode
 
     - id: 'Умный контроль кондиционера в спальне'
       alias: bedroom_ac_smart_control

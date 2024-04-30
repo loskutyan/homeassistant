@@ -9,4 +9,8 @@ image/
 zigbee2mqtt/
 www/
 tts/
-custom_components/
+custom_components/*
+!custom_components/smartir/
+custom_components/smartir/*
+!custom_components/smartir/codes/
+
