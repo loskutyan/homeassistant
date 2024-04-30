@@ -188,6 +188,14 @@ cards:
               layout: horizontal
               secondary_info: last-changed
 
+            - type: custom:mushroom-entity-card
+              entity: input_boolean.bedroom_ac_swing_mode
+              name: 'Режим качания'
+              secondary_info: last-changed
+              tap_action:
+                action: toggle
+              icon: mdi:stack-overflow
+
             - type: horizontal-stack
               cards:
                 - type: custom:mushroom-entity-card

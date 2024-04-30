@@ -28,7 +28,7 @@ conditioning_bedroom:
       name: 'Целевая температура охлаждения в спальне'
       min: 20
       max: 31
-      step: 1
+      step: 0.5
       icon: mdi:thermometer-auto
 
   input_select:
@@ -300,7 +300,7 @@ conditioning_bedroom:
           value_template: "{{ states('sensor.bedroom_average_temperature') | float(0) > 0 }}"
         - condition: template
           value_template: >
-            {% set target_temp = states('input_number.bedroom_target_cooling_temperature') | int %}
+            {% set target_temp = states('input_number.bedroom_target_cooling_temperature') | float(25) %}
             {% set cur_temp = states('sensor.bedroom_average_temperature') | float %}
             {% set ac_temp = state_attr('climate.bedroom_ac', 'temperature') | float %}
             {% set delta = target_temp - cur_temp %}
@@ -310,12 +310,12 @@ conditioning_bedroom:
           entity_id: climate.bedroom_ac
           data_template:
             temperature: >
-              {% set target_temp = states('input_number.bedroom_target_cooling_temperature') | int %}
+              {% set target_temp = states('input_number.bedroom_target_cooling_temperature') | float %}
               {% set cur_temp = states('sensor.bedroom_average_temperature') | float %}
               {% set delta = target_temp - cur_temp %}
               {% if delta > 0.5 %}
                 31
               {% elif delta < -0.5 %}
-                {{ target_temp }}
+                {{ target_temp | int }}
               {% endif %}
             hvac_mode: 'cool'
