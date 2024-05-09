@@ -319,7 +319,7 @@ bedroom_air:
           entity_id: sensor.bedroom_airpurifier_preset_mode
       condition:
         - condition: template
-          value_template: "{{ trigger.to_state.state not in ['unknown', 'unavailable'] }}"
+          value_template: "{{ trigger.to_state.state is defined and trigger.to_state.state not in ['unknown', 'unavailable'] }}"
       action:
         - service: input_select.select_option
           entity_id: input_select.bedroom_airpurifier_mode

@@ -66,7 +66,7 @@ bedroom_humidity:
           for: '00:00:01'
       condition:
         - condition: template
-          value_template: "{{ trigger.to_state.attributes.mode not in ['unknown', 'unavailable'] }}"
+          value_template: "{{ trigger.to_state.attributes.mode is defined and trigger.to_state.attributes.mode not in ['unknown', 'unavailable'] }}"
       action:
         - service: input_select.select_option
           entity_id: input_select.bedroom_humidifier_mode

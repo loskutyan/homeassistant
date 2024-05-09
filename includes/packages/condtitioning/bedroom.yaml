@@ -224,7 +224,7 @@ conditioning_bedroom:
           attribute: last_on_operation
       condition:
         - condition: template
-          value_template: "{{ trigger.to_state.state not in ['unknown', 'unavailable'] }}"
+          value_template: "{{ trigger.to_state.state is defined and trigger.to_state.state not in ['unknown', 'unavailable'] }}"
       action:
         - service: input_select.select_option
           entity_id: input_select.bedroom_ac_mode
@@ -254,7 +254,7 @@ conditioning_bedroom:
           attribute: fan_mode
       condition:
         - condition: template
-          value_template: "{{ trigger.to_state.attributes.fan_mode not in ['unknown', 'unavailable'] }}"
+          value_template: "{{ trigger.to_state.attributes.fan_mode is defined and trigger.to_state.attributes.fan_mode not in ['unknown', 'unavailable'] }}"
       action:
         - service: input_select.select_option
           entity_id: input_select.bedroom_ac_fan_mode
@@ -269,7 +269,7 @@ conditioning_bedroom:
           attribute: swing_mode
       condition:
         - condition: template
-          value_template: "{{ trigger.to_state.attributes.swing_mode not in ['unknown', 'unavailable'] }}"
+          value_template: "{{ trigger.to_state.attributes.swing_mode is defined and trigger.to_state.attributes.swing_mode not in ['unknown', 'unavailable'] }}"
       action:
         - service: input_boolean.turn_{{ trigger.to_state.attributes.swing_mode }}
           entity_id: input_boolean.bedroom_ac_swing_mode
