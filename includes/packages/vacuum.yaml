@@ -35,6 +35,7 @@ vacuum:
         color_room_names: [0, 0, 0]
         color_unknown: [0, 0, 0]
         color_scan: [0xDF, 0xDF, 0xDF]
+      draw: ['all']
       room_colors:
         1: [240, 178, 122]
         2: [133, 193, 233]
@@ -46,34 +47,22 @@ vacuum:
         8: [245, 176, 65]
         9: [252, 212, 81]
         10: [72, 201, 176]
-        11: [84, 153, 199]
+        11: [240, 178, 122]
         12: [133, 193, 233]
-        13: [245, 176, 65]
-        14: [82, 190, 128]
-        15: [72, 201, 176]
-        16: [165, 105, 18]
-      draw:
-        - charger
-        - cleaned_area
-        - goto_path
-        - ignored_obstacles
-        - ignored_obstacles_with_photo
-        - no_go_zones
-        - no_mopping_zones
-        - obstacles
-        - obstacles_with_photo
-        - path
-        - predicted_path
-        - room_names
-        - vacuum_position
-        - virtual_walls
-        - zones
+        13: [217, 136, 128]
+        14: [52, 152, 219]
+        15: [205, 97, 85]
+        16: [243, 156, 18]
+        17: [88, 214, 141]
+        18: [245, 176, 65]
+        19: [252, 212, 81]
+        20: [72, 201, 176]
       map_transformation:
         scale: 2
         rotate: 0
         trim:
-          top: 25
-          bottom: 20
+          top: 20
+          bottom: 25
           left: 24
           right: 24
       sizes:
@@ -116,6 +105,65 @@ vacuum:
       store_map_path: '/tmp'
       force_api: xiaomi
 
+  input_number:
+    roborock_s5_max_room_enum_bedroom:
+      mode: box
+      min: 1
+      max: 25
+      step: 1
+    roborock_s5_max_room_enum_kidsroom:
+      mode: box
+      min: 1
+      max: 25
+      step: 1
+    roborock_s5_max_room_enum_kitchen:
+      mode: box
+      min: 1
+      max: 25
+      step: 1
+    roborock_s5_max_room_enum_hallway:
+      mode: box
+      min: 1
+      max: 25
+      step: 1
+
+  input_select:
+    roborock_s5_max_room:
+      options:
+        - bedroom
+        - kidsroom
+        - kitchen
+        - hallway
+        - none
+
+  template:
+    - trigger:
+        - platform: state
+          entity_id: input_select.roborock_s5_max_room
+          to:
+            - bedroom
+            - kidsroom
+            - kitchen
+            - hallway
+            - none
+      sensor:
+        - name: 'Roborock S5 Max Selected Rooms'
+          state: >-
+            {% set new_room = trigger.to_state.state %}
+            {% set current_rooms = states('sensor.roborock_s5_max_selected_rooms') %}
+            {% if new_room == 'none' %}
+              []
+            {% else %}
+              {% if current_rooms is not defined or current_rooms in ['unknown', 'unavailable'] %}
+                {% set current_rooms = '[]' %}
+              {% endif %}
+              {% set current_rooms = current_rooms | from_json %}
+              {% if new_room not in current_rooms %}
+                {% set current_rooms = current_rooms + [new_room] %}
+              {% endif %}
+              {{ current_rooms | to_json }}
+            {% endif %}
+
   sensor:
     - platform: template
       sensors:
@@ -150,6 +198,30 @@ vacuum:
           icon_template: mdi:air-filter
 
   script:
+    roborock_s5_max_vacuum_clean_room:
+      alias: 'Пылесос - уборка комнаты'
+      mode: queued
+      fields:
+        room:
+          name: 'Room'
+          required: true
+          example: 'bedroom'
+          selector:
+            select:
+              options:
+                - kidsroom
+                - bedroom
+                - hallway
+                - kitchen
+      sequence:
+        - service: xiaomi_miio.vacuum_clean_segment
+          target:
+            entity_id: vacuum.roborock_s5_max
+          data_template:
+            segments: >
+              {% set room_id = states('input_number.roborock_s5_max_room_enum_' + room) | int %}
+              {{ room_id }}
+
     roborock_s5_max_vacuum_map_to_telegram:
       alias: 'Отправка снимка карты пылесоса'
       sequence:
@@ -165,6 +237,40 @@ vacuum:
             file: '/config/www/cam_captures/roborock_s5_max_vacuum_map.jpg'
 
   automation:
+    - id: 'Запустить пылесос в комнате'
+      alias: roborock_s5_max_vacuum_start_room_cleaning
+      trigger:
+        - platform: state
+          entity_id: sensor.roborock_s5_max_selected_rooms
+      condition:
+        - condition: template
+          value_template: '{{ trigger.to_state.state | length > 2 }}'
+      action:
+        - service: script.roborock_s5_max_vacuum_clean_room
+          data_template:
+            room: >
+              {{ trigger.to_state.state | from_json | last }}
+
+    - id: 'Сброс списка комнат для уборки пылесоса'
+      alias: roborock_s5_max_vacuum_clear_rooms_list
+      trigger:
+        - platform: state
+          entity_id: vacuum.roborock_s5_max
+      condition:
+        - not:
+            - condition: state
+              entity_id: vacuum.roborock_s5_max
+              attribute: status
+              state: 'Segment cleaning'
+            - condition: state
+              entity_id: vacuum.roborock_s5_max
+              state: 'paused'
+      action:
+        - service: input_select.select_option
+          entity_id: input_select.roborock_s5_max_room
+          data:
+            option: 'none'
+
     - id: 'Пылесос начал уборку - уведомление'
       alias: telegram_vacuum_started_cleaning
       trigger:

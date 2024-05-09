@@ -15,8 +15,7 @@ away:
           entity_id: person.ekaterina
           from: 'home'
       sensor:
-        - name: 'Последний раз Екатерина была дома, время'
-          unique_id: ekaterina_last_time_left_home_timestamp
+        - name: 'Ekaterina Last Time Left Home Timestamp'
           device_class: timestamp
           state: '{{ now() }}'
 
