@@ -113,212 +113,210 @@ cards:
             name: 'Aqara Hub'
             layout: horizontal
 
-  - type: custom:vertical-stack-in-card
-    title: 'Пылесос'
-    cards:
-      - type: custom:mushroom-vacuum-card
-        entity: vacuum.roborock_s5_max
-        icon_animation: true
-        fill_container: true
-        commands:
-          - stop
-          - locate
-          - return_home
-          - start_pause
-        secondary_info: state
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: custom:mushroom-vacuum-card
+            entity: vacuum.roborock_s5_max
+            icon_animation: true
+            fill_container: true
+            commands:
+              - stop
+              - locate
+              - return_home
+              - start_pause
+            secondary_info: state
 
-      - type: custom:mushroom-chips-card
-        alignment: center
-        chips:
-          - type: entity
-            entity: input_select.roborock_s5_max_room
-            name: 'Спальня'
-            content_info: name
-            tap_action:
-              action: call-service
-              service: input_select.select_option
-              target:
-                entity_id: input_select.roborock_s5_max_room
-              data:
-                option: 'bedroom'
-            icon: mdi:bed-king
-            icon_color: >
-              {% set bedroom_in_selected_rooms = 'bedroom' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
-              {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
-              {% if bedroom_in_selected_rooms and cleaning_mode_on %}
-                accent
-              {% else %}
-                grey
-              {% endif %}
-          - type: entity
-            entity: input_select.roborock_s5_max_room
-            name: 'Детская'
-            content_info: name
-            tap_action:
-              action: call-service
-              service: input_select.select_option
-              target:
-                entity_id: input_select.roborock_s5_max_room
-              data:
-                option: 'kidsroom'
-            icon: mdi:bed
-            icon_color: >
-              {% set kidsroom_in_selected_rooms = 'kidsroom' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
-              {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
-              {% if kidsroom_in_selected_rooms and cleaning_mode_on %}
-                accent
-              {% else %}
-                grey
-              {% endif %}
-          - type: entity
-            entity: input_select.roborock_s5_max_room
-            name: 'Кухня'
-            content_info: name
-            tap_action:
-              action: call-service
-              service: input_select.select_option
-              target:
-                entity_id: input_select.roborock_s5_max_room
-              data:
-                option: 'kitchen'
-            icon: mdi:food-fork-drink
-            icon_color: >
-              {% set kitchen_in_selected_rooms = 'kitchen' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
-              {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
-              {% if kitchen_in_selected_rooms and cleaning_mode_on %}
-                accent
-              {% else %}
-                grey
-              {% endif %}
-          - type: entity
-            entity: input_select.roborock_s5_max_room
-            name: 'Прихожая'
-            content_info: name
-            tap_action:
-              action: call-service
-              service: input_select.select_option
-              target:
-                entity_id: input_select.roborock_s5_max_room
-              data:
-                option: 'hallway'
-            icon: mdi:door-open
-            icon_color: >
-              {% set hallway_in_selected_rooms = 'hallway' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
-              {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
-              {% if hallway_in_selected_rooms and cleaning_mode_on %}
-                accent
-              {% else %}
-                grey
-              {% endif %}
+          - type: custom:mushroom-chips-card
+            alignment: center
+            chips:
+              - type: entity
+                entity: input_select.roborock_s5_max_room
+                name: 'Спальня'
+                content_info: name
+                tap_action:
+                  action: call-service
+                  service: input_select.select_option
+                  target:
+                    entity_id: input_select.roborock_s5_max_room
+                  data:
+                    option: 'bedroom'
+                icon: mdi:bed-king
+                icon_color: >
+                  {% set bedroom_in_selected_rooms = 'bedroom' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
+                  {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
+                  {% if bedroom_in_selected_rooms and cleaning_mode_on %}
+                    accent
+                  {% else %}
+                    grey
+                  {% endif %}
+              - type: entity
+                entity: input_select.roborock_s5_max_room
+                name: 'Детская'
+                content_info: name
+                tap_action:
+                  action: call-service
+                  service: input_select.select_option
+                  target:
+                    entity_id: input_select.roborock_s5_max_room
+                  data:
+                    option: 'kidsroom'
+                icon: mdi:bed
+                icon_color: >
+                  {% set kidsroom_in_selected_rooms = 'kidsroom' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
+                  {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
+                  {% if kidsroom_in_selected_rooms and cleaning_mode_on %}
+                    accent
+                  {% else %}
+                    grey
+                  {% endif %}
+              - type: entity
+                entity: input_select.roborock_s5_max_room
+                name: 'Кухня'
+                content_info: name
+                tap_action:
+                  action: call-service
+                  service: input_select.select_option
+                  target:
+                    entity_id: input_select.roborock_s5_max_room
+                  data:
+                    option: 'kitchen'
+                icon: mdi:food-fork-drink
+                icon_color: >
+                  {% set kitchen_in_selected_rooms = 'kitchen' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
+                  {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
+                  {% if kitchen_in_selected_rooms and cleaning_mode_on %}
+                    accent
+                  {% else %}
+                    grey
+                  {% endif %}
+              - type: entity
+                entity: input_select.roborock_s5_max_room
+                name: 'Прихожая'
+                content_info: name
+                tap_action:
+                  action: call-service
+                  service: input_select.select_option
+                  target:
+                    entity_id: input_select.roborock_s5_max_room
+                  data:
+                    option: 'hallway'
+                icon: mdi:door-open
+                icon_color: >
+                  {% set hallway_in_selected_rooms = 'hallway' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
+                  {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
+                  {% if hallway_in_selected_rooms and cleaning_mode_on %}
+                    accent
+                  {% else %}
+                    grey
+                  {% endif %}
 
-      - type: conditional
-        conditions:
-          - entity: vacuum.roborock_s5_max
-            state_not: 'docked'
-        card:
-          type: picture-entity
-          entity: camera.roborock_s5_max_vacuum_map
-          camera_image: camera.roborock_s5_max_vacuum_map
-          camera_view: live
-          show_state: false
-          show_name: false
-          aspect_ratio: '135x115'
+          - type: conditional
+            conditions:
+              - entity: vacuum.roborock_s5_max
+                state_not: 'docked'
+            card:
+              type: picture-entity
+              entity: camera.roborock_s5_max_vacuum_map
+              camera_image: camera.roborock_s5_max_vacuum_map
+              camera_view: live
+              show_state: false
+              show_name: false
+              aspect_ratio: '135x115'
 
-  - type: custom:vertical-stack-in-card
-    title: 'Обслуживание'
-    cards:
-      - type: conditional
-        conditions:
-          - entity: update.home_assistant_core_update
-            state: 'on'
-        card:
-          type: custom:mushroom-update-card
-          entity: update.home_assistant_core_update
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: conditional
+            conditions:
+              - entity: update.home_assistant_core_update
+                state: 'on'
+            card:
+              type: custom:mushroom-update-card
+              entity: update.home_assistant_core_update
 
-      - type: conditional
-        conditions:
-          - entity: update.home_assistant_supervisor_update
-            state: 'on'
-        card:
-          type: custom:mushroom-update-card
-          entity: update.home_assistant_supervisor_update
+          - type: conditional
+            conditions:
+              - entity: update.home_assistant_supervisor_update
+                state: 'on'
+            card:
+              type: custom:mushroom-update-card
+              entity: update.home_assistant_supervisor_update
 
-      - type: conditional
-        conditions:
-          - entity: binary_sensor.hacs_updates_available
-            state: 'on'
-        card:
-          type: custom:mushroom-update-card
-          entity: sensor.hacs
-          name: 'Обновления HACS'
+          - type: conditional
+            conditions:
+              - entity: binary_sensor.hacs_updates_available
+                state: 'on'
+            card:
+              type: custom:mushroom-update-card
+              entity: sensor.hacs
+              name: 'Обновления HACS'
 
-      - type: conditional
-        conditions:
-          - entity: binary_sensor.bedroom_smartmi_humidifier_water_tank
-            state: 'on'
-          - entity: switch.warm_season
-            state: 'off'
-        card:
-          type: custom:auto-entities
-          card:
-            type: entities
-          show_empty: false
-          filter:
-            include:
-              - entity_id: sensor.bedroom_smartmi_humidifier_water_level
-            exclude:
-              - state: '> 30'
+          - type: conditional
+            conditions:
+              - entity: binary_sensor.bedroom_smartmi_humidifier_water_tank
+                state: 'on'
+              - entity: switch.warm_season
+                state: 'off'
+            card:
+              type: custom:auto-entities
+              card:
+                type: entities
+              show_empty: false
+              filter:
+                include:
+                  - entity_id: sensor.bedroom_smartmi_humidifier_water_level
+                exclude:
+                  - state: '> 30'
 
-      - type: conditional
-        conditions:
-          - entity: binary_sensor.kidsroom_smartmi_humidifier_water_tank
-            state: 'on'
-          - entity: switch.warm_season
-            state: 'off'
-        card:
-          type: custom:auto-entities
-          card:
-            type: entities
-          show_empty: false
-          filter:
-            include:
-              - entity_id: sensor.kidsroom_smartmi_humidifier_water_level
-            exclude:
-              - state: '> 30'
+          - type: conditional
+            conditions:
+              - entity: binary_sensor.kidsroom_smartmi_humidifier_water_tank
+                state: 'on'
+              - entity: switch.warm_season
+                state: 'off'
+            card:
+              type: custom:auto-entities
+              card:
+                type: entities
+              show_empty: false
+              filter:
+                include:
+                  - entity_id: sensor.kidsroom_smartmi_humidifier_water_level
+                exclude:
+                  - state: '> 30'
 
-      - type: custom:auto-entities
-        card:
-          type: entities
-        show_empty: false
-        filter:
-          include:
-            - entity_id: sensor.*_filter_life_remaining_days
-          exclude:
-            - state: '> 30'
+          - type: custom:auto-entities
+            card:
+              type: entities
+            show_empty: false
+            filter:
+              include:
+                - entity_id: sensor.*_filter_life_remaining_days
+              exclude:
+                - state: '> 30'
 
-      - type: custom:auto-entities
-        card:
-          type: entities
-        show_empty: false
-        filter:
-          include:
-            - entity_id: sensor.*_battery
-              options:
-                type: custom:battery-entity-row
-                secondary_info: last-changed
-          exclude:
-            - state: '> 30'
+          - type: custom:auto-entities
+            card:
+              type: entities
+            show_empty: false
+            filter:
+              include:
+                - entity_id: sensor.*_battery
+                  options:
+                    type: custom:battery-entity-row
+                    secondary_info: last-changed
+              exclude:
+                - state: '> 30'
 
-      - type: custom:auto-entities
-        card:
-          type: entities
-        show_empty: false
-        filter:
-          include:
-            - entity_id: sensor.vacuum_*_brush_left
-            - entity_id: sensor.vacuum_filter_left
-          exclude:
-            - state: '> 25'
+          - type: custom:auto-entities
+            card:
+              type: entities
+            show_empty: false
+            filter:
+              include:
+                - entity_id: sensor.vacuum_*_brush_left
+                - entity_id: sensor.vacuum_filter_left
+              exclude:
+                - state: '> 25'
 
   - type: vertical-stack
     title: 'Климат и качество воздуха'
