@@ -24,18 +24,6 @@ kidsroom_air:
       name: 'Фиксированная скорость бризера в детской, осталось '
       duration: 1800
 
-    kidsroom_airpurifier_heater_remind:
-      name: 'Нагреватель бризера в детской включен, напомнить через '
-      duration: 7200
-
-    kidsroom_airpurifier_heater_turn_off:
-      name: 'Нагреватель бризера в детской включен, выключение через '
-      duration: 18000
-
-    kidsroom_airpurifier_heater_cooldown:
-      name: 'Нагреватель бризера в детской остывает, можно включить через '
-      duration: 1800
-
   switch:
     - platform: template
       switches:
@@ -60,18 +48,6 @@ kidsroom_air:
             service: xiaomi_miio_airpurifier.fan_set_buzzer_off
             entity_id: fan.mijia_airpurifier_kidsroom
           icon_template: mdi:volume-high
-
-        kidsroom_airpurifier_ptc:
-          friendly_name: 'Нагреватель бризера в детской'
-          value_template: "{{ state_attr('fan.mijia_airpurifier_kidsroom', 'ptc') }}"
-          availability_template: "{{ states('fan.mijia_airpurifier_kidsroom') in ['on', 'off'] }}"
-          turn_on:
-            service: xiaomi_miio_airpurifier.fan_set_ptc_on
-            entity_id: fan.mijia_airpurifier_kidsroom
-          turn_off:
-            service: xiaomi_miio_airpurifier.fan_set_ptc_off
-            entity_id: fan.mijia_airpurifier_kidsroom
-          icon_template: mdi:fire
 
         kidsroom_airpurifier_forced_ventilation:
           friendly_name: 'Проветривание в детской'
@@ -317,11 +293,6 @@ kidsroom_air:
   binary_sensor:
     - platform: template
       sensors:
-        kidsroom_airpurifier_ptc_status:
-          friendly_name: 'Статус нагревателя бризера в детской'
-          device_class: heat
-          value_template: "{{ is_state_attr('fan.mijia_airpurifier_kidsroom', 'ptc_status', True) }}"
-
         kidsroom_airpurifier_favourite_speed_fixed:
           friendly_name: 'Фиксированная скорость бризера в детской'
           value_template: >
@@ -413,142 +384,6 @@ kidsroom_air:
               {% else %}
                 {{ states('sensor.kidsroom_airpurifier_previous_speed') | int }}
               {% endif %}
-
-    - id: 'Включение нагревателя бризера в детской'
-      alias: kidsroom_airpurifier_heater_turn_on
-      initial_state: true
-      trigger:
-        - platform: time_pattern
-          minutes: '/10'
-        - platform: state
-          entity_id: switch.somebody_home
-          from: 'off'
-          to: 'on'
-        - platform: state
-          entity_id: timer.kidsroom_airpurifier_heater_cooldown
-          to: 'idle'
-      condition:
-        - condition: state
-          entity_id: switch.warm_season
-          state: 'off'
-        - condition: state
-          entity_id: switch.somebody_home
-          state: 'on'
-        - condition: state
-          entity_id: fan.mijia_airpurifier_kidsroom
-          state: 'on'
-          for:
-            minutes: 1
-        - condition: state
-          entity_id: binary_sensor.kidsroom_airpurifier_ptc_status
-          state: 'off'
-          for:
-            minutes: 1
-        - condition: numeric_state
-          entity_id: sensor.kidsroom_average_temperature
-          below: input_number.target_temperature
-        - not:
-            - condition: state
-              entity_id: timer.kidsroom_airpurifier_heater_cooldown
-              state: 'active'
-      action:
-        - service: switch.turn_on
-          entity_id: switch.kidsroom_airpurifier_ptc
-
-    - id: 'Выключение нагревателя бризера в детской'
-      alias: kidsroom_airpurifier_heater_turn_off
-      initial_state: true
-      trigger:
-        - platform: state
-          entity_id: timer.kidsroom_airpurifier_heater_turn_off
-          from: 'active'
-          to: 'idle'
-        - platform: numeric_state
-          entity_id: sensor.kidsroom_average_temperature
-          value_template: '{{ state.state | float(0) - 0.5 }}'
-          above: input_number.target_temperature
-          for:
-            minutes: 1
-      condition:
-        - condition: state
-          entity_id: switch.kidsroom_airpurifier_ptc
-          state: 'on'
-      action:
-        - service: switch.turn_off
-          entity_id: switch.kidsroom_airpurifier_ptc
-
-    - id: 'Включение нагревателя бризера в детской - таймеры, уведомление'
-      alias: kidsroom_airpurifier_heater_turned_on_timers_notify
-      initial_state: true
-      trigger:
-        - platform: state
-          entity_id: switch.kidsroom_airpurifier_ptc
-          from: 'off'
-          to: 'on'
-      action:
-        - service: timer.start
-          entity_id:
-            - timer.kidsroom_airpurifier_heater_turn_off
-            - timer.kidsroom_airpurifier_heater_remind
-        - service: timer.finish
-          entity_id: timer.kidsroom_airpurifier_heater_cooldown
-        - service: notify.tg_bot
-          data:
-            message: >
-              {% set messages = ['Нагреватель бризера в детской включен!',
-                                 'Бризер в детской начинает греть воздух..',
-                                 'Нагреватель бризера в детской начал жарить!'] %}
-              {{ '\U0001F525' }}  {{ messages | random }} {{ states('sensor.time_date') }}
-              {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
-
-    - id: 'Работает нагреватель бризера в детской - уведомление'
-      alias: kidsroom_airpurifier_heater_on_reminder
-      initial_state: true
-      trigger:
-        - platform: state
-          entity_id: timer.kidsroom_airpurifier_heater_remind
-          from: 'active'
-          to: 'idle'
-        - platform: homeassistant
-          event: start
-      condition:
-        - condition: state
-          entity_id: switch.kidsroom_airpurifier_ptc
-          state: 'on'
-      action:
-        - service: notify.tg_bot
-          data:
-            message: >
-              {% set messages = ['Нагреватель бризера в детской все еще работает!',
-                                 'Бризер в детской продолжает греть воздух..',
-                                 'Нагреватель бризера в детской еще жарит!'] %}
-              {{ '\U0001F525' }} {{ messages | random }} {{ states('sensor.time_date') }}
-        - service: timer.start
-          entity_id: timer.kidsroom_airpurifier_heater_remind
-
-    - id: 'Выключение нагревателя бризера в детской - таймеры, уведомление'
-      alias: kidsroom_airpurifier_heater_turned_off_timers_notify
-      initial_state: true
-      trigger:
-        - platform: state
-          entity_id: switch.kidsroom_airpurifier_ptc
-          from: 'on'
-          to: 'off'
-      action:
-        - service: timer.finish
-          entity_id:
-            - timer.kidsroom_airpurifier_heater_remind
-            - timer.kidsroom_airpurifier_heater_turn_off
-        - service: timer.start
-          entity_id: timer.kidsroom_airpurifier_heater_cooldown
-        - service: notify.tg_bot
-          data:
-            message: >
-              {% set messages = ['Нагреватель бризера в детской выключен!',
-                                 'Бризер в детской завершает греть воздух..',
-                                 'Нагреватель бризера в детской покидает здание!'] %}
-              {{ '\U0001F9EF' }} {{ messages | random }} {{ states('sensor.time_date') }}
-              {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
 
     - id: 'Включение бризера в детской'
       alias: kidsroom_airpurifier_turn_on
