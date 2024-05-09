@@ -115,6 +115,19 @@ cards:
 
       - type: conditional
         conditions:
+          - entity: vacuum.roborock_s5_max
+            state_not: 'docked'
+        card:
+          type: picture-entity
+          entity: camera.roborock_s5_max_vacuum_map
+          camera_image: camera.roborock_s5_max_vacuum_map
+          camera_view: live
+          show_state: false
+          show_name: false
+          aspect_ratio: '135x115'
+
+      - type: conditional
+        conditions:
           - entity: update.home_assistant_core_update
             state: 'on'
         card:

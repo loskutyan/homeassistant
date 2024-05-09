@@ -1,4 +1,121 @@
 vacuum:
+  camera:
+    - platform: xiaomi_cloud_map_extractor
+      host: !secret roborock_s5_max_vacuum_host
+      token: !secret roborock_s5_max_vacuum_token
+      username: !secret xiaomi_cloud_username
+      password: !secret xiaomi_cloud_password
+      name: roborock_s5_max_vacuum_map
+      country: 'de'
+      colors:
+        color_map_inside: [32, 115, 185]
+        color_map_outside: [19, 87, 148]
+        color_map_wall: [100, 196, 254]
+        color_map_wall_v2: [93, 109, 126]
+        color_grey_wall: [93, 109, 126]
+        color_ignored_obstacle: [0, 0, 0, 127]
+        color_ignored_obstacle_with_photo: [0, 0, 0, 127]
+        color_obstacle: [0, 0, 0, 127]
+        color_obstacle_with_photo: [0, 0, 0, 127]
+        #   color_path: [147, 194, 238]
+        color_path: [255, 255, 255]
+        color_goto_path: [0, 255, 0]
+        color_predicted_path: [255, 255, 0, 0]
+        color_cleaned_area: [127, 127, 127, 127]
+        color_zones: [0xAD, 0xD8, 0xFF, 0x8F]
+        color_zones_outline: [0xAD, 0xD8, 0xFF]
+        color_virtual_walls: [255, 0, 0]
+        color_new_discovered_area: [64, 64, 64]
+        color_no_go_zones: [255, 33, 55, 127]
+        color_no_go_zones_outline: [255, 0, 0]
+        color_no_mop_zones: [163, 130, 211, 127]
+        color_no_mop_zones_outline: [163, 130, 211]
+        color_charger: [0x66, 0xfe, 0xda, 0x7f]
+        color_robo: [75, 235, 149]
+        color_room_names: [0, 0, 0]
+        color_unknown: [0, 0, 0]
+        color_scan: [0xDF, 0xDF, 0xDF]
+      room_colors:
+        1: [240, 178, 122]
+        2: [133, 193, 233]
+        3: [217, 136, 128]
+        4: [52, 152, 219]
+        5: [205, 97, 85]
+        6: [243, 156, 18]
+        7: [88, 214, 141]
+        8: [245, 176, 65]
+        9: [252, 212, 81]
+        10: [72, 201, 176]
+        11: [84, 153, 199]
+        12: [133, 193, 233]
+        13: [245, 176, 65]
+        14: [82, 190, 128]
+        15: [72, 201, 176]
+        16: [165, 105, 18]
+      draw:
+        - charger
+        - cleaned_area
+        - goto_path
+        - ignored_obstacles
+        - ignored_obstacles_with_photo
+        - no_go_zones
+        - no_mopping_zones
+        - obstacles
+        - obstacles_with_photo
+        - path
+        - predicted_path
+        - room_names
+        - vacuum_position
+        - virtual_walls
+        - zones
+      map_transformation:
+        scale: 2
+        rotate: 0
+        trim:
+          top: 25
+          bottom: 20
+          left: 24
+          right: 24
+      sizes:
+        charger_radius: 4
+        vacuum_radius: 6.5
+        obstacle_radius: 3
+        ignored_obstacle_radius: 3
+        obstacle_with_photo_radius: 3
+        ignored_obstacle_with_photo_radius: 3
+      attributes:
+        - calibration_points
+        - charger
+        - cleaned_rooms
+        - country
+        - goto
+        - goto_path
+        - goto_predicted_path
+        - image
+        - is_empty
+        - map_name
+        - no_go_areas
+        - no_mopping_areas
+        - obstacles
+        - ignored_obstacles
+        - obstacles_with_photo
+        - ignored_obstacles_with_photo
+        - path
+        - room_numbers
+        - rooms
+        - vacuum_position
+        - vacuum_room
+        - vacuum_room_name
+        - walls
+        - zones
+      scan_interval:
+        seconds: 10
+      auto_update: true
+      store_map_raw: false
+      store_map_image: true
+      store_map_path: '/tmp'
+      force_api: xiaomi
+
   sensor:
     - platform: template
       sensors:
@@ -7,9 +124,9 @@ vacuum:
           device_class: duration
           unit_of_measurement: 'h'
           value_template: >
-            {{ states('sensor.roborock_vacuum_s5e_main_brush_left') | float / 3600 }}
+            {{ states('sensor.roborock_s5_max_main_brush_left') | float / 3600 }}
           availability_template: >
-            {{ states('sensor.roborock_vacuum_s5e_main_brush_left') | float(-1) >= 0 }}
+            {{ states('sensor.roborock_s5_max_main_brush_left') | float(-1) >= 0 }}
           icon_template: mdi:robot-vacuum
 
         vacuum_side_brush_left:
@@ -17,9 +134,9 @@ vacuum:
           device_class: duration
           unit_of_measurement: 'h'
           value_template: >
-            {{ states('sensor.roborock_vacuum_s5e_side_brush_left') | float / 3600 }}
+            {{ states('sensor.roborock_s5_max_side_brush_left') | float / 3600 }}
           availability_template: >
-            {{ states('sensor.roborock_vacuum_s5e_side_brush_left') | float(-1) >= 0 }}
+            {{ states('sensor.roborock_s5_max_side_brush_left') | float(-1) >= 0 }}
           icon_template: mdi:robot-vacuum
 
         vacuum_filter_left:
@@ -27,17 +144,32 @@ vacuum:
           device_class: duration
           unit_of_measurement: 'h'
           value_template: >
-            {{ states('sensor.roborock_vacuum_s5e_filter_left') | float / 3600 }}
+            {{ states('sensor.roborock_s5_max_filter_left') | float / 3600 }}
           availability_template: >
-            {{ states('sensor.roborock_vacuum_s5e_filter_left') | float(-1) >= 0 }}
+            {{ states('sensor.roborock_s5_max_filter_left') | float(-1) >= 0 }}
           icon_template: mdi:air-filter
+
+  script:
+    roborock_s5_max_vacuum_map_to_telegram:
+      alias: 'Отправка снимка карты пылесоса'
+      sequence:
+        - service: camera.snapshot
+          data:
+            entity_id: camera.roborock_s5_max_vacuum_map
+            filename: '/config/www/cam_captures/roborock_s5_max_vacuum_map.jpg'
+        - delay: 00:00:03
+        - service: telegram_bot.send_photo
+          data_template:
+            target:
+              - !secret tg_chat_id_loskutyan
+            file: '/config/www/cam_captures/roborock_s5_max_vacuum_map.jpg'
 
   automation:
     - id: 'Пылесос начал уборку - уведомление'
       alias: telegram_vacuum_started_cleaning
       trigger:
         - platform: state
-          entity_id: vacuum.roborock_vacuum_s5e
+          entity_id: vacuum.roborock_s5_max
           from:
             - 'docked'
             - 'idle'
@@ -46,13 +178,13 @@ vacuum:
         - service: notify.tg_bot
           data:
             message: >
-              {{ '\U0001F9F9' }} Пылесос начал уборку в {{ states('sensor.time') }}, режим {{ state_attr('vacuum.roborock_vacuum_s5e', 'fan_speed') }}
+              {{ '\U0001F9F9' }} Пылесос начал уборку в {{ states('sensor.time') }}, режим {{ state_attr('vacuum.roborock_s5_max', 'fan_speed') }}
 
     - id: 'Пылесос закончил уборку - уведомление'
       alias: telegram_vacuum_finished_cleaning
       trigger:
         - platform: state
-          entity_id: vacuum.roborock_vacuum_s5e
+          entity_id: vacuum.roborock_s5_max
           from:
             - 'cleaning'
             - 'paused'
@@ -60,18 +192,19 @@ vacuum:
             - 'returning'
             - 'idle'
       action:
+        - service: script.roborock_s5_max_vacuum_map_to_telegram
         - service: notify.tg_bot
           data:
             message: >
-              {% set cleaned_area = states('sensor.roborock_vacuum_s5e_last_clean_area') %}
-              {% set cleaning_duration = (states('sensor.roborock_vacuum_s5e_last_clean_duration') | float(-999) / 60) | round(2) %}
+              {% set cleaned_area = states('sensor.roborock_s5_max_last_clean_area') %}
+              {% set cleaning_duration = (states('sensor.roborock_s5_max_last_clean_duration') | float(-999) / 60) | round(2) %}
               {{ '\U0001F9F9' }} Пылесос закончил уборку, убрано {{ cleaned_area }}м² за {{ cleaning_duration }}мин.
 
     - id: 'Пылесос вернулся на док-станцию - уведомление'
       alias: telegram_vacuum_docked
       trigger:
         - platform: state
-          entity_id: vacuum.roborock_vacuum_s5e
+          entity_id: vacuum.roborock_s5_max
           from: 'returning'
           to: 'docked'
       action:

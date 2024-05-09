@@ -40,7 +40,7 @@
       - light.kidsroom_aqara_led_bulb_left
       - light.kidsroom_aqara_led_bulb_right
   entity_config:
-    vacuum.roborock_vacuum_s5e:
+    vacuum.roborock_s5_max:
       name: 'Пылесос'
     humidifier.bedroom_smartmi_humidifier:
       name: 'Увлажнитель'
