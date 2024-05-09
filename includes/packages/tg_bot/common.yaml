@@ -78,8 +78,7 @@ tg_common:
           data_template:
             callback_query_id: '{{ trigger.event.data.id }}'
             message: 'Перекрываем краны'
-        - service: script.turn_on
-          entity_id: script.close_bathroom_valves
+        - service: script.close_bathroom_valves
 
     - id: 'Прогноз погоды в боте'
       alias: telegram_weather_forecast
@@ -90,5 +89,4 @@ tg_common:
           event_data:
             text: 'Прогноз погоды'
       action:
-        - service: script.turn_on
-          entity_id: script.sending_yandex_weather_forecast
+        - service: script.sending_yandex_weather_forecast

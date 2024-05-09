@@ -33,5 +33,4 @@ tg_heaters_control:
           data_template:
             callback_query_id: '{{ trigger.event.data.id }}'
             message: 'Выключаем все обогреватели'
-        - service: script.turn_on
-          entity_id: script.turn_off_all_heaters
+        - service: script.turn_off_all_heaters

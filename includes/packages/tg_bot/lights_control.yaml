@@ -33,5 +33,4 @@ tg_lights_control:
           data_template:
             callback_query_id: '{{ trigger.event.data.id }}'
             message: 'Выключаем весь свет'
-        - service: script.turn_on
-          entity_id: script.turn_off_all_lights
+        - service: script.turn_off_all_lights

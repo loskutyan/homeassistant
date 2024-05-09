@@ -126,10 +126,8 @@ games_signal:
               after: '09:00:00'
               before: '23:50:00'
           then:
-            service: script.turn_on
-            entity_id: script.signal_aqara_hub_quiet_sound_notification
-        - service: script.turn_on
-          entity_id: script.signal_light_flashes_notification
+            service: script.signal_aqara_hub_quiet_sound_notification
+        - service: script.signal_light_flashes_notification
 
     - id: 'Циклопы готовы к РЛ - освещение'
       alias: cyclops_is_rocketleague_ready_lights_toggle

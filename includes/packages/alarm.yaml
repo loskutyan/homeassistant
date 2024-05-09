@@ -255,11 +255,9 @@ alarm:
           value_template: >
             {{ states('input_boolean.bathroom_valves') }}
           turn_on:
-            - service: script.turn_on
-              entity_id: script.open_bathroom_valves
+            - service: script.open_bathroom_valves
           turn_off:
-            - service: script.turn_on
-              entity_id: script.close_bathroom_valves
+            - service: script.close_bathroom_valves
           icon_template: >
             {% if is_state('input_boolean.bathroom_valves', 'on') %}
               mdi:valve-open
@@ -278,8 +276,7 @@ alarm:
             - binary_sensor.dishwasher_aqara_leak_sensor_water_leak
           to: 'on'
       action:
-        - service: script.turn_on
-          entity_id: script.close_bathroom_valves
+        - service: script.close_bathroom_valves
         - service: alarm_control_panel.alarm_trigger
           entity_id: alarm_control_panel.miio_gateway
 

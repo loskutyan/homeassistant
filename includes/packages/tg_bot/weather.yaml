@@ -183,5 +183,4 @@ tg_weather:
         - platform: time
           at: '08:00:00'
       action:
-        - service: script.turn_on
-          entity_id: script.sending_yandex_weather_forecast
+        - service: script.sending_yandex_weather_forecast

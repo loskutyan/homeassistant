@@ -128,15 +128,13 @@ intercom:
                                  'Внизу люди! Звонят в домофон.'] %}
               {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}
           continue_on_error: true
-        - service: script.turn_on
-          entity_id: script.intercom_light_flashes_notification
+        - service: script.intercom_light_flashes_notification
         - if:
             - condition: state
               entity_id: switch.smartintercom_otkliuchit_trubku_domofona
               state: 'on'
           then:
-            service: script.turn_on
-            entity_id: script.intercom_rings_aqara_hub_quiet_sound_notification
+            service: script.intercom_rings_aqara_hub_quiet_sound_notification
 
     - id: 'Замок домофона открыт - уведомление'
       alias: intercom_lock_was_opened_notify
@@ -154,5 +152,9 @@ intercom:
                                  'Люди впущены!'] %}
               {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}
           continue_on_error: true
-        - service: script.turn_on
-          entity_id: script.intercom_lock_opened_aqara_hub_quiet_sound_notification
+        - if:
+            - condition: state
+              entity_id: switch.smartintercom_otkliuchit_trubku_domofona
+              state: 'on'
+          then:
+            service: script.intercom_lock_opened_aqara_hub_quiet_sound_notification

@@ -113,6 +113,4 @@ tg_climate_status:
           event_data:
             text: 'Отчет по климату'
       action:
-        - service: script.turn_on
-          entity_id: 
-            - script.telegram_climate_report
+        - service: script.telegram_climate_report
