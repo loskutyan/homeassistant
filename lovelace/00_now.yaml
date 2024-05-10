@@ -126,13 +126,12 @@ cards:
               - start_pause
             secondary_info: state
 
-          - type: custom:mushroom-chips-card
-            alignment: center
-            chips:
-              - type: entity
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-template-card
                 entity: input_select.roborock_s5_max_room
-                name: 'Спальня'
-                content_info: name
+                primary: 'Спальня'
+                layout: vertical
                 tap_action:
                   action: call-service
                   service: input_select.select_option
@@ -141,7 +140,7 @@ cards:
                   data:
                     option: 'bedroom'
                 icon: mdi:bed-king
-                icon_color: >
+                icon_color: >-
                   {% set bedroom_in_selected_rooms = 'bedroom' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
                   {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
                   {% if bedroom_in_selected_rooms and cleaning_mode_on %}
@@ -149,10 +148,10 @@ cards:
                   {% else %}
                     grey
                   {% endif %}
-              - type: entity
+              - type: custom:mushroom-template-card
                 entity: input_select.roborock_s5_max_room
-                name: 'Детская'
-                content_info: name
+                primary: 'Детская'
+                layout: vertical
                 tap_action:
                   action: call-service
                   service: input_select.select_option
@@ -161,7 +160,7 @@ cards:
                   data:
                     option: 'kidsroom'
                 icon: mdi:bed
-                icon_color: >
+                icon_color: >-
                   {% set kidsroom_in_selected_rooms = 'kidsroom' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
                   {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
                   {% if kidsroom_in_selected_rooms and cleaning_mode_on %}
@@ -169,10 +168,10 @@ cards:
                   {% else %}
                     grey
                   {% endif %}
-              - type: entity
+              - type: custom:mushroom-template-card
                 entity: input_select.roborock_s5_max_room
-                name: 'Кухня'
-                content_info: name
+                primary: 'Кухня'
+                layout: vertical
                 tap_action:
                   action: call-service
                   service: input_select.select_option
@@ -181,7 +180,7 @@ cards:
                   data:
                     option: 'kitchen'
                 icon: mdi:food-fork-drink
-                icon_color: >
+                icon_color: >-
                   {% set kitchen_in_selected_rooms = 'kitchen' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
                   {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
                   {% if kitchen_in_selected_rooms and cleaning_mode_on %}
@@ -189,10 +188,10 @@ cards:
                   {% else %}
                     grey
                   {% endif %}
-              - type: entity
+              - type: custom:mushroom-template-card
                 entity: input_select.roborock_s5_max_room
-                name: 'Прихожая'
-                content_info: name
+                primary: 'Прихожая'
+                layout: vertical
                 tap_action:
                   action: call-service
                   service: input_select.select_option
@@ -201,7 +200,7 @@ cards:
                   data:
                     option: 'hallway'
                 icon: mdi:door-open
-                icon_color: >
+                icon_color: >-
                   {% set hallway_in_selected_rooms = 'hallway' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
                   {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
                   {% if hallway_in_selected_rooms and cleaning_mode_on %}
