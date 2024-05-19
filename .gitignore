@@ -1,5 +1,6 @@
 cubeserver.key
-minipc.key
+ha.key
+ha.key.pub
 secrets.yaml
 known_devices.yaml
 home-assistant.*

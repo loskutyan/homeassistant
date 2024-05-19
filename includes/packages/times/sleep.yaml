@@ -116,6 +116,20 @@ sleep_time:
           entity_id: switch.kidsroom_airpurifier_ptc
           continue_on_error: true
 
+        - if:
+            - condition: state
+              entity_id: switch.kidsroom_ac
+              state: 'on'
+            - condition: state
+              entity_id: climate.kidsroom_ac
+              attribute: swing_mode
+              state: 'on'
+          then:
+            - service: climate.set_swing_mode
+              entity_id: climate.kidsroom_ac
+              data:
+                swing_mode: 'off'
+
         - service: input_boolean.turn_on
           entity_id: input_boolean.kidsroom_asleep
 
@@ -196,6 +210,20 @@ sleep_time:
         - service: switch.turn_off
           entity_id: switch.bedroom_airpurifier_ptc
           continue_on_error: true
+
+        - if:
+            - condition: state
+              entity_id: switch.bedroom_ac
+              state: 'on'
+            - condition: state
+              entity_id: climate.bedroom_ac
+              attribute: swing_mode
+              state: 'off'
+          then:
+            - service: climate.set_swing_mode
+              entity_id: climate.bedroom_ac
+              data:
+                swing_mode: 'on'
 
         - service: input_boolean.turn_on
           entity_id: input_boolean.bedroom_asleep

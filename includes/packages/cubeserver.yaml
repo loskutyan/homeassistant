@@ -6,6 +6,10 @@ cubeserver:
           friendly_name: 'Cubeserver IP'
           value_template: !secret cubeserver_ip
 
+        cubeserver_windows10_vm_ip:
+          friendly_name: 'Windows 10 VM IP'
+          value_template: !secret cubeserver_windows10_vm_ip
+
         cubeserver_parity_progress:
           unit_of_measurement: '%'
           value_template: >
@@ -249,22 +253,39 @@ cubeserver:
   #   - binary_sensor:
   #       unique_id: cubeserver_vm_windows10_virsh_status
   #       name: 'Cubeserver VM Windows10 Virsh Status'
-  #       command: "if test $(ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh list --all | grep 'Windows 10' | awk '{print $4}') == running; then echo running; else echo 'not running'; fi"
+  #       command: "if test $(ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh list --all | grep 'Windows 10' | awk '{print $4}') == running; then echo running; else echo 'not running'; fi"
   #       device_class: connectivity
   #       payload_on: 'running'
   #       payload_off: 'not running'
 
   shell_command:
-    run_cubeserver_vm_windows10: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} virsh start ''Windows\ 10'''
-    shutdown_cubeserver_vm_windows10: 'ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} virsh shutdown ''Windows\ 10'''
-    run_cubeserver_vm_ubuntuyadisk: "ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh start 'Ubuntu'"
-    shutdown_cubeserver_vm_ubuntuyadisk: "ssh -i /config/cubeserver.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh shutdown 'Ubuntu'"
+    cubeserver_vm_windows10_run: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh start 'Windows\ 10'"
+    cubeserver_vm_windows10_shutdown: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh shutdown 'Windows\ 10'"
+    cubeserver_vm_ubuntuyadisk_run: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh start 'Ubuntu'"
+    cubeserver_vm_ubuntuyadisk_shutdown: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh shutdown 'Ubuntu'"
+    cubeserver_vm_windows10_switch_to_internal_display: "ssh -i /config/ha.key -o StrictHostKeyChecking=no loskutyan@{{ states('sensor.cubeserver_windows10_vm_ip') }} 'psexec -s -i 1 -accepteula C:\\Windows\\System32\\DisplaySwitch.exe /internal'"
+    cubeserver_vm_windows10_switch_to_external_display: "ssh -i /config/ha.key -o StrictHostKeyChecking=no loskutyan@{{ states('sensor.cubeserver_windows10_vm_ip') }} 'psexec -s -i 1 -accepteula C:\\Windows\\System32\\DisplaySwitch.exe /external'"
 
   script:
-    shutdown_cubeserver_vm_windows10:
+    cubeserver_vm_windows10_run:
+      alias: 'cubeserver: включение VM Windows 10'
+      sequence:
+        - service: shell_command.cubeserver_vm_windows10_run
+        - delay: 00:02:00
+        - if:
+            - condition: state
+              entity_id: switch.cubeserver_vm_windows10
+              state: 'off'
+          then:
+            - service: notify.tg_bot
+              data:
+                message: >
+                  {{ '\U000026A0' }} Запуск VM Windows прошел неуспешно
+
+    cubeserver_vm_windows10_shutdown:
       alias: 'cubeserver: выключение VM Windows 10'
       sequence:
-        service: shell_command.shutdown_cubeserver_vm_windows10
+        - service: shell_command.cubeserver_vm_windows10_shutdown
 
   switch:
     - platform: template
@@ -272,13 +293,11 @@ cubeserver:
         cubeserver_vm_windows10:
           friendly_name: 'VM Windows 10'
           value_template: >
-            {% set ping_status = states('binary_sensor.cubeserver_vm_windows10_ping') %}
-            {% set virsh_status = states('binary_sensor.cubeserver_vm_windows10_virsh_status') %}
-            {{ ping_status or virsh_status }}
+            {{ states('binary_sensor.cubeserver_vm_windows10_ping') }}
           turn_on:
-            service: shell_command.run_cubeserver_vm_windows10
+            service: script.cubeserver_vm_windows10_run
           turn_off:
-            service: shell_command.shutdown_cubeserver_vm_windows10
+            service: script.cubeserver_vm_windows10_shutdown
           icon_template: mdi:microsoft-windows
 
         cubeserver_vm_ubuntuyadisk:
@@ -286,9 +305,9 @@ cubeserver:
           value_template: >
             {{ states('binary_sensor.cubeserver_vm_ubuntuyadisk_ping') }}
           turn_on:
-            service: shell_command.run_cubeserver_vm_ubuntuyadisk
+            service: shell_command.cubeserver_vm_ubuntuyadisk_run
           turn_off:
-            service: shell_command.shutdown_cubeserver_vm_ubuntuyadisk
+            service: shell_command.cubeserver_vm_ubuntuyadisk_shutdown
           icon_template: mdi:ubuntu
 
   automation:

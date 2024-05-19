@@ -1,7 +1,7 @@
 remotes_learning:
   script:
-    bedroom_air_conditioner_leaning_cooling_fan:
-      alias: 'Обучение кондиционера: вентиляция'
+    bedroom_air_conditioner_remote_leaning_cooling_fan:
+      alias: 'Обучение пульта кондиционера: вентиляция'
       sequence:
         - service: remote.learn_command
           target:
@@ -22,8 +22,8 @@ remotes_learning:
               - vent_high_1
               - vent_high_swing
 
-    bedroom_air_conditioner_leaning_cool_auto_swing:
-      alias: 'Обучение кондиционера: охлаждение auto swing'
+    bedroom_air_conditioner_remote_leaning_cool_auto_swing:
+      alias: 'Обучение пульта кондиционера: охлаждение auto swing'
       sequence:
         - service: remote.learn_command
           target:
@@ -48,8 +48,8 @@ remotes_learning:
               - cool_30_auto_swing
               - cool_31_auto_swing
 
-    bedroom_air_conditioner_leaning_cool_low_swing:
-      alias: 'Обучение кондиционера: охлаждение low swing'
+    bedroom_air_conditioner_remote_leaning_cool_low_swing:
+      alias: 'Обучение пульта кондиционера: охлаждение low swing'
       sequence:
         - service: remote.learn_command
           target:
@@ -74,8 +74,8 @@ remotes_learning:
               - cool_17_low_swing
               - cool_16_low_swing
 
-    bedroom_air_conditioner_leaning_cool_medium_swing:
-      alias: 'Обучение кондиционера: охлаждение medium swing'
+    bedroom_air_conditioner_remote_leaning_cool_medium_swing:
+      alias: 'Обучение пульта кондиционера: охлаждение medium swing'
       sequence:
         - service: remote.learn_command
           target:
@@ -100,8 +100,8 @@ remotes_learning:
               - cool_30_medium_swing
               - cool_31_medium_swing
 
-    bedroom_air_conditioner_leaning_cool_high_swing:
-      alias: 'Обучение кондиционера: охлаждение high swing'
+    bedroom_air_conditioner_remote_leaning_cool_high_swing:
+      alias: 'Обучение пульта кондиционера: охлаждение high swing'
       sequence:
         - service: remote.learn_command
           target:

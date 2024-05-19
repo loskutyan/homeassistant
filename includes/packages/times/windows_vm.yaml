@@ -1,0 +1,228 @@
+windows_vm_time:
+  input_boolean:
+    using_bedroom_tv_for_cubeserver_vm_windows10:
+      name: 'Вывод изображения с VM Windows на телевизор в спальне'
+
+  binary_sensor:
+    - platform: template
+      sensors:
+        bedroom_monitor_is_on:
+          friendly_name: 'Монитор в спальне включен'
+          value_template: >
+            {{ states('sensor.monitor_plug_power') | float(0) > 30 }}
+          availability_template: >
+            {{ states('sensor.monitor_plug_power') | float(-1) >= 0 }}
+
+  script:
+    bedroom_tv_gaming_mode_turn_on:
+      alias: 'Включение режима игры на телевизоре в спальне'
+      sequence:
+        - if:
+            - condition: state
+              entity_id: remote.sony_xr_65a80j
+              state: 'off'
+          then:
+            - service: remote.turn_on
+              entity_id: remote.sony_xr_65a80j
+            - delay: 00:00:10
+        - service: media_player.select_source
+          entity_id: media_player.sony_xr_65a80j
+          data:
+            source: 'HDMI 4'
+
+    bedroom_tv_gaming_mode_turn_off:
+      alias: 'Выключение режима игры на телевизоре в спальне'
+      sequence:
+        - if:
+            - condition: state
+              entity_id: remote.sony_xr_65a80j
+              state: 'on'
+            - condition: state
+              entity_id: media_player.sony_xr_65a80j
+              attribute: source
+              state: 'HDMI 4'
+          then:
+            - service: remote.send_command
+              entity_id: remote.sony_xr_65a80j
+              data:
+                num_repeats: 2
+                delay_secs: 0.4
+                hold_secs: 0
+                command: 'Home'
+
+    cubeserver_vm_windows10_switch_display_to_bedroom_monitor:
+      alias: 'Смена дисплея для VM Windows на монитор в спальне'
+      sequence:
+        - service: shell_command.cubeserver_vm_windows10_switch_to_internal_display
+        - service: switch.turn_off
+          entity_id: switch.bedroom_tv_gaming_mode
+
+    cubeserver_vm_windows10_switch_display_to_bedroom_tv:
+      alias: 'Смена дисплея для VM Windows на телевизор в спальне'
+      sequence:
+        - service: shell_command.cubeserver_vm_windows10_switch_to_external_display
+
+    cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_on:
+      alias: 'Включение режима игры на телевизоре в спальне'
+      sequence:
+        - if:
+            - condition: state
+              entity_id: switch.cubeserver_vm_windows10
+              state: 'off'
+          then:
+            - service: switch.turn_on
+              entity_id: switch.cubeserver_vm_windows10
+        - service: switch.turn_on
+          entity_id: switch.bedroom_tv_gaming_mode
+        - delay: 00:00:05
+        - service: media_player.volume_set
+          entity_id: media_player.sony_xr_65a80j
+          data:
+            volume_level: 0.2
+        - service: input_boolean.turn_on
+          entity_id: input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10
+
+    cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_off:
+      alias: 'Выключение режима игры на телевизоре в спальне'
+      sequence:
+        - service: switch.turn_off
+          entity_id: switch.bedroom_tv_gaming_mode
+        - service: input_boolean.turn_off
+          entity_id: input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10
+
+    cubeserver_vm_windows10_with_bedroom_monitor_run:
+      alias: 'cubeserver: включение VM Windows 10 с монитором в спальне'
+      sequence:
+        - if:
+            - condition: state
+              entity_id: switch.cubeserver_vm_windows10
+              state: 'off'
+          then:
+            - service: switch.turn_on
+              entity_id: switch.cubeserver_vm_windows10
+        - service: input_boolean.turn_off
+          entity_id: input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10
+
+  switch:
+    - platform: template
+      switches:
+        bedroom_tv_gaming_mode:
+          friendly_name: 'Режим игры на телевизоре в спальне'
+          value_template: >
+            {% set tv_is_on = is_state('remote.sony_xr_65a80j', 'on') %}
+            {% set tv_input_selected = is_state_attr('media_player.sony_xr_65a80j', 'media_content_id', 'extInput:hdmi?port=4') %}
+            {{ tv_is_on and tv_input_selected }}
+          turn_on:
+            service: script.bedroom_tv_gaming_mode_turn_on
+          turn_off:
+            service: script.bedroom_tv_gaming_mode_turn_off
+          icon_template: mdi:controller
+
+        using_bedroom_tv_for_cubeserver_vm_windows10:
+          friendly_name: 'Вывод изображения с VM Windows на телевизор в спальне'
+          value_template: >
+            {{ states('input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10') }}
+          turn_on:
+            service: input_boolean.turn_on
+            entity_id: input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10
+          turn_off:
+            service: input_boolean.turn_off
+            entity_id: input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10
+          icon_template: >
+            {% if is_state('input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10', 'on') %}
+              mdi:controller
+            {% else %}
+              mdi:keyboard
+            {% endif %}
+
+        cubeserver_vm_windows10_with_bedroom_tv_gaming:
+          friendly_name: 'Игра на телевизоре в спальне'
+          value_template: >
+            {% set vm_is_on = is_state('switch.cubeserver_vm_windows10', 'on') %}
+            {% set tv_gaming_mode_is_on = is_state('switch.bedroom_tv_gaming_mode', 'on') %}
+            {% set vm_tv_display_selected = is_state('input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10', 'on') %}
+            {{ vm_is_on and tv_gaming_mode_is_on and vm_tv_display_selected }}
+          turn_on:
+            service: script.cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_on
+          turn_off:
+            service: script.cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_off
+          icon_template: mdi:controller
+
+        cubeserver_vm_windows10_with_bedroom_monitor_using:
+          friendly_name: 'Использование монитора в спальне для VM Windows'
+          value_template: >
+            {% set vm_is_on = is_state('switch.cubeserver_vm_windows10', 'on') %}
+            {% set vm_monitor_display_selected = is_state('input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10', 'off') %}
+            {{ vm_is_on and vm_monitor_display_selected }}
+          turn_on:
+            service: script.cubeserver_vm_windows10_with_bedroom_monitor_run
+          turn_off:
+            service: script.cubeserver_vm_windows10_shutdown
+          icon_template: mdi:keyboard
+
+  automation:
+    - id: 'Смена дисплея для VM Windows'
+      alias: cubeserver_vm_windows10_switch_display
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10
+          to:
+            - 'on'
+            - 'off'
+          for: '00:00:03'
+      condition:
+        - condition: state
+          entity_id: switch.cubeserver_vm_windows10
+          state: 'on'
+        # - condition: template
+        #   value_template: >
+        #     {% set switch_id_to_check = 'bedroom_tv_gaming' if trigger.to_state.state | bool else 'bedroom_monitor_using' %}
+        #     {{ is_state('switch.cubeserver_vm_windows10_with_' + switch_id_to_check, 'off') }}
+      action:
+        - service: script.turn_on
+          target:
+            entity_id: >
+              {% set display = 'tv' if trigger.to_state.state | bool else 'monitor' %}
+              script.cubeserver_vm_windows10_switch_display_to_bedroom_{{ display }}
+
+    - id: 'Выбор дисплея при включении VM Windows'
+      alias: cubeserver_vm_windows10_select_display_after_turn_on
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: switch.cubeserver_vm_windows10
+          from: 'off'
+          to: 'on'
+          for: '00:01:00'
+      action:
+        - service: script.turn_on
+          target:
+            entity_id: >
+              {% set display = 'tv' if is_state('input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10', 'on') else 'monitor' %}
+              script.cubeserver_vm_windows10_switch_display_to_bedroom_{{ display }}
+
+    - id: 'Отслеживание использования монитора в спальне для VM Windows'
+      alias: tracking_cubeserver_vm_windows10_bedroom_monitor_using
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.bedroom_monitor_is_on
+          from: 'off'
+          to: 'on'
+          for: '00:00:30'
+        - platform: state
+          entity_id: media_player.sony_xr_65a80j
+          attribute: source
+          to: 'HDMI 4'
+          for: '00:00:10'
+      condition:
+        - condition: state
+          entity_id: switch.cubeserver_vm_windows10
+          state: 'on'
+          for:
+            seconds: 30
+      action:
+        - service_template: >
+            input_boolean.turn_{{ 'off' if 'monitor' in trigger.entity_id else 'on' }}
+          entity_id: input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10
