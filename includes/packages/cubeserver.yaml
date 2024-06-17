@@ -10,6 +10,10 @@ cubeserver:
           friendly_name: 'Windows 10 VM IP'
           value_template: !secret cubeserver_windows10_vm_ip
 
+        cubeserver_windows10_vm_name:
+          friendly_name: 'Windows 10 VM name'
+          value_template: 'Windows 10'
+
         cubeserver_parity_progress:
           unit_of_measurement: '%'
           value_template: >
@@ -259,8 +263,8 @@ cubeserver:
   #       payload_off: 'not running'
 
   shell_command:
-    cubeserver_vm_windows10_run: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh start 'Windows\ 10'"
-    cubeserver_vm_windows10_shutdown: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh shutdown 'Windows\ 10'"
+    cubeserver_vm_windows10_run: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} 'virsh start \"{{ states('sensor.cubeserver_windows10_vm_name') }}\"'"
+    cubeserver_vm_windows10_shutdown: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} 'virsh shutdown \"{{ states('sensor.cubeserver_windows10_vm_name') }}\"'"
     cubeserver_vm_ubuntuyadisk_run: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh start 'Ubuntu'"
     cubeserver_vm_ubuntuyadisk_shutdown: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh shutdown 'Ubuntu'"
     cubeserver_vm_windows10_switch_to_internal_display: "ssh -i /config/ha.key -o StrictHostKeyChecking=no loskutyan@{{ states('sensor.cubeserver_windows10_vm_ip') }} 'psexec -s -i 1 -accepteula C:\\Windows\\System32\\DisplaySwitch.exe /internal'"

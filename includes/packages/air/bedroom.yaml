@@ -496,8 +496,18 @@ bedroom_air:
           entity_id: fan.mijia_airpurifier_bedroom
           state: 'off'
         - condition: state
-          entity_id: switch.bedroom_airpurifier_favourite_speed_smart_control
+          entity_id: input_boolean.bedroom_airpurifier_favourite_speed_smart_control
           state: 'on'
       action:
-        - service: switch.turn_on
-          entity_id: switch.bedroom_airpurifier_forced_ventilation
+        - service: fan.turn_on
+          entity_id: fan.mijia_airpurifier_bedroom
+        - service: input_select.select_option
+          entity_id: input_select.bedroom_airpurifier_mode
+          data:
+            option: 'Favorite'
+        - service: input_number.set_value
+          entity_id: input_number.bedroom_airpurifier_favorite_speed
+          data:
+            value: 100
+        - service: timer.start
+          entity_id: timer.bedroom_airpurifier_fixed_speed
