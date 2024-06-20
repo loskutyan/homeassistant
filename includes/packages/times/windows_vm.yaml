@@ -151,9 +151,10 @@ windows_vm_time:
         cubeserver_vm_windows10_with_bedroom_monitor_using:
           friendly_name: 'Использование монитора в спальне для VM Windows'
           value_template: >
+            {% set monitor_is_on = is_state('binary_sensor.bedroom_monitor_is_on', 'on') %}
             {% set vm_is_on = is_state('switch.cubeserver_vm_windows10', 'on') %}
             {% set vm_monitor_display_selected = is_state('input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10', 'off') %}
-            {{ vm_is_on and vm_monitor_display_selected }}
+            {{ monitor_is_on and vm_is_on and vm_monitor_display_selected }}
           turn_on:
             service: script.cubeserver_vm_windows10_with_bedroom_monitor_run
           turn_off:

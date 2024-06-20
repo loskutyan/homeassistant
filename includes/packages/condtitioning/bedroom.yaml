@@ -319,3 +319,32 @@ conditioning_bedroom:
                 {{ target_temp | int }}
               {% endif %}
             hvac_mode: 'cool'
+
+    - id: 'Изменение режима качания халюзи кондиционера в спальне при работе с монитором'
+      alias: toggle_bedroom_ac_swing_mode_on_cubeserver_vm_windows10_monitor_using
+      trigger:
+        - platform: state
+          entity_id: switch.cubeserver_vm_windows10_with_bedroom_monitor_using
+          from:
+            - 'on'
+            - 'off'
+          to:
+            - 'on'
+            - 'off'
+      condition:
+        - condition: state
+          entity_id: input_select.bedroom_ac_mode
+          state: 'cool'
+        - condition: state
+          entity_id:
+            - switch.bedroom_ac
+            - switch.bedroom_auto_conditioning
+          state: 'on'
+        - condition: template
+          value_template: >
+            {{ trigger.to_state.state == states('input_boolean.bedroom_ac_swing_mode') }}
+      action:
+        - service: climate.set_swing_mode
+          entity_id: climate.bedroom_ac
+          data_template:
+            swing_mode: '{{ trigger.from_state.state }}'
