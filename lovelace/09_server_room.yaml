@@ -5,12 +5,21 @@ cards:
   - type: vertical-stack
     title: 'UPS'
     cards:
-      - type: custom:mushroom-entity-card
-        entity: sensor.ups_status
-        name: 'Статус'
-        layout: horizontal
-        icon: mdi:battery
-        icon_color: accent
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-entity-card
+            entity: sensor.ups_status
+            name: 'Статус'
+            layout: horizontal
+            icon: mdi:battery
+            icon_color: accent
+
+          - type: custom:mushroom-entity-card
+            entity: switch.ups_data_plug
+            name: 'Соединение'
+            layout: horizontal
+            icon: mdi:connection
+            icon_color: accent
 
       - type: horizontal-stack
         cards:

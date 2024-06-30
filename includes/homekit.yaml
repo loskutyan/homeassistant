@@ -108,3 +108,5 @@
       name: 'Охлаждение'
     media_player.kidsroom_mi_tv_stick:
       name: 'Телевизор'
+    light.hallway_duty_aqara_led_strip:
+      name: 'Подсветка'
