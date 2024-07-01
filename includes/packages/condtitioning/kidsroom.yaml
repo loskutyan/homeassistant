@@ -49,13 +49,6 @@ conditioning_kidsroom:
         - high
       icon: mdi:fan
 
-    kidsroom_ac_fan_swing_mode:
-      name: 'Направление обдува кондиционера в детской (только вентилятор)'
-      options:
-        - auto
-        - swing
-      icon: mdi:weather-windy
-
   binary_sensor:
     - platform: template
       sensors:

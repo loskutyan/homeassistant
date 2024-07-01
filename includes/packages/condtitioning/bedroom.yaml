@@ -49,13 +49,6 @@ conditioning_bedroom:
         - high
       icon: mdi:fan
 
-    bedroom_ac_fan_swing_mode:
-      name: 'Направление обдува кондиционера в спальне (только вентилятор)'
-      options:
-        - auto
-        - swing
-      icon: mdi:weather-windy
-
   binary_sensor:
     - platform: template
       sensors:
