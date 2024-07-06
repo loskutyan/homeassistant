@@ -361,7 +361,7 @@ cards:
     cards:
       - type: custom:mini-graph-card
         entities:
-          - entity: sensor.qingping_air_lite_co2
+          - entity: sensor.kidsroom_co2
             name: 'CO²'
         lower_bound: 400
         upper_bound: 1200
@@ -386,7 +386,7 @@ cards:
 
       - type: custom:mini-graph-card
         entities:
-          - entity: sensor.qingping_air_lite_pm25
+          - entity: sensor.kidsroom_pm25
             name: 'PM2.5'
         lower_bound: 0.0
         upper_bound: 20.0
@@ -411,23 +411,19 @@ cards:
 
       - type: custom:mini-graph-card
         entities:
-          - entity: sensor.qingping_air_lite_pm10
-            name: 'PM10'
-        lower_bound: 0.0
-        upper_bound: 20.0
+          - entity: sensor.kidsroom_tvoc
+            name: 'tVOC'
+        lower_bound: 0
+        upper_bound: 500
         color_thresholds:
-          - value: 1
+          - value: 60
             color: '#00FFFF'
-          - value: 3
+          - value: 100
             color: '#00FF00'
-          - value: 10
+          - value: 200
             color: '#FFFF00'
-          - value: 25
-            color: '#FFD700'
-          - value: 75
+          - value: 500
             color: '#FF0000'
-          - value: 999
-            color: '#800000'
         animate: true
         line_width: 2
         hour24: true

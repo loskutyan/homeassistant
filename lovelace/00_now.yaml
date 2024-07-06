@@ -484,10 +484,10 @@ cards:
 
       - type: custom:mini-graph-card
         entities:
-          - entity: sensor.cleargrass_air_co2
+          - entity: sensor.bedroom_co2
             name: 'Спальня'
             show_legend: true
-          - entity: sensor.qingping_air_lite_co2
+          - entity: sensor.kidsroom_co2
             name: 'Детская'
             show_state: true
             show_legend: true
@@ -518,10 +518,10 @@ cards:
         cards:
           - type: custom:mini-graph-card
             entities:
-              - entity: sensor.cleargrass_air_pm25
+              - entity: sensor.bedroom_pm25
                 name: 'Спальня'
                 show_legend: true
-              - entity: sensor.qingping_air_lite_pm25
+              - entity: sensor.kidsroom_pm25
                 name: 'Детская'
                 show_state: true
                 show_legend: true
@@ -550,8 +550,15 @@ cards:
 
           - type: custom:mini-graph-card
             entities:
-              - entity: sensor.cleargrass_air_tvoc
-                name: 'tVOC'
+              - entity: sensor.bedroom_tvoc
+                name: 'Спальня'
+                show_legend: true
+              - entity: sensor.kidsroom_tvoc
+                name: 'Детская'
+                show_state: true
+                show_legend: true
+            name: 'tVOC'
+            align_state: 'center'
             lower_bound: 0
             upper_bound: 500
             color_thresholds:

@@ -355,7 +355,7 @@ cards:
     cards:
       - type: custom:mini-graph-card
         entities:
-          - entity: sensor.cleargrass_air_co2
+          - entity: sensor.bedroom_co2
             name: 'CO²'
         lower_bound: 400
         upper_bound: 1200
@@ -380,7 +380,7 @@ cards:
 
       - type: custom:mini-graph-card
         entities:
-          - entity: sensor.cleargrass_air_pm25
+          - entity: sensor.bedroom_pm25
             name: 'PM2.5'
         lower_bound: 0.0
         upper_bound: 20.0
@@ -405,7 +405,7 @@ cards:
 
       - type: custom:mini-graph-card
         entities:
-          - entity: sensor.cleargrass_air_tvoc
+          - entity: sensor.bedroom_tvoc
             name: 'tVOC'
         lower_bound: 0
         upper_bound: 500

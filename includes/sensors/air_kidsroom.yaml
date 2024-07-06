@@ -1,40 +1,88 @@
 - platform: template
   sensors:
-    qingping_air_lite_co2:
-      friendly_name: 'Qingping air lite CO²'
+    kidsroom_co2:
+      friendly_name: 'Cleargrass air CO²'
       device_class: carbon_dioxide
       unit_of_measurement: 'ppm'
-      value_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.co2_density') }}"
-      availability_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.co2_density') | float(0) > 100 }}"
+      availability_template: >
+        {% set value = states('sensor.cgllc_s1_04e8_co2_density') | float(0) %}
+        {{ value > 0 and value < 10000 }}
+      value_template: "{{ states('sensor.cgllc_s1_04e8_co2_density') }}"
       icon_template: mdi:molecule-co2
 
-    qingping_air_lite_pm25:
-      friendly_name: 'Qingping air lite PM2.5'
+    kidsroom_tvoc:
+      friendly_name: 'Cleargrass air tVOC'
+      device_class: volatile_organic_compounds_parts
+      unit_of_measurement: 'ppb'
+      availability_template: >
+        {% set value = states('sensor.cgllc_s1_04e8_tvoc_density') | float(0) %}
+        {{ value > 0 and value < 10000 }}
+      value_template: "{{ states('sensor.cgllc_s1_04e8_tvoc_density') }}"
+      icon_template: mdi:atom
+
+    kidsroom_pm25:
+      friendly_name: 'Cleargrass air PM2.5'
       device_class: pm25
       unit_of_measurement: 'µg/m³'
-      value_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.pm2_5_density') }}"
+      availability_template: >
+        {% set value = states('sensor.cgllc_s1_04e8_pm25_density') | float(-1) %}
+        {{ value >= 0 and value < 1000 }}
+      value_template: "{{ states('sensor.cgllc_s1_04e8_pm25_density') }}"
       icon_template: mdi:molecule
 
-    qingping_air_lite_pm10:
-      friendly_name: 'Qingping air lite PM10'
-      device_class: pm10
-      unit_of_measurement: 'µg/m³'
-      value_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.pm10_density') }}"
-      icon_template: mdi:grain
-
-    qingping_air_lite_temperature:
-      friendly_name: 'Qingping air lite Температура'
+    cleargrass_air_temperature:
+      friendly_name: 'Cleargrass air Температура'
       device_class: temperature
       unit_of_measurement: '°C'
-      value_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.temperature') }}"
-      availability_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.temperature') | float(0) > 10 }}"
+      availability_template: >
+        {% set value = states('sensor.cgllc_s1_04e8_temperature') | float(0) %}
+        {{ value > 0 and value < 100 }}
+      value_template: "{{ states('sensor.cgllc_s1_04e8_temperature') }}"
 
-    qingping_air_lite_humidity:
-      friendly_name: 'Qingping air lite Влажность'
+    cleargrass_air_humidity:
+      friendly_name: 'Cleargrass air Влажность'
       device_class: humidity
       unit_of_measurement: '%'
-      value_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.relative_humidity') }}"
-      availability_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.relative_humidity') | float(0) > 5 }}"
+      availability_template: >
+        {% set value = states('sensor.cgllc_s1_04e8_environment') | float(0) %}
+        {{ value > 0 and value < 100 }}
+      value_template: "{{ states('sensor.cgllc_s1_04e8_environment') }}"
+
+    # qingping_air_lite_co2:
+    #   friendly_name: 'Qingping air lite CO²'
+    #   device_class: carbon_dioxide
+    #   unit_of_measurement: 'ppm'
+    #   value_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.co2_density') }}"
+    #   availability_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.co2_density') | float(0) > 100 }}"
+    #   icon_template: mdi:molecule-co2
+
+    # qingping_air_lite_pm25:
+    #   friendly_name: 'Qingping air lite PM2.5'
+    #   device_class: pm25
+    #   unit_of_measurement: 'µg/m³'
+    #   value_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.pm2_5_density') }}"
+    #   icon_template: mdi:molecule
+
+    # qingping_air_lite_pm10:
+    #   friendly_name: 'Qingping air lite PM10'
+    #   device_class: pm10
+    #   unit_of_measurement: 'µg/m³'
+    #   value_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.pm10_density') }}"
+    #   icon_template: mdi:grain
+
+    # qingping_air_lite_temperature:
+    #   friendly_name: 'Qingping air lite Температура'
+    #   device_class: temperature
+    #   unit_of_measurement: '°C'
+    #   value_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.temperature') }}"
+    #   availability_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.temperature') | float(0) > 10 }}"
+
+    # qingping_air_lite_humidity:
+    #   friendly_name: 'Qingping air lite Влажность'
+    #   device_class: humidity
+    #   unit_of_measurement: '%'
+    #   value_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.relative_humidity') }}"
+    #   availability_template: "{{ state_attr('sensor.cgllc_cgdn1_a7b6_environment', 'environment.relative_humidity') | float(0) > 5 }}"
 
     kidsroom_aqara_temperature:
       friendly_name: 'Kidsroom Aqara Температура'
@@ -55,23 +103,33 @@
       device_class: temperature
       unit_of_measurement: '°C'
       value_template: >
-        {% set temps = [states('sensor.kidsroom_aqara_temperature')] %}
+        {% set temps = [
+          states('sensor.cleargrass_air_temperature'),
+          states('sensor.kidsroom_aqara_temperature')
+        ] %}
         {% set filtered_temps = temps | reject('equalto', 'unavailable') | map('float') | list %}
         {{ filtered_temps | sum / filtered_temps | count }}
       availability_template: >
-        {% set temps = [states('sensor.kidsroom_aqara_temperature')] %}
-        {{ temps | reject('equalto', 'unavailable') | list | count > 0 }}
+        {% set temps = [
+          states('sensor.cleargrass_air_temperature'),
+          states('sensor.kidsroom_aqara_temperature')
+        ] %}
+        {{ temps | reject('equalto', 'unavailable') | list | count == 2 }}
 
     kidsroom_average_humidity:
       friendly_name: 'Влажность'
       device_class: humidity
       unit_of_measurement: '%'
       value_template: >
-        {% set hums = [states('sensor.qingping_air_lite_humidity'),
-                       states('sensor.kidsroom_aqara_humidity')] %}
+        {% set hums = [
+          states('sensor.cleargrass_air_humidity'),
+          states('sensor.kidsroom_aqara_humidity')
+        ] %}
         {% set filtered_hums = hums | reject('equalto', 'unavailable') | map('float') | list %}
         {{ filtered_hums | sum / filtered_hums | count }}
       availability_template: >
-        {% set hums = [states('sensor.qingping_air_lite_humidity'),
-                       states('sensor.kidsroom_aqara_humidity')] %}
+        {% set hums = [
+          states('sensor.cleargrass_air_humidity'),
+          states('sensor.kidsroom_aqara_humidity')
+        ] %}
         {{ hums | reject('equalto', 'unavailable') | list | count == 2 }}

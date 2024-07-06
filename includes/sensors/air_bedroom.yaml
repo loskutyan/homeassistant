@@ -1,52 +1,70 @@
 - platform: template
   sensors:
-    cleargrass_air_co2:
-      friendly_name: 'Cleargrass air CO²'
+    bedroom_co2:
+      friendly_name: 'Qingping air2 CO²'
       device_class: carbon_dioxide
       unit_of_measurement: 'ppm'
       availability_template: >
-        {% set value = states('sensor.cgllc_s1_04e8_co2_density') | float(0) %}
+        {% set value = states('sensor.cgllc_cgs2_84ac_co2_density') | float(0) %}
         {{ value > 0 and value < 10000 }}
-      value_template: "{{ states('sensor.cgllc_s1_04e8_co2_density') }}"
+      value_template: "{{ states('sensor.cgllc_cgs2_84ac_co2_density') }}"
       icon_template: mdi:molecule-co2
 
-    cleargrass_air_tvoc:
-      friendly_name: 'Cleargrass air tVOC'
+    bedroom_tvoc:
+      friendly_name: 'Qingping air2 tVOC'
       device_class: volatile_organic_compounds_parts
       unit_of_measurement: 'ppb'
       availability_template: >
-        {% set value = states('sensor.cgllc_s1_04e8_tvoc_density') | float(0) %}
-        {{ value > 0 and value < 10000 }}
-      value_template: "{{ states('sensor.cgllc_s1_04e8_tvoc_density') }}"
+        {% set value = states('sensor.cgllc_cgs2_84ac_tvoc_density') | float(-1) %}
+        {{ value >= 0 and value < 1000 }}
+      value_template: >
+        {% set index = states('sensor.cgllc_cgs2_84ac_tvoc_density') | float %}
+        {% if index < 37 %}
+          {{ index * 4.5 + 52 }}
+        {% elif index < 120 %}
+          {{ index * 5.3 + 24 }}
+        {% else %}
+          {{ index * 7.75 - 270 }}
+        {% endif %}
       icon_template: mdi:atom
 
-    cleargrass_air_pm25:
-      friendly_name: 'Cleargrass air PM2.5'
+    bedroom_pm25:
+      friendly_name: 'Qingping air2 PM2.5'
       device_class: pm25
       unit_of_measurement: 'µg/m³'
       availability_template: >
-        {% set value = states('sensor.cgllc_s1_04e8_pm25_density') | float(-1) %}
+        {% set value = states('sensor.cgllc_cgs2_84ac_pm25_density') | float(-1) %}
         {{ value >= 0 and value < 1000 }}
-      value_template: "{{ states('sensor.cgllc_s1_04e8_pm25_density') }}"
+      value_template: "{{ states('sensor.cgllc_cgs2_84ac_pm25_density') }}"
       icon_template: mdi:molecule
 
-    cleargrass_air_temperature:
-      friendly_name: 'Cleargrass air Температура'
+    bedroom_pm10:
+      friendly_name: 'Qingping air2 PM10'
+      device_class: pm10
+      unit_of_measurement: 'µg/m³'
+      availability_template: >
+        {% set value = states('sensor.cgllc_cgs2_84ac_pm10_density') | float(-1) %}
+        {{ value >= 0 and value < 1000 }}
+      value_template: "{{ states('sensor.cgllc_cgs2_84ac_pm10_density') }}"
+      icon_template: mdi:grain
+
+    qingping_air2_temperature:
+      friendly_name: 'Qingping air2 Температура'
       device_class: temperature
       unit_of_measurement: '°C'
       availability_template: >
-        {% set value = states('sensor.cgllc_s1_04e8_temperature') | float(0) %}
+        {% set value = states('sensor.cgllc_cgs2_84ac_temperature') | float(0) %}
         {{ value > 0 and value < 100 }}
-      value_template: "{{ states('sensor.cgllc_s1_04e8_temperature') }}"
+      value_template: "{{ states('sensor.cgllc_cgs2_84ac_temperature') }}"
 
-    cleargrass_air_humidity:
-      friendly_name: 'Cleargrass air Влажность'
+    qingping_air2_humidity:
+      friendly_name: 'Qingping air2 Влажность'
       device_class: humidity
       unit_of_measurement: '%'
       availability_template: >
-        {% set value = states('sensor.cgllc_s1_04e8_environment') | float(0) %}
+        {% set value = states('sensor.cgllc_cgs2_84ac_environment') | float(0) %}
         {{ value > 0 and value < 100 }}
-      value_template: "{{ states('sensor.cgllc_s1_04e8_environment') }}"
+      value_template: "{{ states('sensor.cgllc_cgs2_84ac_environment') }}"
 
     bedroom_aqara_temperature:
       friendly_name: 'Bedroom aqara Температура'
@@ -71,13 +89,17 @@
       device_class: temperature
       unit_of_measurement: '°C'
       value_template: >
-        {% set temps = [states('sensor.cleargrass_air_temperature'),
-                        states('sensor.bedroom_aqara_temperature')] %}
+        {% set temps = [
+          states('sensor.qingping_air2_temperature'),
+          states('sensor.bedroom_aqara_temperature')
+        ] %}
         {% set filtered_temps = temps | reject('equalto', 'unavailable') | map('float') | list %}
         {{ filtered_temps | sum / filtered_temps | count }}
       availability_template: >
-        {% set temps = [states('sensor.cleargrass_air_temperature'),
-                        states('sensor.bedroom_aqara_temperature')] %}
+        {% set temps = [
+          states('sensor.qingping_air2_temperature'),
+          states('sensor.bedroom_aqara_temperature')
+        ] %}
         {{ temps | reject('equalto', 'unavailable') | list | count == 2 }}
 
     bedroom_average_humidity:
@@ -85,11 +107,15 @@
       device_class: humidity
       unit_of_measurement: '%'
       value_template: >
-        {% set hums = [states('sensor.cleargrass_air_humidity'),
-                       states('sensor.bedroom_aqara_humidity')] %}
+        {% set hums = [
+          states('sensor.qingping_air2_humidity'),
+          states('sensor.bedroom_aqara_humidity')
+        ] %}
         {% set filtered_hums = hums | reject('equalto', 'unavailable') | map('float') | list %}
         {{ filtered_hums | sum / filtered_hums | count }}
       availability_template: >
-        {% set hums = [states('sensor.cleargrass_air_humidity'),
-                       states('sensor.bedroom_aqara_humidity')] %}
+        {% set hums = [
+          states('sensor.qingping_air2_humidity'),
+          states('sensor.bedroom_aqara_humidity')
+        ] %}
         {{ hums | reject('equalto', 'unavailable') | list | count == 2 }}

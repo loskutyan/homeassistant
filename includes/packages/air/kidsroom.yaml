@@ -276,7 +276,7 @@ kidsroom_air:
           value_template: >
             {% set hi = (states('sensor.kidsroom_airpurifier_speed_max_co2') | float) + 15 %}
             {% set lo = (states('sensor.kidsroom_airpurifier_speed_min_co2') | float) - 35 %}
-            {% set co2 = states('sensor.qingping_air_lite_co2') | float %}
+            {% set co2 = states('sensor.kidsroom_co2') | float %}
             {% if co2 > hi %}
               up
             {% elif co2 < lo %}
@@ -287,7 +287,7 @@ kidsroom_air:
           availability_template: >
             {% set valid_min_co2 = states('sensor.kidsroom_airpurifier_speed_min_co2') | float(-1) >= 0 %}
             {% set valid_max_co2 = states('sensor.kidsroom_airpurifier_speed_max_co2') | float(-1) >= 0 %}
-            {% set valid_co2 = states('sensor.qingping_air_lite_co2') | float(0) > 0 %}
+            {% set valid_co2 = states('sensor.kidsroom_co2') | float(0) > 0 %}
             {{ valid_min_co2 and valid_max_co2 and valid_co2 }}
 
   binary_sensor:
@@ -403,7 +403,7 @@ kidsroom_air:
           entity_id: fan.mijia_airpurifier_kidsroom
           state: 'off'
         - condition: numeric_state
-          entity_id: sensor.qingping_air_lite_co2
+          entity_id: sensor.kidsroom_co2
           above: 650
         - condition: state
           entity_id: input_boolean.kidsroom_airpurifier_favourite_speed_smart_control
@@ -422,7 +422,7 @@ kidsroom_air:
                 message: |
                   {{ '\U0001F4A8' }} Бризер в детской включен.
                   {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
-                  {{ '\U0000269B' }} CO2 {{ states('sensor.qingping_air_lite_co2') | int }}ppm
+                  {{ '\U0000269B' }} CO2 {{ states('sensor.kidsroom_co2') | int }}ppm
 
     - id: 'Выключение бризера в детской'
       alias: kidsroom_airpurifier_turn_off
@@ -439,7 +439,7 @@ kidsroom_air:
           entity_id: fan.mijia_airpurifier_kidsroom
           state: 'on'
         - condition: numeric_state
-          entity_id: sensor.qingping_air_lite_co2
+          entity_id: sensor.kidsroom_co2
           below: sensor.breezers_turnoff_co2_threshold
         - condition: state
           entity_id:
@@ -472,7 +472,7 @@ kidsroom_air:
                 message: |
                   {{ '\U0001F4A8' }} Бризер в детской выключен.
                   {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
-                  {{ '\U0000269B' }} CO2 {{ states('sensor.qingping_air_lite_co2') | int }}ppm
+                  {{ '\U0000269B' }} CO2 {{ states('sensor.kidsroom_co2') | int }}ppm
           else:
             - service: notify.tg_bot
               data:
