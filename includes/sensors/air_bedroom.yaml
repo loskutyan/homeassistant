@@ -20,11 +20,11 @@
       value_template: >
         {% set index = states('sensor.cgllc_cgs2_84ac_tvoc_density') | float %}
         {% if index < 37 %}
-          {{ index * 4.5 + 52 }}
+          {{ (index * 4.5 + 52) | round(0) }}
         {% elif index < 120 %}
-          {{ index * 5.3 + 24 }}
+          {{ (index * 5.3 + 24) | round(0) }}
         {% else %}
-          {{ index * 7.75 - 270 }}
+          {{ (index * 7.75 - 270) | round(0) }}
         {% endif %}
       icon_template: mdi:atom
 

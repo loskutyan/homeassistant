@@ -30,6 +30,9 @@
       - switch.bedroom_cooling
       - switch.kidsroom_cooling
       - media_player.kidsroom_mi_tv_stick
+      - camera.intercom
+      - camera.doorbell
+      - lock.intercom_door_lock
     include_entity_globs:
       - binary_sensor.*_water_leak
       - binary_sensor.*_sensor_smoke
@@ -110,3 +113,13 @@
       name: 'Телевизор'
     light.hallway_duty_aqara_led_strip:
       name: 'Подсветка'
+    camera.intercom:
+      name: 'Домофон'
+      support_audio: false
+      linked_doorbell_sensor: binary_sensor.intercom_rings
+    camera.doorbell:
+      name: 'Дверной звонок'
+      support_audio: false
+      linked_doorbell_sensor: binary_sensor.doorbell_rings
+    lock.intercom_door_lock:
+      name: 'Дверь в подъезде'

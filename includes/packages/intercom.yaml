@@ -21,6 +21,20 @@ intercom:
           auto_off: '00:00:10'
           device_class: lock
 
+  lock:
+    - platform: template
+      name: 'Intercom door lock'
+      value_template: >
+        {{ is_state('switch.smartintercom_otkryvat_na_sleduiushchii_zvonok', 'off') }}
+      lock:
+        service: switch.turn_off
+        target:
+          entity_id: switch.smartintercom_otkryvat_na_sleduiushchii_zvonok
+      unlock:
+        service: switch.turn_on
+        target:
+          entity_id: switch.smartintercom_otkryvat_na_sleduiushchii_zvonok
+
   script:
     intercom_rings_aqara_hub_quiet_sound_notification:
       alias: 'Тихое звуковое уведомление Aqara Hub звонка в домофон'

@@ -1,0 +1,40 @@
+doorbell:
+  template:
+    - trigger:
+        - platform: state
+          from: 'off'
+          to: 'on'
+          entity_id: binary_sensor.elevator_hall_button_press_sensor_contact
+      binary_sensor:
+        - name: 'Doorbell Rings'
+          state: 'on'
+          auto_off: '00:00:15'
+  
+  automation:
+    - id: 'Звонок в дверь'
+      alias: elevator_hall_doorbell_rings
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.doorbell_rings
+          from: 'off'
+          to: 'on'
+      action:
+        - if:
+            - condition: time
+              after: '09:00:00'
+              before: '23:00:00'
+          then:
+            - service: media_player.play_media
+              entity_id: media_player.miio_gateway
+              data:
+                media_content_type: 'music'
+                media_content_id: 10
+          continue_on_error: true
+        - service: notify.tg_urgent
+          data:
+            message: >
+              {% set messages = ['Кто-то позвонил в дверь!',
+                                 'Кажется, кто-то пришел и звонит в дверь.',
+                                 'Билим-билим!'] %}
+              {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}

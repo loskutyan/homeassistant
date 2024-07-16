@@ -46,36 +46,11 @@ aqara_hub:
           entity_id: sensor.aqara_hub_volume
       condition:
         - condition: template
-          value_template: "{{ state_attr('media_player.miio_gateway', 'volume_level') | float(-1) >= 0 }}"
+          value_template: >
+            {{ state_attr('media_player.miio_gateway', 'volume_level') | float(-1) >= 0 }}
       action:
         - service: input_number.set_value
           entity_id: input_number.aqara_hub_volume
           data_template:
-            value: "{{ (state_attr('media_player.miio_gateway', 'volume_level') | float * 100) | int }}"
-
-    - id: 'Звонок в дверь'
-      alias: elevator_hall_doorbell_rings
-      initial_state: true
-      trigger:
-        - platform: state
-          entity_id: binary_sensor.elevator_hall_button_press_sensor_contact
-          to: 'off'
-      action:
-        - if:
-            - condition: time
-              after: '09:00:00'
-              before: '23:00:00'
-          then:
-            - service: media_player.play_media
-              entity_id: media_player.miio_gateway
-              data:
-                media_content_type: 'music'
-                media_content_id: 10
-          continue_on_error: true
-        - service: notify.tg_urgent
-          data:
-            message: >
-              {% set messages = ['Кто-то позвонил в дверь!',
-                                 'Кажется, кто-то пришел и звонит в дверь.',
-                                 'Билим-билим!'] %}
-              {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}
+            value: >
+              {{ (state_attr('media_player.miio_gateway', 'volume_level') | float * 100) | int }}
