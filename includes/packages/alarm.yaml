@@ -255,9 +255,9 @@ alarm:
           value_template: >
             {{ states('input_boolean.bathroom_valves') }}
           turn_on:
-            - service: script.open_bathroom_valves
+            service: script.open_bathroom_valves
           turn_off:
-            - service: script.close_bathroom_valves
+            service: script.close_bathroom_valves
           icon_template: >
             {% if is_state('input_boolean.bathroom_valves', 'on') %}
               mdi:valve-open
