@@ -23,7 +23,7 @@ intercom:
 
   lock:
     - platform: template
-      name: 'Intercom door lock'
+      name: 'Intercom door'
       value_template: >
         {{ is_state('switch.intercom_lock', 'on') }}
       lock:
@@ -161,7 +161,7 @@ intercom:
           friendly_name: 'Замок домофона'
           value_template: >
             {% set not_auto_open = is_state('switch.smartintercom_otkryvat_na_sleduiushchii_zvonok', 'off') %}
-            {% set not_door_is_being_opened = is_state('sensor.intercom_lock_opened', 'off') %}
+            {% set not_door_is_being_opened = is_state('binary_sensor.intercom_lock_opened', 'off') %}
             {{ not_auto_open and not_door_is_being_opened }}
           availability_template: >
             {{ states('switch.smartintercom_otkryvat_na_sleduiushchii_zvonok') in ['on', 'off'] }}

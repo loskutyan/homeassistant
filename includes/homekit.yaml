@@ -32,7 +32,7 @@
       - media_player.kidsroom_mi_tv_stick
       - camera.intercom
       - camera.doorbell
-      - lock.intercom_door_lock
+      - lock.intercom_door
     include_entity_globs:
       - binary_sensor.*_water_leak
       - binary_sensor.*_sensor_smoke
@@ -121,5 +121,5 @@
       name: 'Дверной звонок'
       support_audio: false
       linked_doorbell_sensor: binary_sensor.doorbell_rings
-    lock.intercom_door_lock:
+    lock.intercom_door:
       name: 'Дверь в подъезде'

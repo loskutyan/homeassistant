@@ -90,9 +90,9 @@ cards:
 
           - type: horizontal-stack
             cards:
-              - type: custom:mushroom-entity-card
-                entity: switch.smartintercom_otkryvat_na_sleduiushchii_zvonok
-                name: 'След. автооткрытие домофона'
+              - type: custom:mushroom-lock-card
+                entity: lock.intercom_door
+                name: 'Домофон'
                 secondary_info: last-changed
                 tap_action:
                   action: toggle
