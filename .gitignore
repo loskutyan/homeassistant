@@ -8,6 +8,7 @@ home-assistant_v2.db
 .storage/
 image/
 zigbee2mqtt/
+zigbee2mqtt_lan/
 www/
 tts/
 custom_components/*

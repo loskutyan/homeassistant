@@ -8,7 +8,7 @@ intercom:
       binary_sensor:
         - name: 'Intercom Rings'
           state: 'on'
-          auto_off: '00:00:15'
+          auto_off: '00:00:45'
 
     - trigger:
         - platform: state
@@ -160,11 +160,9 @@ intercom:
         intercom_lock:
           friendly_name: 'Замок домофона'
           value_template: >
-            {% set not_auto_open = is_state('switch.smartintercom_otkryvat_na_sleduiushchii_zvonok', 'off') %}
+            {% set auto_open = is_state('switch.smartintercom_otkryvat_na_sleduiushchii_zvonok', 'on') %}
             {% set not_door_is_being_opened = is_state('binary_sensor.intercom_lock_opened', 'off') %}
-            {{ not_auto_open and not_door_is_being_opened }}
-          availability_template: >
-            {{ states('switch.smartintercom_otkryvat_na_sleduiushchii_zvonok') in ['on', 'off'] }}
+            {{ not auto_open and not_door_is_being_opened }}
           turn_on:
             service: script.intercom_lock_close
           turn_off:
@@ -183,9 +181,11 @@ intercom:
         - service: notify.tg_urgent
           data:
             message: >
-              {% set messages = ['Кто-то позвонил в домофон!',
-                                 'Кажется, кто-то пришел и звонит в домофон.',
-                                 'Внизу люди! Звонят в домофон.'] %}
+              {% set messages = [
+                'Кто-то позвонил в домофон!',
+                'Кажется, кто-то пришел и звонит в домофон.',
+                'Внизу люди! Звонят в домофон.'
+              ] %}
               {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}
           continue_on_error: true
         - service: script.intercom_light_flashes_notification
@@ -207,9 +207,11 @@ intercom:
         - service: notify.tg_urgent
           data:
             message: >
-              {% set messages = ['Дверь домофона открыта!',
-                                 'Замок внизу открыт!',
-                                 'Люди впущены!'] %}
+              {% set messages = [
+                'Дверь домофона открыта!',
+                'Замок внизу открыт!',
+                'Люди впущены!'
+              ] %}
               {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}
           continue_on_error: true
         - if:

@@ -91,10 +91,11 @@
       value_template: >
         {% set temps = [
           states('sensor.qingping_air2_temperature'),
+          states('sensor.qingping_air2_temperature'),
           states('sensor.bedroom_aqara_temperature')
         ] %}
         {% set filtered_temps = temps | reject('equalto', 'unavailable') | map('float') | list %}
-        {{ filtered_temps | sum / filtered_temps | count }}
+        {{ (filtered_temps | sum / filtered_temps | count) | round(2) }}
       availability_template: >
         {% set temps = [
           states('sensor.qingping_air2_temperature'),
