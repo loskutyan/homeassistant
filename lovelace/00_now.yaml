@@ -69,6 +69,18 @@ cards:
               - type: conditional
                 conditions:
                   - condition: numeric_state
+                    entity: sensor.nikolai_since_last_time_at_home_hours
+                    below: 48
+                card:
+                  type: custom:mushroom-person-card
+                  entity: person.nikolai
+                  layout: horizontal
+                  secondary_info: last-changed
+                  icon_type: entity-picture
+
+              - type: conditional
+                conditions:
+                  - condition: numeric_state
                     entity: sensor.ekaterina_since_last_time_at_home_hours
                     below: 48
                 card:

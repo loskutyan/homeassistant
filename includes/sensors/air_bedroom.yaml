@@ -113,7 +113,7 @@
           states('sensor.bedroom_aqara_humidity')
         ] %}
         {% set filtered_hums = hums | reject('equalto', 'unavailable') | map('float') | list %}
-        {{ filtered_hums | sum / filtered_hums | count }}
+        {{ (filtered_hums | sum / filtered_hums | count) | round(2) }}
       availability_template: >
         {% set hums = [
           states('sensor.qingping_air2_humidity'),

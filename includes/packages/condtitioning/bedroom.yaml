@@ -55,7 +55,10 @@ conditioning_bedroom:
         bedroom_ac_power:
           friendly_name: 'Кондиционер в спальне включен'
           device_class: power
-          value_template: "{{ states('sensor.bedroom_ac_plug_power') | float(0) > 10 }}"
+          value_template: >
+            {% set power = states('sensor.bedroom_ac_plug_power') | float(0) %}
+            {% set drying_mode = is_state_attr('climate.bedroom_ac', 'last_on_operation', 'dry') %}
+            {{ power > 10 or (power > 3 and drying_mode) }}
           availability_template: >
             {% set status =  states('switch.bedroom_ac_plug') %}
             {% if status == 'off' %}
@@ -267,8 +270,8 @@ conditioning_bedroom:
         - service: input_boolean.turn_{{ trigger.to_state.attributes.swing_mode }}
           entity_id: input_boolean.bedroom_ac_swing_mode
 
-    - id: 'Умный контроль кондиционера в спальне'
-      alias: bedroom_ac_smart_control
+    - id: 'Умный контроль кондиционера для охлаждения спальни'
+      alias: bedroom_ac_cooling_smart_control
       initial_state: true
       trigger:
         - platform: time_pattern
@@ -312,6 +315,76 @@ conditioning_bedroom:
                 {{ target_temp | int }}
               {% endif %}
             hvac_mode: 'cool'
+
+    - id: 'Умный контроль кондиционера для осушения спальни'
+      alias: bedroom_ac_drying_smart_control
+      initial_state: true
+      trigger:
+        - platform: time_pattern
+          minutes: '/15'
+        - platform: state
+          entity_id:
+            - switch.bedroom_ac
+            - switch.bedroom_auto_conditioning
+          to: 'on'
+        - platform: numeric_state
+          entity_id: sensor.bedroom_average_humidity
+          above: 60
+          for: '00:01:00'
+        - platform: numeric_state
+          entity_id: sensor.bedroom_average_humidity
+          below: 52
+          for: '00:01:00'
+      condition:
+        - or:
+            - condition: state
+              entity_id: input_select.bedroom_ac_mode
+              state: 'cool'
+            - condition: state
+              entity_id: input_select.bedroom_ac_mode
+              state: 'dry'
+        - condition: state
+          entity_id:
+            - switch.bedroom_ac
+            - switch.bedroom_auto_conditioning
+          state: 'on'
+      action:
+        - if:
+            - condition: state
+              entity_id: input_select.bedroom_ac_mode
+              state: 'cool'
+            - condition: numeric_state
+              entity_id: sensor.bedroom_average_humidity
+              above: 60
+          then:
+            - service: input_select.select_option
+              entity_id: input_select.bedroom_ac_mode
+              data_template:
+                option: 'dry'
+            - service: notify.tg_bot
+              data:
+                message: |
+                  {{ '\U00002600' }} Кондиционер в спальне переключен в режим осушения.
+                  {{ '\U0001F321' }} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
+                  {{ '\U0001F4A7' }} Влажность {{ states('sensor.bedroom_average_humidity') | round(1) }}%
+        - if:
+            - condition: state
+              entity_id: input_select.bedroom_ac_mode
+              state: 'dry'
+            - condition: numeric_state
+              entity_id: sensor.bedroom_average_humidity
+              below: 52
+          then:
+            - service: input_select.select_option
+              entity_id: input_select.bedroom_ac_mode
+              data_template:
+                option: 'cool'
+            - service: notify.tg_bot
+              data:
+                message: |
+                  {{ '\U00002744' }} Кондиционер в спальне переключен в режим охлаждения.
+                  {{ '\U0001F321' }} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
+                  {{ '\U0001F4A7' }} Влажность {{ states('sensor.bedroom_average_humidity') | round(1) }}%
 
     - id: 'Изменение режима качания халюзи кондиционера в спальне при работе с монитором'
       alias: toggle_bedroom_ac_swing_mode_on_cubeserver_vm_windows10_monitor_using

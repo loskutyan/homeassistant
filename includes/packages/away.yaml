@@ -18,6 +18,15 @@ away:
           device_class: timestamp
           state: '{{ now() }}'
 
+    - trigger:
+        - platform: state
+          entity_id: person.nikolai
+          from: 'home'
+      sensor:
+        - name: 'Nikolai Last Time Left Home Timestamp'
+          device_class: timestamp
+          state: '{{ now() }}'
+
   sensor:
     - platform: template
       sensors:
@@ -77,6 +86,12 @@ away:
             {% set last_at_home = states('sensor.ekaterina_last_time_left_home_timestamp') %}
             {{ (now().timestamp() - as_timestamp(last_at_home, default=0)) / 3600 }}
 
+        nikolai_since_last_time_at_home_hours:
+          friendly_name: 'Николай ушел, часов назад'
+          value_template: >
+            {% set last_at_home = states('sensor.nikolai_last_time_left_home_timestamp') %}
+            {{ (now().timestamp() - as_timestamp(last_at_home, default=0)) / 3600 }}
+
   binary_sensor:
     - platform: template
       sensors:
@@ -93,6 +108,14 @@ away:
           device_class: presence
           value_template: >
             {% set mac = states('sensor.sisters_phone_mac_address') %}
+            {{ states('device_tracker.' ~ mac) == 'home' }}
+          icon_template: mdi:cellphone
+
+        sons_phone_presence:
+          friendly_name: 'Телефон Кати дома'
+          device_class: presence
+          value_template: >
+            {% set mac = states('sensor.sons_phone_mac_address') %}
             {{ states('device_tracker.' ~ mac) == 'home' }}
           icon_template: mdi:cellphone
 
@@ -158,9 +181,11 @@ away:
         - service: notify.tg_bot
           data:
             message: >
-              {% set messages = ['Весь свет выключен',
-                                 'Свет выключен - сэкономили кучу денег',
-                                 'Светильники обесточены... но это неточно'] %}
+              {% set messages = [
+                'Весь свет выключен',
+                'Свет выключен - сэкономили кучу денег',
+                'Светильники обесточены... но это неточно'
+              ] %}
               {{ '\U0001F4A1' }} {{ messages | random }}
 
     turn_off_all_heaters:
@@ -173,9 +198,11 @@ away:
         - service: notify.tg_bot
           data:
             message: >
-              {% set messages = ['Все обогреватели выключены',
-                                 'Нагрев выключен - сэкономили кучу денег',
-                                 'Обогреватели обесточены... но это неточно'] %}
+              {% set messages = [
+                'Все обогреватели выключены',
+                'Нагрев выключен - сэкономили кучу денег',
+                'Обогреватели обесточены... но это неточно'
+              ] %}
               {{ '\U0001F525' }} {{ messages | random }}
 
   automation:
@@ -235,6 +262,7 @@ away:
           entity_id:
             - binary_sensor.phone_presence
             - binary_sensor.sisters_phone_presence
+            - binary_sensor.sons_phone_presence
           state: 'on'
           match: any
         - condition: state
@@ -251,6 +279,7 @@ away:
           entity_id:
             - binary_sensor.phone_presence
             - binary_sensor.sisters_phone_presence
+            - binary_sensor.sons_phone_presence
           from: 'on'
           to: 'off'
       condition:
@@ -258,6 +287,7 @@ away:
           entity_id:
             - binary_sensor.phone_presence
             - binary_sensor.sisters_phone_presence
+            - binary_sensor.sons_phone_presence
           state: 'off'
         - condition: state
           entity_id: timer.left_home_by_phone_presence_after_door_closed
@@ -310,6 +340,7 @@ away:
           entity_id:
             - binary_sensor.phone_presence
             - binary_sensor.sisters_phone_presence
+            - binary_sensor.sons_phone_presence
           from: 'off'
           to: 'on'
       condition:
@@ -322,9 +353,11 @@ away:
         - service: notify.tg_bot
           data:
             message: >
-              {% set messages = ['С возвращением!',
-                                 'Welcome back',
-                                 'И снова здравствуйте!'] %}
+              {% set messages = [
+                'С возвращением!',
+                'Welcome back',
+                'И снова здравствуйте!'
+              ] %}
               {{ '\U0001F596' }} {{ messages | random }} {{ '\U0001F60A' }}
           continue_on_error: true
         - service: mqtt.publish

@@ -55,7 +55,10 @@ conditioning_kidsroom:
         kidsroom_ac_power:
           friendly_name: 'Кондиционер в детской включен'
           device_class: power
-          value_template: "{{ states('sensor.kidsroom_ac_plug_power') | float(0) > 10 }}"
+          value_template: >
+            {% set power = states('sensor.kidsroom_ac_plug_power') | float(0) %}
+            {% set drying_mode = is_state_attr('climate.kidsroom_ac', 'last_on_operation', 'dry') %}
+            {{ power > 10 or (power > 0 and power < 2.7 and drying_mode) }}
           availability_template: >
             {% set status =  states('switch.kidsroom_ac_plug') %}
             {% if status == 'off' %}
@@ -267,8 +270,8 @@ conditioning_kidsroom:
         - service: input_boolean.turn_{{ trigger.to_state.attributes.swing_mode }}
           entity_id: input_boolean.kidsroom_ac_swing_mode
 
-    - id: 'Умный контроль кондиционера в детской'
-      alias: kidsroom_ac_smart_control
+    - id: 'Умный контроль кондиционера для охлаждения детской'
+      alias: kidsroom_ac_cooling_smart_control
       initial_state: true
       trigger:
         - platform: time_pattern
@@ -312,3 +315,73 @@ conditioning_kidsroom:
                 {{ target_temp | int }}
               {% endif %}
             hvac_mode: 'cool'
+
+    - id: 'Умный контроль кондиционера для осушения детской'
+      alias: kidsroom_ac_drying_smart_control
+      initial_state: true
+      trigger:
+        - platform: time_pattern
+          minutes: '/15'
+        - platform: state
+          entity_id:
+            - switch.kidsroom_ac
+            - switch.kidsroom_auto_conditioning
+          to: 'on'
+        - platform: numeric_state
+          entity_id: sensor.kidsroom_average_humidity
+          above: 60
+          for: '00:01:00'
+        - platform: numeric_state
+          entity_id: sensor.kidsroom_average_humidity
+          below: 50
+          for: '00:01:00'
+      condition:
+        - or:
+            - condition: state
+              entity_id: input_select.kidsroom_ac_mode
+              state: 'cool'
+            - condition: state
+              entity_id: input_select.kidsroom_ac_mode
+              state: 'dry'
+        - condition: state
+          entity_id:
+            - switch.kidsroom_ac
+            - switch.kidsroom_auto_conditioning
+          state: 'on'
+      action:
+        - if:
+            - condition: state
+              entity_id: input_select.kidsroom_ac_mode
+              state: 'cool'
+            - condition: numeric_state
+              entity_id: sensor.kidsroom_average_humidity
+              above: 60
+          then:
+            - service: input_select.select_option
+              entity_id: input_select.kidsroom_ac_mode
+              data_template:
+                option: 'dry'
+            - service: notify.tg_bot
+              data:
+                message: |
+                  {{ '\U00002600' }} Кондиционер в детской переключен в режим осушения.
+                  {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
+                  {{ '\U0001F4A7' }} Влажность {{ states('sensor.kidsroom_average_humidity') | round(1) }}%
+        - if:
+            - condition: state
+              entity_id: input_select.kidsroom_ac_mode
+              state: 'dry'
+            - condition: numeric_state
+              entity_id: sensor.kidsroom_average_humidity
+              below: 52
+          then:
+            - service: input_select.select_option
+              entity_id: input_select.kidsroom_ac_mode
+              data_template:
+                option: 'cool'
+            - service: notify.tg_bot
+              data:
+                message: |
+                  {{ '\U00002744' }} Кондиционер в детской переключен в режим охлаждения.
+                  {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
+                  {{ '\U0001F4A7' }} Влажность {{ states('sensor.kidsroom_average_humidity') | round(1) }}%

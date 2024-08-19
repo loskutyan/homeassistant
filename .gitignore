@@ -1,6 +1,5 @@
 cubeserver.key
-ha.key
-ha.key.pub
+ha.key*
 secrets.yaml
 known_devices.yaml
 home-assistant.*
@@ -15,4 +14,4 @@ custom_components/*
 !custom_components/smartir/
 custom_components/smartir/*
 !custom_components/smartir/codes/
-
+includes/sensors/devices.yaml
