@@ -89,6 +89,8 @@
       name: 'Подогрев'
     switch.kidsroom_airpurifier_ptc:
       name: 'Подогрев'
+    cover.bedroom_curtain:
+      name: 'Штора'
     cover.kidsroom_curtain:
       name: 'Штора'
     climate.bedroom_ac:

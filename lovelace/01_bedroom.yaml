@@ -299,6 +299,13 @@ cards:
             use_light_color: true
             icon: mdi:alarm-light
 
+      - type: custom:mushroom-cover-card
+        entity: cover.bedroom_curtain
+        name: 'Штора'
+        layout: horizontal
+        show_buttons_control: true
+        show_position_control: true
+
   - type: vertical-stack
     title: 'Климат'
     cards:
