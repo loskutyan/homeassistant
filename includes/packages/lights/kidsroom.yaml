@@ -107,6 +107,17 @@ kidsroom_lights:
               {{ states('sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule') }}
             transition: 2
 
+    - id: 'Включение/выключение умного управления светильниками в детской'
+      alias: kidsroom_lights_smart_control_toggle
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.kidsroom_wall_switch_action
+          to: 'both_double'
+      action:
+        - service: switch.toggle
+          entity_id: switch.kidsroom_lights_smart_control
+
     - id: 'Включение бра в детской вечером'
       alias: kidsroom_wall_aqara_led_bulbs_turn_on
       initial_state: true

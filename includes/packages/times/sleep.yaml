@@ -112,8 +112,16 @@ sleep_time:
           entity_id: switch.kidsroom_nightlight_plug
           continue_on_error: true
 
+        - service: switch.turn_on
+          entity_id: switch.smartintercom_otkliuchit_trubku_domofona
+          continue_on_error: true
+
         - service: switch.turn_off
           entity_id: switch.kidsroom_airpurifier_ptc
+          continue_on_error: true
+
+        - service: switch.turn_on
+          entity_id: switch.kidsroom_lights_smart_control
           continue_on_error: true
 
         - if:
@@ -160,6 +168,13 @@ sleep_time:
         - delay: 00:00:05
         - service: cover.open_cover
           entity_id: cover.kidsroom_curtain
+        - if:
+            - condition: state
+              entity_id: switch.smartintercom_otkliuchit_trubku_domofona
+              state: 'on'
+          then:
+            - service: switch.turn_off
+              entity_id: switch.smartintercom_otkliuchit_trubku_domofona
 
     - id: 'Отход ко сну в спальне'
       alias: bedroom_going_to_sleep

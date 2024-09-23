@@ -7,3 +7,7 @@
     sisters_phone_mac_address:
       friendly_name: 'MAC-адрес телефона Кати'
       value_template: 'e6_c8_8d_97_17_8a'
+
+    sons_phone_mac_address:
+      friendly_name: 'MAC-адрес телефона Коли'
+      value_template: '00_24_36_2a_73_8b'

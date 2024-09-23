@@ -5,6 +5,28 @@ kitchen_lights:
       duration: 3600
 
   automation:
+    - id: 'Включение/выключение бра на кухне'
+      alias: kitchen_wall_lights_toggle
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.kitchen_lights_switch_action
+          to: 'single_left'
+      action:
+        - service: switch.toggle
+          entity_id: switch.kitchen_lights_switch_left
+
+    - id: 'Включение/выключение LED ленты на кухне'
+      alias: kitchen_led_strip_toggle
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.kitchen_lights_switch_action
+          to: 'double_left'
+      action:
+        - service: switch.toggle
+          entity_id: switch.kitchen_led_strip_switch
+
     - id: 'Свет при движении на кухне'
       alias: kitchen_motion_lights_turn_on
       initial_state: true
@@ -23,6 +45,7 @@ kitchen_lights:
           entity_id:
             - switch.kitchen_lights_switch_left
             - switch.kitchen_lights_switch_right
+            - switch.kitchen_led_strip_switch
           state: 'off'
       action:
         - if:

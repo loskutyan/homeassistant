@@ -58,7 +58,7 @@ conditioning_kidsroom:
           value_template: >
             {% set power = states('sensor.kidsroom_ac_plug_power') | float(0) %}
             {% set drying_mode = is_state_attr('climate.kidsroom_ac', 'last_on_operation', 'dry') %}
-            {{ power > 10 or (power > 0 and power < 2.7 and drying_mode) }}
+            {{ power > 4 or (power > 0 and power < 2.7 and drying_mode) }}
           availability_template: >
             {% set status =  states('switch.kidsroom_ac_plug') %}
             {% if status == 'off' %}
@@ -373,7 +373,7 @@ conditioning_kidsroom:
               state: 'dry'
             - condition: numeric_state
               entity_id: sensor.kidsroom_average_humidity
-              below: 52
+              below: 50
           then:
             - service: input_select.select_option
               entity_id: input_select.kidsroom_ac_mode

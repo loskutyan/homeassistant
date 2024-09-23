@@ -58,7 +58,7 @@ conditioning_bedroom:
           value_template: >
             {% set power = states('sensor.bedroom_ac_plug_power') | float(0) %}
             {% set drying_mode = is_state_attr('climate.bedroom_ac', 'last_on_operation', 'dry') %}
-            {{ power > 10 or (power > 3 and drying_mode) }}
+            {{ power > 4 or (power > 2.9 and drying_mode) }}
           availability_template: >
             {% set status =  states('switch.bedroom_ac_plug') %}
             {% if status == 'off' %}
@@ -283,6 +283,9 @@ conditioning_bedroom:
             - switch.bedroom_ac
             - switch.bedroom_auto_conditioning
           to: 'on'
+        - platform: state
+          entity_id: climate.bedroom_ac
+          attribute: last_on_operation
       condition:
         - condition: state
           entity_id: input_select.bedroom_ac_mode
@@ -333,7 +336,7 @@ conditioning_bedroom:
           for: '00:01:00'
         - platform: numeric_state
           entity_id: sensor.bedroom_average_humidity
-          below: 52
+          below: 50
           for: '00:01:00'
       condition:
         - or:
@@ -373,7 +376,7 @@ conditioning_bedroom:
               state: 'dry'
             - condition: numeric_state
               entity_id: sensor.bedroom_average_humidity
-              below: 52
+              below: 50
           then:
             - service: input_select.select_option
               entity_id: input_select.bedroom_ac_mode
