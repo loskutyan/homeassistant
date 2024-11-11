@@ -5,9 +5,9 @@
       device_class: carbon_dioxide
       unit_of_measurement: 'ppm'
       availability_template: >
-        {% set value = states('sensor.cgllc_cgs2_84ac_co2_density') | float(0) %}
+        {% set value = states('sensor.cgllc_cgs2_co2_density') | float(0) %}
         {{ value > 0 and value < 10000 }}
-      value_template: "{{ states('sensor.cgllc_cgs2_84ac_co2_density') }}"
+      value_template: "{{ states('sensor.cgllc_cgs2_co2_density') }}"
       icon_template: mdi:molecule-co2
 
     bedroom_tvoc:
@@ -15,10 +15,10 @@
       device_class: volatile_organic_compounds_parts
       unit_of_measurement: 'ppb'
       availability_template: >
-        {% set value = states('sensor.cgllc_cgs2_84ac_tvoc_density') | float(-1) %}
+        {% set value = states('sensor.cgllc_cgs2_tvoc_density') | float(-1) %}
         {{ value >= 0 and value < 1000 }}
       value_template: >
-        {% set index = states('sensor.cgllc_cgs2_84ac_tvoc_density') | float %}
+        {% set index = states('sensor.cgllc_cgs2_tvoc_density') | float %}
         {% if index < 37 %}
           {{ (index * 4.5 + 52) | round(0) }}
         {% elif index < 120 %}
@@ -33,9 +33,9 @@
       device_class: pm25
       unit_of_measurement: 'µg/m³'
       availability_template: >
-        {% set value = states('sensor.cgllc_cgs2_84ac_pm25_density') | float(-1) %}
+        {% set value = states('sensor.cgllc_cgs2_pm25_density') | float(-1) %}
         {{ value >= 0 and value < 1000 }}
-      value_template: "{{ states('sensor.cgllc_cgs2_84ac_pm25_density') }}"
+      value_template: "{{ states('sensor.cgllc_cgs2_pm25_density') }}"
       icon_template: mdi:molecule
 
     bedroom_pm10:
@@ -43,9 +43,9 @@
       device_class: pm10
       unit_of_measurement: 'µg/m³'
       availability_template: >
-        {% set value = states('sensor.cgllc_cgs2_84ac_pm10_density') | float(-1) %}
+        {% set value = states('sensor.cgllc_cgs2_pm10_density') | float(-1) %}
         {{ value >= 0 and value < 1000 }}
-      value_template: "{{ states('sensor.cgllc_cgs2_84ac_pm10_density') }}"
+      value_template: "{{ states('sensor.cgllc_cgs2_pm10_density') }}"
       icon_template: mdi:grain
 
     qingping_air2_temperature:
@@ -53,18 +53,18 @@
       device_class: temperature
       unit_of_measurement: '°C'
       availability_template: >
-        {% set value = states('sensor.cgllc_cgs2_84ac_temperature') | float(0) %}
+        {% set value = states('sensor.cgllc_cgs2_temperature') | float(0) %}
         {{ value > 0 and value < 100 }}
-      value_template: "{{ states('sensor.cgllc_cgs2_84ac_temperature') }}"
+      value_template: "{{ states('sensor.cgllc_cgs2_temperature') }}"
 
     qingping_air2_humidity:
       friendly_name: 'Qingping air2 Влажность'
       device_class: humidity
       unit_of_measurement: '%'
       availability_template: >
-        {% set value = states('sensor.cgllc_cgs2_84ac_environment') | float(0) %}
+        {% set value = states('sensor.cgllc_cgs2_relative_humidity') | float(0) %}
         {{ value > 0 and value < 100 }}
-      value_template: "{{ states('sensor.cgllc_cgs2_84ac_environment') }}"
+      value_template: "{{ states('sensor.cgllc_cgs2_relative_humidity') }}"
 
     bedroom_aqara_temperature:
       friendly_name: 'Bedroom aqara Температура'

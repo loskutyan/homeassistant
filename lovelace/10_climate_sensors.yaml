@@ -9,7 +9,7 @@ cards:
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.qingping_air2_temperature
-                name: 'Cleargrass'
+                name: 'QingpingAir2'
             hour24: true
             show:
               graph: false
@@ -47,7 +47,7 @@ cards:
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.qingping_air2_humidity
-                name: 'Cleargrass'
+                name: 'QingpingAir2'
             hour24: true
             show:
               graph: false
@@ -73,7 +73,7 @@ cards:
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.bedroom_co2
-                name: 'Cleargrass'
+                name: 'QingpingAir2'
             hour24: true
             show:
               graph: false
@@ -102,7 +102,7 @@ cards:
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.cleargrass_air_temperature
-                name: 'Qingping'
+                name: 'Cleargrass'
             hour24: true
             show:
               graph: false
@@ -140,7 +140,7 @@ cards:
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.cleargrass_air_humidity
-                name: 'Qingping'
+                name: 'Cleargrass'
             hour24: true
             show:
               graph: false
@@ -166,7 +166,7 @@ cards:
           - type: custom:mini-graph-card
             entities:
               - entity: sensor.kidsroom_co2
-                name: 'Qingping'
+                name: 'Cleargrass'
             hour24: true
             show:
               graph: false

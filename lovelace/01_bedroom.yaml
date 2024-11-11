@@ -278,8 +278,16 @@ cards:
             use_light_color: true
 
           - type: custom:mushroom-light-card
-            entity: light.bedroom_nightstand_aqara_led_bulb
-            name: 'Прикроватный светильник'
+            entity: light.bedroom_nightstand_aqara_led_bulb_left
+            name: 'Прикроватный светильник левый'
+            show_brightness_control: true
+            show_color_temp_control: true
+            collapsible_controls: true
+            use_light_color: true
+
+          - type: custom:mushroom-light-card
+            entity: light.bedroom_nightstand_aqara_led_bulb_right
+            name: 'Прикроватный светильник правый'
             show_brightness_control: true
             show_color_temp_control: true
             collapsible_controls: true

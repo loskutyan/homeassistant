@@ -54,7 +54,8 @@ away:
           value_template: >
             {% set lights_entities_ids = [
               'light.bedroom_floor_aqara_led_bulb',
-              'light.bedroom_nightstand_aqara_led_bulb',
+              'light.bedroom_nightstand_aqara_led_bulb_left',
+              'light.bedroom_nightstand_aqara_led_bulb_right',
               'light.kidsroom_wall_aqara_led_bulbs',
               'light.hallway_lights_switch',
               'light.hallway_duty_aqara_led_strip'

@@ -51,8 +51,10 @@
       name: 'Увлажнитель'
     light.bedroom_floor_aqara_led_bulb:
       name: 'Торшер'
-    light.bedroom_nightstand_aqara_led_bulb:
-      name: 'Прикроватный светильник'
+    light.bedroom_nightstand_aqara_led_bulb_left:
+      name: 'Прикроватный светильник левый'
+    light.bedroom_nightstand_aqara_led_bulb_right:
+      name: 'Прикроватный светильник правый'
     fan.mijia_airpurifier_bedroom:
       name: 'Бризер'
     fan.mijia_airpurifier_kidsroom:
