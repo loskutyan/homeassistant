@@ -35,11 +35,11 @@ bedroom_humidity:
             {% set somebody_home = states('switch.somebody_home') %}
             {% if current_humidity > 35 and breezer_state == 'off' and somebody_home == 'off' %}
               Silent
-            {% elif 0 < current_humidity < 43 and current_mode != 'High' %}
+            {% elif 0 < current_humidity < 38 and current_mode != 'High'%}
               High
-            {% elif 45 <= current_humidity < 48 and current_mode != 'Medium' or current_state != 'on' %}
+            {% elif 40 <= current_humidity < 43 and current_mode != 'Medium'%}
               Medium
-            {% elif current_humidity >= 50 and current_mode != 'Silent' %}
+            {% elif current_humidity >= 45 and current_mode != 'Silent' %}
               Silent
             {% else %}
               keep

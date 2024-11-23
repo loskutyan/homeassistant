@@ -1,0 +1,6 @@
+Mushroom No Border:
+  # Home Assistant override
+  ha-card-border-width: 0
+  modes:
+    light: {}
+    dark: {}

@@ -49,7 +49,7 @@ lovelace:
       type: module
     - url: /hacsfiles/lovelace-slider-entity-row/slider-entity-row.js
       type: module
-    - url: /hacsfiles/light-entity-card/light-entity-card.js
+    - url: /hacsfiles/light-entity-card/dist/light-entity-card.js
       type: module
     - url: /hacsfiles/mini-humidifier/mini-humidifier-bundle.js
       type: module
@@ -67,6 +67,11 @@ lovelace:
       type: module
     - url: /hacsfiles/button-card/button-card.js
       type: module
+
+frontend:
+  themes: !include_dir_merge_named themes
+  extra_module_url:
+    - /hacsfiles/lovelace-card-mod/card-mod.js
 
 # Text to speech
 tts:
