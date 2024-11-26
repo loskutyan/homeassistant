@@ -9,7 +9,7 @@ doorbell:
         - name: 'Doorbell Rings'
           state: 'on'
           auto_off: '00:00:15'
-  
+
   automation:
     - id: 'Звонок в дверь'
       alias: elevator_hall_doorbell_rings
@@ -34,7 +34,9 @@ doorbell:
         - service: notify.tg_urgent
           data:
             message: >
-              {% set messages = ['Кто-то позвонил в дверь!',
-                                 'Кажется, кто-то пришел и звонит в дверь.',
-                                 'Билим-билим!'] %}
+              {% set messages = [
+                'Кто-то позвонил в дверь!',
+                'Кажется, кто-то пришел и звонит в дверь.',
+                'Билим-билим!'
+              ] %}
               {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}

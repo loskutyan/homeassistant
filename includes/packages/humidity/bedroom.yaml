@@ -33,13 +33,13 @@ bedroom_humidity:
             {% set current_humidity = states('sensor.bedroom_average_humidity') | float(0) %}
             {% set breezer_state = states('fan.mijia_airpurifier_bedroom') %}
             {% set somebody_home = states('switch.somebody_home') %}
-            {% if current_humidity > 35 and breezer_state == 'off' and somebody_home == 'off' %}
+            {% if current_humidity > 30 and breezer_state == 'off' and somebody_home == 'off' %}
               Silent
-            {% elif 0 < current_humidity < 38 and current_mode != 'High'%}
+            {% elif 0 < current_humidity < 32 and current_mode != 'High'%}
               High
-            {% elif 40 <= current_humidity < 43 and current_mode != 'Medium'%}
+            {% elif 34 <= current_humidity < 36 and current_mode != 'Medium'%}
               Medium
-            {% elif current_humidity >= 45 and current_mode != 'Silent' %}
+            {% elif current_humidity >= 38 and current_mode != 'Silent' %}
               Silent
             {% else %}
               keep

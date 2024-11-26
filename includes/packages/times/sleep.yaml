@@ -104,13 +104,9 @@ sleep_time:
           entity_id: timer.kidsroom_humidifier_fixed_mode
           continue_on_error: true
 
-        - service: cover.close_cover
-          entity_id: cover.kidsroom_curtain
-          continue_on_error: true
-
-        - service: switch.turn_on
-          entity_id: switch.kidsroom_nightlight_plug
-          continue_on_error: true
+        # - service: switch.turn_on
+        #   entity_id: switch.kidsroom_nightlight_plug
+        #   continue_on_error: true
 
         - service: switch.turn_on
           entity_id: switch.smartintercom_otkliuchit_trubku_domofona
@@ -260,3 +256,28 @@ sleep_time:
       action:
         - service: input_boolean.turn_off
           entity_id: input_boolean.bedroom_asleep
+
+    - id: 'Закрытие шторы в детской'
+      alias: kidsroom_closing_curtain
+      initial_state: true
+      trigger:
+        - platform: time
+          at: '03:00'
+        - platform: homeassistant
+          event: start
+      condition:
+        - condition: numeric_state
+          entity_id: cover.kidsroom_curtain
+          attribute: current_position
+          above: 50
+        - condition: state
+          entity_id: input_boolean.kidsroom_asleep
+          state: 'on'
+        - condition: template
+          value_template: >
+            {% set sun_next_rising = states('sensor.sun_next_rising') %}
+            {{ as_datetime(sun_next_rising).astimezone().time().hour < 8 }}
+      action:
+        - service: cover.close_cover
+          entity_id: cover.kidsroom_curtain
+          continue_on_error: true

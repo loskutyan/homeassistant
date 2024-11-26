@@ -32,7 +32,7 @@ kidsroom_humidity:
             {% set current_humidity = states('sensor.kidsroom_average_humidity') | float(0) %}
             {% set breezer_state = states('fan.mijia_airpurifier_kidsroom') %}
             {% set somebody_home = states('switch.somebody_home') %}
-            {% if current_humidity > 35 and breezer_state == 'off' and somebody_home == 'off' %}
+            {% if current_humidity > 30 and breezer_state == 'off' and somebody_home == 'off' %}
               Silent
             {% elif 0 < current_humidity < 38 and current_mode != 'High'%}
               High
