@@ -189,11 +189,14 @@ sleep_time:
             - light.bedroom_floor_aqara_led_bulb
             - light.bedroom_nightstand_aqara_led_bulb_left
             - light.bedroom_nightstand_aqara_led_bulb_right
+            - light.hallway_duty_aqara_led_strip
           data:
             transition: 1
           continue_on_error: true
         - service: switch.turn_off
-          entity_id: switch.bedroom_lights_switch_right
+          entity_id:
+            - switch.bedroom_lights_switch_right
+            - switch.hallway_lights_switch
           continue_on_error: true
         - service: media_player.turn_off
           entity_id: media_player.sony_xr_65a80j

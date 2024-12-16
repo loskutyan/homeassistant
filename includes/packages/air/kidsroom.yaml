@@ -166,9 +166,14 @@ kidsroom_air:
         kidsroom_airpurifier_target_co2_delta:
           friendly_name: 'Поправка к скорости бризера в детской'
           value_template: >
-            {% set delta_ct = states('sensor.kidsroom_current_target_temperature_delta') | float(1) %}
-            {% set delta_ot = states('sensor.outside_target_temperature_delta') | float(1) %}
-            {{ (delta_ct * delta_ot / ((delta_ct * delta_ot) | abs)) * min(150, ((delta_ct | abs)**1.5 * sin((min(20, delta_ot | abs)) / 20 * 3.1415926)) | round * 10) }}
+            {% set temp_delta_ct = states('sensor.kidsroom_current_target_temperature_delta') | float(1) %}
+            {% set temp_delta_ot = states('sensor.outside_target_temperature_delta') | float(1) %}
+            {% set x = temp_delta_ot | abs %}
+            {% set k = 0.05 %}
+            {% set exp_2kx =e**(-2*k*x) %}
+            {% set tahn_temp_delta_ot = (1 - exp_2kx) / (1 + exp_2kx) %}
+            {% set temp_delta_sign = (temp_delta_ct * temp_delta_ot / ((temp_delta_ct * temp_delta_ot) | abs)) %}
+            {{ min(150, (temp_delta_sign * (temp_delta_ct | abs)**1.5 + 10 * tahn_temp_delta_ot) | round * 10) }}
 
         kidsroom_airpurifier_speed_min_co2:
           value_template: >
@@ -402,9 +407,13 @@ kidsroom_air:
         - condition: state
           entity_id: fan.mijia_airpurifier_kidsroom
           state: 'off'
-        - condition: numeric_state
-          entity_id: sensor.kidsroom_co2
-          above: 650
+        - condition: template
+          value_template: >
+            {% set co2 = states('sensor.kidsroom_co2') | float(600) %}
+            {% set threshold = states('sensor.breezers_turnon_co2_threshold') | float(600) %}
+            {% set somebody_home = is_state('switch.somebody_home', 'on') | int %}
+            {% set co2_delta = states('sensor.kidsroom_airpurifier_target_co2_delta') | float(0) %}
+            {{ co2 > threshold + 50 + somebody_home * co2_delta }}
         - condition: state
           entity_id: input_boolean.kidsroom_airpurifier_favourite_speed_smart_control
           state: 'on'
@@ -422,6 +431,7 @@ kidsroom_air:
                 message: |
                   {{ '\U0001F4A8' }} Бризер в детской включен.
                   {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
+                  {{ '\U0001F4A7' }} Влажность {{ states('sensor.kidsroom_average_humidity') | round(1) }}%
                   {{ '\U0000269B' }} CO2 {{ states('sensor.kidsroom_co2') | int }}ppm
 
     - id: 'Выключение бризера в детской'
@@ -438,9 +448,13 @@ kidsroom_air:
         - condition: state
           entity_id: fan.mijia_airpurifier_kidsroom
           state: 'on'
-        - condition: numeric_state
-          entity_id: sensor.kidsroom_co2
-          below: sensor.breezers_turnoff_co2_threshold
+        - condition: template
+          value_template: >
+            {% set co2 = states('sensor.kidsroom_co2') | float(600) %}
+            {% set threshold = states('sensor.breezers_turnoff_co2_threshold') | float(600) %}
+            {% set somebody_home = is_state('switch.somebody_home', 'on') | int %}
+            {% set co2_delta = states('sensor.kidsroom_airpurifier_target_co2_delta') | float(0) %}
+            {{ co2 < threshold + somebody_home * co2_delta }}
         - condition: state
           entity_id:
             - timer.kidsroom_airpurifier_fixed_speed

@@ -166,9 +166,14 @@ bedroom_air:
         bedroom_airpurifier_target_co2_delta:
           friendly_name: 'Поправка к скорости бризера в спальне'
           value_template: >
-            {% set delta_ct = states('sensor.bedroom_current_target_temperature_delta') | float(1) %}
-            {% set delta_ot = states('sensor.outside_target_temperature_delta') | float(1) %}
-            {{ (delta_ct * delta_ot / ((delta_ct * delta_ot) | abs)) * min(150, ((delta_ct | abs)**1.5 * sin((min(20, delta_ot | abs)) / 20 * 3.1415926)) | round * 10) }}
+            {% set temp_delta_ct = states('sensor.bedroom_current_target_temperature_delta') | float(1) %}
+            {% set temp_delta_ot = states('sensor.outside_target_temperature_delta') | float(1) %}
+            {% set x = temp_delta_ot | abs %}
+            {% set k = 0.05 %}
+            {% set exp_2kx =e**(-2*k*x) %}
+            {% set tahn_temp_delta_ot = (1 - exp_2kx) / (1 + exp_2kx) %}
+            {% set temp_delta_sign = (temp_delta_ct * temp_delta_ot / ((temp_delta_ct * temp_delta_ot) | abs)) %}
+            {{ min(150, (temp_delta_sign * (temp_delta_ct | abs)**1.5 + 10 * tahn_temp_delta_ot) | round * 10) }}
 
         bedroom_airpurifier_speed_min_co2:
           value_template: >
@@ -402,9 +407,13 @@ bedroom_air:
         - condition: state
           entity_id: fan.mijia_airpurifier_bedroom
           state: 'off'
-        - condition: numeric_state
-          entity_id: sensor.bedroom_co2
-          above: 650
+        - condition: template
+          value_template: >
+            {% set co2 = states('sensor.bedroom_co2') | float(600) %}
+            {% set threshold = states('sensor.breezers_turnon_co2_threshold') | float(600) %}
+            {% set somebody_home = is_state('switch.somebody_home', 'on') | int %}
+            {% set co2_delta = states('sensor.bedroom_airpurifier_target_co2_delta') | float(0) %}
+            {{ co2 > threshold + 50 + somebody_home * co2_delta }}
         - condition: state
           entity_id: input_boolean.bedroom_airpurifier_favourite_speed_smart_control
           state: 'on'
@@ -438,9 +447,13 @@ bedroom_air:
         - condition: state
           entity_id: fan.mijia_airpurifier_bedroom
           state: 'on'
-        - condition: numeric_state
-          entity_id: sensor.bedroom_co2
-          below: sensor.breezers_turnoff_co2_threshold
+        - condition: template
+          value_template: >
+            {% set co2 = states('sensor.bedroom_co2') | float(600) %}
+            {% set threshold = states('sensor.breezers_turnoff_co2_threshold') | float(600) %}
+            {% set somebody_home = is_state('switch.somebody_home', 'on') | int %}
+            {% set co2_delta = states('sensor.bedroom_airpurifier_target_co2_delta') | float(0) %}
+            {{ co2 < threshold + somebody_home * co2_delta }}
         - condition: state
           entity_id:
             - timer.bedroom_airpurifier_fixed_speed
@@ -450,10 +463,10 @@ bedroom_air:
           state: 'on'
         - condition: template
           value_template: >
-            {% set outside_target_delta = states('sensor.outside_target_temperature_delta') | float(-99) %}
-            {% set inside_target_delta = states('sensor.bedroom_current_target_temperature_delta') | float(99) %}
+            {% set temp_delta_ot = states('sensor.outside_target_temperature_delta') | float(-99) %}
+            {% set temp_delta_ct = states('sensor.bedroom_current_target_temperature_delta') | float(99) %}
             {% set somebody_home = states('switch.somebody_home') | bool(True) %}
-            {% set needs_cooling_from_outside = outside_target_delta < -10 and inside_target_delta > 1.5 and somebody_home %}
+            {% set needs_cooling_from_outside = temp_delta_ot < -10 and temp_delta_ct > 1.5 and somebody_home %}
             {{ not needs_cooling_from_outside }}
       action:
         - service: switch.turn_off
@@ -472,6 +485,7 @@ bedroom_air:
                 message: |
                   {{ '\U0001F4A8' }} Бризер в спальне выключен.
                   {{ '\U0001F321' }} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
+                  {{ '\U0001F4A7' }} Влажность {{ states('sensor.bedroom_average_humidity') | round(1) }}%
                   {{ '\U0000269B' }} CO2 {{ states('sensor.bedroom_co2') | int }}ppm
           else:
             - service: notify.tg_bot

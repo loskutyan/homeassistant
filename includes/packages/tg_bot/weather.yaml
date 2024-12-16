@@ -93,9 +93,11 @@ tg_weather:
               {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
               {% set condition_emoji = conditions_emojis.get(condition, '\U0000274C') %}
               {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
-              {% set messages = ['Итак.',
-                                 'Здравствуйте!',
-                                 'Итак, поехали!'] %}
+              {% set messages = [
+                'Итак.',
+                'Здравствуйте!',
+                'Итак, поехали!',
+              ] %}
               {% set now_hour = now().hour %}
               {% if 6 <= now_hour < 12 %}
                 {% set messages = messages + ['Доброе утро!', 'Утро доброе!'] %}
@@ -127,8 +129,10 @@ tg_weather:
               {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
               {% set condition_emoji = conditions_emojis.get(condition, '\U0000274C') %}
               {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
-              {% set messages = ['Теперь к прогнозам.',
-                                 'Далее.'] %}
+              {% set messages = [
+                'Теперь к прогнозам.',
+                'Далее.',
+              ] %}
               {% set now_hour = now().hour %}
               {% if 0 <= now_hour < 6 %}
                 {% set day_part = ['Утром'] %}

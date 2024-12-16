@@ -9,3 +9,11 @@ air_common:
           value_template: >
             {% set outside_t = state_attr('weather.yandex_weather', 'temperature') | float(0) %}
             {{ 600 - max(0, min(5, outside_t - 5)) * 10 }}
+
+        breezers_turnon_co2_threshold:
+          friendly_name: 'Порог CO2 включения бризеров'
+          device_class: carbon_dioxide
+          unit_of_measurement: 'ppm'
+          value_template: >
+            {% set outside_t = state_attr('weather.yandex_weather', 'temperature') | float(0) %}
+            {{ 600 - max(0, min(5, outside_t - 5)) * 10 }}

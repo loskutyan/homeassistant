@@ -15,6 +15,10 @@ hallway_lights:
   timer:
     hallway_lights_turn_off_without_motion:
       name: 'Свет в прихожей погаснет через '
+      duration: 1800
+      
+    hallway_lights_turn_off_without_motion_at_night:
+      name: 'Свет ночью в прихожей погаснет через '
       duration: 180
 
   automation:
@@ -79,7 +83,10 @@ hallway_lights:
           state: 'off'
       action:
         - service: timer.start
-          entity_id: timer.hallway_lights_turn_off_without_motion
+          target:
+            entity_id: >
+              {% set at_night = '_at_night' if is_state('switch.bedroom_asleep', 'on') %}
+              timer.hallway_lights_turn_off_without_motion{{ at_night }}
 
     - id: 'Выключение таймера выключения света в прихожей'
       alias: hallway_lights_on_timer_finish
@@ -99,7 +106,9 @@ hallway_lights:
           state: 'off'
       action:
         - service: timer.finish
-          entity_id: timer.hallway_lights_turn_off_without_motion
+          entity_id:
+            -  timer.hallway_lights_turn_off_without_motion
+            -  timer.hallway_lights_turn_off_without_motion_at_night
 
     - id: 'Сброс таймера выключения света при движении в прихожей'
       alias: hallway_motion_lights_timer_reset
@@ -115,15 +124,29 @@ hallway_lights:
           entity_id: timer.hallway_lights_turn_off_without_motion
           state: 'active'
       action:
-        - service: timer.start
-          entity_id: timer.hallway_lights_turn_off_without_motion
+        - if:
+            - condition: state
+              entity_id: timer.hallway_lights_turn_off_without_motion
+              state: 'active'
+          then:
+            - service: timer.start
+              entity_id: timer.hallway_lights_turn_off_without_motion
+        - if:
+            - condition: state
+              entity_id: timer.hallway_lights_turn_off_without_motion_at_night
+              state: 'active'
+          then:
+            - service: timer.start
+              entity_id: timer.hallway_lights_turn_off_without_motion_at_night
 
     - id: 'Сброс таймера выключения света после окончания при движении в прихожей'
       alias: hallway_motion_timer_finished_lights_timer_reset
       initial_state: true
       trigger:
         - platform: state
-          entity_id: timer.hallway_lights_turn_off_without_motion
+          entity_id:
+            - timer.hallway_lights_turn_off_without_motion
+            - timer.hallway_lights_turn_off_without_motion_at_night
           from: 'active'
           to: 'idle'
       condition:
@@ -141,14 +164,19 @@ hallway_lights:
           match: any
       action:
         - service: timer.start
-          entity_id: timer.hallway_lights_turn_off_without_motion
+          target:
+            entity_id: >
+              {% set at_night = '_at_night' if is_state('switch.bedroom_asleep', 'on') %}
+              timer.hallway_lights_turn_off_without_motion{{ at_night }}
 
     - id: 'Выключение света в прихожей, если нет движения'
       alias: hallway_no_motion_lights_turn_off
       initial_state: true
       trigger:
         - platform: state
-          entity_id: timer.hallway_lights_turn_off_without_motion
+          entity_id:
+            - timer.hallway_lights_turn_off_without_motion
+            - timer.hallway_lights_turn_off_without_motion_at_night
           from: 'active'
           to: 'idle'
       condition:

@@ -28,17 +28,18 @@ kidsroom_humidity:
       sensors:
         kidsroom_humidifier_mode_needs_changes:
           value_template: >
+            {% set current_state = states('humidifier.kidsroom_smartmi_humidifier') %}
             {% set current_mode = state_attr('humidifier.kidsroom_smartmi_humidifier', 'mode') %}
             {% set current_humidity = states('sensor.kidsroom_average_humidity') | float(0) %}
             {% set breezer_state = states('fan.mijia_airpurifier_kidsroom') %}
             {% set somebody_home = states('switch.somebody_home') %}
             {% if current_humidity > 30 and breezer_state == 'off' and somebody_home == 'off' %}
               Silent
-            {% elif 0 < current_humidity < 38 and current_mode != 'High'%}
+            {% elif 0 < current_humidity < 32 and current_mode != 'High'%}
               High
-            {% elif 40 <= current_humidity < 43 and current_mode != 'Medium'%}
+            {% elif 34 <= current_humidity < 36 and current_mode != 'Medium'%}
               Medium
-            {% elif current_humidity >= 45 and current_mode != 'Silent' %}
+            {% elif current_humidity >= 38 and current_mode != 'Silent' %}
               Silent
             {% else %}
               keep
@@ -150,9 +151,11 @@ kidsroom_humidity:
           data:
             message: >
               {% set hum = states('sensor.kidsroom_average_humidity') %}
-              {% set messages = ['В детской слишком сухой воздух!',
-                                 'Нужно увлажнить воздух в детской.',
-                                 'Беги скорее увлажнитель в детской включай! СКОРЕЕ!'] %}
+              {% set messages = [
+                'В детской слишком сухой воздух!',
+                'Нужно увлажнить воздух в детской.',
+                'Беги скорее увлажнитель в детской включай! СКОРЕЕ!'
+              ] %}
               {{ '\U0001F6B1' }} {{ messages | random }} Влажность {{ hum }}%. {{ states('sensor.time_date') }}
 
     - id: 'Кончается вода в увлажнителе в детской - уведомление'
@@ -182,9 +185,11 @@ kidsroom_humidity:
           data:
             message: >
               {% set lvl = states('sensor.kidsroom_smartmi_humidifier_water_level') %}
-              {% set messages = ['Вода в увлажнителе в детской кончается!',
-                                 'Вода для увлажнения в детской на исходе, милорд!',
-                                 'Нужно долить воды в увлажнитель в детской.'] %}
+              {% set messages = [
+                'Вода в увлажнителе в детской кончается!',
+                'Вода для увлажнения в детской на исходе, милорд!',
+                'Нужно долить воды в увлажнитель в детской.',
+              ] %}
               {{ '\U0001F6B1' }} {{ messages | random }} Осталось всего {{ lvl }}%. {{ states('sensor.time_date') }}
 
     - id: 'Кончилась вода в увлажнителе в детской - уведомление'
@@ -214,6 +219,8 @@ kidsroom_humidity:
           data:
             message: >
               {% set lvl = states('sensor.kidsroom_smartmi_humidifier_water_level') %}
-              {% set messages = ['Вода в увлажнителе в детской кончилась!',
-                                 'Нужно долить воды в увлажнитель в детской.'] %}
+              {% set messages = [
+                'Вода в увлажнителе в детской кончилась!',
+                'Нужно долить воды в увлажнитель в детской.',
+              ] %}
               {{ '\U0001F6B1' }} {{ messages | random }} Уровень {{ lvl }}%. {{ states('sensor.time_date') }}
