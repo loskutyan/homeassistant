@@ -316,7 +316,7 @@ cubeserver:
 
   automation:
     - id: 'Перегрев дисков - уведомление'
-      alias: telegram_cubeserver_disks_overheat
+      alias: cubeserver_disks_overheat_notify
       initial_state: true
       trigger:
         - platform: state
@@ -353,7 +353,7 @@ cubeserver:
               Disk 2: {{ disk2_temp }}°C
 
     - id: 'Начало/окончание Parity-Check - уведомление'
-      alias: telegram_cubeserver_parity_check_start_finish
+      alias: cubeserver_parity_check_start_finish_notify
       initial_state: true
       trigger:
         - platform: state
@@ -378,7 +378,7 @@ cubeserver:
               {{ '\U0001F4BF' }} Cubeserver: {{ message }} {{ states('sensor.time_date') }}
 
     - id: 'Пауза Parity-Check - уведомление'
-      alias: telegram_cubeserver_parity_check_pause
+      alias: cubeserver_parity_check_pause_notify
       initial_state: true
       trigger:
         - platform: state
@@ -404,7 +404,7 @@ cubeserver:
               {{ '\U0001F4C0' }} Cubeserver: {{ message }} {{ states('sensor.time_date') }}
 
     - id: 'Началась загрузка торрента - уведомление'
-      alias: telegram_torrent_downloading_started
+      alias: torrent_downloading_started_notify
       initial_state: true
       trigger:
         - platform: event
@@ -416,7 +416,7 @@ cubeserver:
               {{ '\U00002B07' }} Cubeserver: Началась загрузка торрента. {{ trigger.event.data.name }}
 
     - id: 'Загрузка торрента завершена - уведомление'
-      alias: telegram_torrent_downloading_completed
+      alias: torrent_downloading_completed_notify
       initial_state: true
       trigger:
         - platform: event

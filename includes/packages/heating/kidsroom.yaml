@@ -117,14 +117,16 @@ kidsroom_heating:
         - service: notify.tg_bot
           data:
             message: >
-              {% set messages = ['Нагреватель бризера в детской включен!',
-                                 'Бризер в детской начинает греть воздух..',
-                                 'Нагреватель бризера в детской начал жарить!'] %}
+              {% set messages = [
+                'Нагреватель бризера в детской включен!',
+                'Бризер в детской начинает греть воздух..',
+                'Нагреватель бризера в детской начал жарить!'
+              ] %}
               {{ '\U0001F525' }}  {{ messages | random }} {{ states('sensor.time_date') }}
               {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
 
     - id: 'Работает нагреватель бризера в детской - уведомление'
-      alias: kidsroom_airpurifier_heater_on_reminder
+      alias: kidsroom_airpurifier_heater_on_reminder_notify
       initial_state: true
       trigger:
         - platform: state
@@ -141,9 +143,11 @@ kidsroom_heating:
         - service: notify.tg_bot
           data:
             message: >
-              {% set messages = ['Нагреватель бризера в детской все еще работает!',
-                                 'Бризер в детской продолжает греть воздух..',
-                                 'Нагреватель бризера в детской еще жарит!'] %}
+              {% set messages = [
+                'Нагреватель бризера в детской все еще работает!',
+                'Бризер в детской продолжает греть воздух..',
+                'Нагреватель бризера в детской еще жарит!'
+              ] %}
               {{ '\U0001F525' }} {{ messages | random }} {{ states('sensor.time_date') }}
         - service: timer.start
           entity_id: timer.kidsroom_airpurifier_heater_remind
@@ -166,8 +170,10 @@ kidsroom_heating:
         - service: notify.tg_bot
           data:
             message: >
-              {% set messages = ['Нагреватель бризера в детской выключен!',
-                                 'Бризер в детской завершает греть воздух..',
-                                 'Нагреватель бризера в детской покидает здание!'] %}
+              {% set messages = [
+                'Нагреватель бризера в детской выключен!',
+                'Бризер в детской завершает греть воздух..',
+                'Нагреватель бризера в детской покидает здание!'
+              ] %}
               {{ '\U0001F9EF' }} {{ messages | random }} {{ states('sensor.time_date') }}
               {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C

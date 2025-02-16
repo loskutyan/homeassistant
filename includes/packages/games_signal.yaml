@@ -25,8 +25,8 @@ games_signal:
         Content-Type: application/json
 
   script:
-    signal_aqara_hub_quiet_sound_notification:
-      alias: 'Тихое звуковое уведомление Aqara Hub signal'
+    signal_aqara_hub_quiet_sound_notify:
+      alias: 'Signal - тихое звуковое уведомление (Aqara Hub)'
       sequence:
         - service: scene.create
           data:
@@ -52,8 +52,8 @@ games_signal:
           data:
             entity_id: scene.aqara_hub_state_revert
 
-    signal_light_flashes_notification:
-      alias: 'Световое уведомление signal'
+    signal_light_flashes_notify:
+      alias: 'Signal - световое уведомление'
       sequence:
         - repeat:
             count: 5
@@ -126,8 +126,8 @@ games_signal:
               after: '09:00:00'
               before: '23:50:00'
           then:
-            service: script.signal_aqara_hub_quiet_sound_notification
-        - service: script.signal_light_flashes_notification
+            service: script.signal_aqara_hub_quiet_sound_notify
+        - service: script.signal_light_flashes_notify
 
     - id: 'Циклопы готовы к РЛ - освещение'
       alias: cyclops_is_rocketleague_ready_lights_toggle

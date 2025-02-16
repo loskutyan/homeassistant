@@ -78,8 +78,8 @@ hallway_lights:
       condition:
         - condition: state
           entity_id:
-            - script.signal_light_flashes_notification
-            - script.intercom_light_flashes_notification
+            - script.signal_light_flashes_notify
+            - script.intercom_light_flashes_notify
           state: 'off'
       action:
         - service: timer.start

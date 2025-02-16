@@ -119,7 +119,7 @@ kidsroom_humidity:
               {{ states('sensor.kidsroom_humidifier_mode_needs_changes') }}
 
     - id: 'Нужно увлажнить воздух в детской - уведомление'
-      alias: telegram_kidsroom_needs_humidification
+      alias: kidsroom_needs_humidification_notify
       initial_state: true
       trigger:
         - platform: time_pattern
@@ -159,7 +159,7 @@ kidsroom_humidity:
               {{ '\U0001F6B1' }} {{ messages | random }} Влажность {{ hum }}%. {{ states('sensor.time_date') }}
 
     - id: 'Кончается вода в увлажнителе в детской - уведомление'
-      alias: telegram_kidsroom_humidifier_low_water_level
+      alias: kidsroom_humidifier_low_water_level_notify
       initial_state: true
       trigger:
         - platform: numeric_state
@@ -193,7 +193,7 @@ kidsroom_humidity:
               {{ '\U0001F6B1' }} {{ messages | random }} Осталось всего {{ lvl }}%. {{ states('sensor.time_date') }}
 
     - id: 'Кончилась вода в увлажнителе в детской - уведомление'
-      alias: telegram_kidsroom_humidifier_no_water
+      alias: kidsroom_humidifier_no_water_notify
       initial_state: true
       trigger:
         - platform: numeric_state

@@ -206,7 +206,64 @@ away:
               ] %}
               {{ '\U0001F525' }} {{ messages | random }}
 
+    hallway_door_lock_was_locked_notify:
+      alias: 'Замок входной двери закрыт - уведомление'
+      sequence:
+        - service: notify.tg_bot
+          data:
+            message: >
+              {% set messages = [
+                'Замок входной двери закрыт!'
+              ] %}
+              {{ '\U0001F510' }} {{ messages | random }}
+
+    lock_the_door:
+      alias: 'Закрытие входной двери'
+      sequence:
+        - if:
+            - condition: state
+              entity_id: binary_sensor.hallway_door_sensor_contact
+              state: 'on'
+          then:
+            - service: script.hallway_door_is_opened_notify
+          else:
+            - service: lock.lock
+              entity_id: lock.aqara_smart_lock_u200
+            - delay: 00:00:15
+            - if:
+                - condition: state
+                  entity_id: lock.aqara_smart_lock_u200
+                  state: 'locked'
+              then:
+                - service: script.hallway_door_lock_was_locked_notify
+              else:
+                - service: script.hallway_door_lock_is_unlocked_notify
+
+        - service: notify.tg_bot
+          data:
+            message: >
+              {% set messages = [
+                'Все обогреватели выключены',
+                'Нагрев выключен - сэкономили кучу денег',
+                'Обогреватели обесточены... но это неточно'
+              ] %}
+              {{ '\U0001F525' }} {{ messages | random }}
+
   automation:
+    - id: 'Все ушли из дома, закрываем дверь'
+      alias: everyone_left_home_lock_the_door
+      trigger:
+        - platform: state
+          entity_id: input_boolean.somebody_home
+          from: 'on'
+          to: 'off'
+      condition:
+        - condition: state
+          entity_id: binary_sensor.any_light_is_on
+          state: 'on'
+      action:
+        - service: script.turn_off_all_lights
+
     - id: 'Все ушли из дома, выключаем свет'
       alias: everyone_left_home_turn_off_lights
       trigger:

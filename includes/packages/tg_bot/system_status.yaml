@@ -3,15 +3,15 @@ tg_system_status:
     telegram_system_report:
       alias: 'Отправка отчета о состоянии системы'
       sequence:
-       - service: notify.tg_bot
-         data:
-           message: |
-            {{'\U0001F6C0'}} Состояние системы
-            {{'\U0001F567'}} Отчет за {{ states('sensor.time_date') }}
-            {{'\U0001F4A1'}} Светильников недоступно - {{ states('sensor.lights_unavailable_count') }} 
-            {{'\U0001F50C'}} Свичей недоступно - {{ states('sensor.switches_unavailable_count') }} 
-            {{'\U0001F321'}} Сенсоров недоступно - {{ states('sensor.sensors_unavailable_count') }} 
-            {{'\U0001F51F'}} Бинарных сенсоров недоступно - {{ states('sensor.binary_sensors_unavailable_count') }}
+        - service: notify.tg_bot
+          data:
+            message: |
+              {{'\U0001F6C0'}} Состояние системы
+              {{'\U0001F567'}} Отчет за {{ states('sensor.time_date') }}
+              {{'\U0001F4A1'}} Светильников недоступно - {{ states('sensor.lights_unavailable_count') }} 
+              {{'\U0001F50C'}} Свичей недоступно - {{ states('sensor.switches_unavailable_count') }} 
+              {{'\U0001F321'}} Сенсоров недоступно - {{ states('sensor.sensors_unavailable_count') }} 
+              {{'\U0001F51F'}} Бинарных сенсоров недоступно - {{ states('sensor.binary_sensors_unavailable_count') }}
 
 
   automation: 

@@ -1,7 +1,7 @@
 tg_service:
   automation:
     - id: 'Низкий уровень заряда батарей'
-      alias: telegram_low_battery_level_notification
+      alias: telegram_low_battery_level_notify
       description: ''
       use_blueprint:
         path: sbyx/low-battery-level-detection-notification-for-all-battery-sensors.yaml

@@ -34,8 +34,8 @@ intercom:
         entity_id: switch.intercom_lock
 
   script:
-    intercom_rings_aqara_hub_quiet_sound_notification:
-      alias: 'Тихое звуковое уведомление Aqara Hub звонка в домофон'
+    intercom_rings_aqara_hub_quiet_sound_notify:
+      alias: 'Звонок в домофон - тихое звуковое уведомление (Aqara Hub)'
       sequence:
         - service: scene.create
           data:
@@ -61,11 +61,11 @@ intercom:
           data:
             entity_id: scene.aqara_hub_state_revert
 
-    intercom_lock_opened_aqara_hub_quiet_sound_notification:
-      alias: 'Тихое звуковое уведомление Aqara Hub открытия замка домофона'
+    intercom_lock_opened_aqara_hub_quiet_sound_notify:
+      alias: 'Открытия замка домофона - тихое звуковое уведомление (Aqara Hub)'
       sequence:
         - service: script.turn_off
-          entity_id: script.intercom_rings_aqara_hub_quiet_sound_notification
+          entity_id: script.intercom_rings_aqara_hub_quiet_sound_notify
         - service: scene.turn_on
           data:
             entity_id: scene.aqara_hub_state_revert
@@ -90,8 +90,8 @@ intercom:
           data:
             entity_id: scene.aqara_hub_state_revert
 
-    intercom_light_flashes_notification:
-      alias: 'Световое уведомление звонка в домофон'
+    intercom_light_flashes_notify:
+      alias: 'Звонок в домофон - световое уведомление'
       sequence:
         - repeat:
             count: 3
@@ -188,13 +188,13 @@ intercom:
               ] %}
               {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}
           continue_on_error: true
-        - service: script.intercom_light_flashes_notification
+        - service: script.intercom_light_flashes_notify
         - if:
             - condition: state
               entity_id: switch.smartintercom_otkliuchit_trubku_domofona
               state: 'on'
           then:
-            service: script.intercom_rings_aqara_hub_quiet_sound_notification
+            service: script.intercom_rings_aqara_hub_quiet_sound_notify
 
     - id: 'Замок домофона открыт - уведомление'
       alias: intercom_lock_was_opened_notify
@@ -219,4 +219,4 @@ intercom:
               entity_id: switch.smartintercom_otkliuchit_trubku_domofona
               state: 'on'
           then:
-            service: script.intercom_lock_opened_aqara_hub_quiet_sound_notification
+            service: script.intercom_lock_opened_aqara_hub_quiet_sound_notify

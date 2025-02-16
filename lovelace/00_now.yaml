@@ -9,12 +9,12 @@ cards:
         cards:
           - type: custom:mushroom-entity-card
             entity: sensor.date
-            name: Дата
+            name: 'Дата'
             layout: vertical
 
           - type: custom:mushroom-entity-card
             entity: sensor.time
-            name: Время
+            name: 'Время'
             layout: vertical
 
           - type: conditional
@@ -24,7 +24,7 @@ cards:
             card:
               type: custom:mushroom-entity-card
               entity: sensor.sun_next_rising
-              name: Восход солнца
+              name: 'Восход солнца'
               layout: vertical
 
           - type: conditional
@@ -34,7 +34,7 @@ cards:
             card:
               type: custom:mushroom-entity-card
               entity: sensor.sun_next_setting
-              name: Заход солнца
+              name: 'Заход солнца'
               layout: vertical
 
   - type: vertical-stack
@@ -99,6 +99,21 @@ cards:
               - type: custom:mushroom-entity-card
                 entity: switch.kidsroom_asleep
                 icon_color: orange
+
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-lock-card
+                entity: lock.aqara_smart_lock_u200
+                name: 'Замок входной двери'
+                secondary_info: last-changed
+                tap_action:
+                  action: toggle
+
+              - type: custom:mushroom-entity-card
+                entity: binary_sensor.hallway_door_sensor_contact
+                icon_color: red
+                name: 'Входная дверь'
+                secondary_info: last-changed
 
           - type: horizontal-stack
             cards:

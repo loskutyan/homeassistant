@@ -272,7 +272,7 @@ vacuum:
             option: 'none'
 
     - id: 'Пылесос начал уборку - уведомление'
-      alias: telegram_vacuum_started_cleaning
+      alias: vacuum_started_cleaning_notify
       trigger:
         - platform: state
           entity_id: vacuum.roborock_s5_max
@@ -287,7 +287,7 @@ vacuum:
               {{ '\U0001F9F9' }} Пылесос начал уборку в {{ states('sensor.time') }}, режим {{ state_attr('vacuum.roborock_s5_max', 'fan_speed') }}
 
     - id: 'Пылесос закончил уборку - уведомление'
-      alias: telegram_vacuum_finished_cleaning
+      alias: vacuum_finished_cleaning_notify
       trigger:
         - platform: state
           entity_id: vacuum.roborock_s5_max
@@ -307,7 +307,7 @@ vacuum:
               {{ '\U0001F9F9' }} Пылесос закончил уборку, убрано {{ cleaned_area }}м² за {{ cleaning_duration }}мин.
 
     - id: 'Пылесос вернулся на док-станцию - уведомление'
-      alias: telegram_vacuum_docked
+      alias: vacuum_docked_notify
       trigger:
         - platform: state
           entity_id: vacuum.roborock_s5_max

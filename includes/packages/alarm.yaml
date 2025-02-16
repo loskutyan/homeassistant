@@ -247,6 +247,31 @@ alarm:
         - service: input_boolean.turn_on
           entity_id: input_boolean.bathroom_valves
 
+    hallway_door_is_opened_notify:
+      alias: 'Входная дверь открыта - уведомление'
+      sequence:
+        - service: notify.tg_urgent
+          data:
+            message: >
+              {% set messages = [
+                'входная дверь все еще открыта!',
+                'не забыли закрыть входную дверь?',
+                'CLOSE THE DOOR!!!11',
+                'входную дверь может стоить закрыть?..'
+              ] %}
+              {{ '\U0001F6AA' }} {{ states('sensor.time') }} - {{ messages | random }}
+
+    hallway_door_lock_is_unlocked_notify:
+      alias: 'Замок входной двери не заперт - уведомление'
+      sequence:
+        - service: notify.tg_urgent
+          data:
+            message: >
+              {% set messages = [
+                'замок входной двери не закрыт!'
+              ] %}
+              {{ '\U0001F513' }} {{ states('sensor.time') }} - {{ messages | random }}
+
   switch:
     - platform: template
       switches:
@@ -339,9 +364,11 @@ alarm:
         - service: notify.tg_bot
           data:
             message: >
-              {% set messages = ['Входная дверь открыта в',
-                                 'Распахнули входную дверь, а сейчас',
-                                 'Кто-то открыл входную дверь в'] %}
+              {% set messages = [
+                'Входная дверь открыта в',
+                'Распахнули входную дверь, а сейчас',
+                'Кто-то открыл входную дверь в'
+              ] %}
               {{ '\U0001F6AA' }} {{ messages | random }} {{ states('sensor.time_date') }}
         - service: timer.start
           entity_id:
@@ -361,13 +388,6 @@ alarm:
           entity_id: binary_sensor.hallway_door_sensor_contact
           state: 'on'
       action:
-        - service: notify.tg_urgent
-          data:
-            message: >
-              {% set messages = ['входная дверь все еще открыта!',
-                                 'не забыли закрыть входную дверь?',
-                                 'CLOSE THE DOOR!!!11',
-                                 'входную дверь может стоить закрыть?..'] %}
-              {{ '\U0001F6AA' }} {{ states('sensor.time') }} - {{ messages | random }}
+        - service: script.hallway_door_is_opened_notify
         - service: timer.start
           entity_id: timer.hallway_door_left_opened
