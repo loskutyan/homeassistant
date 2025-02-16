@@ -239,16 +239,6 @@ away:
               else:
                 - service: script.hallway_door_lock_is_unlocked_notify
 
-        - service: notify.tg_bot
-          data:
-            message: >
-              {% set messages = [
-                'Все обогреватели выключены',
-                'Нагрев выключен - сэкономили кучу денег',
-                'Обогреватели обесточены... но это неточно'
-              ] %}
-              {{ '\U0001F525' }} {{ messages | random }}
-
   automation:
     - id: 'Все ушли из дома, закрываем дверь'
       alias: everyone_left_home_lock_the_door
@@ -259,10 +249,10 @@ away:
           to: 'off'
       condition:
         - condition: state
-          entity_id: binary_sensor.any_light_is_on
-          state: 'on'
+          entity_id: lock.aqara_smart_lock_u200
+          state: 'unlocked'
       action:
-        - service: script.turn_off_all_lights
+        - service: script.lock_the_door
 
     - id: 'Все ушли из дома, выключаем свет'
       alias: everyone_left_home_turn_off_lights
