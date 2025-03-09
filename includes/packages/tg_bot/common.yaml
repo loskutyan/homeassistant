@@ -12,10 +12,12 @@ tg_common:
         - service: notify.tg_bot
           data:
             message: |
-              {% set messages = ['Привет!',
-                                 'Доброго времени суток!',
-                                 'Милорд.',
-                                 'Приступим!'] %}
+              {% set messages = [
+                'Привет!',
+                'Доброго времени суток!',
+                'Милорд.',
+                'Приступим!'
+              ] %}
               {{ messages | random }}
 
               Доступные команды:
@@ -36,8 +38,7 @@ tg_common:
         - service: notify.tg_bot
           data:
             message: |
-              {% set messages = ['Панель управления',
-                                 'Контрольная панель'] %}
+              {% set messages = ['Панель управления', 'Контрольная панель'] %}
               {{ messages | random }}
             data:
               inline_keyboard:

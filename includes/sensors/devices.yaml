@@ -1,8 +1,8 @@
 - platform: template
   sensors:
     phone_mac_address:
-      friendly_name: 'MAC-адрес телефона'
-      value_template: '4c_79_75_c6_6b_67'
+      friendly_name: 'MAC-адрес моего телефона'
+      value_template: '22_66_d6_ed_b9_ca'
 
     sisters_phone_mac_address:
       friendly_name: 'MAC-адрес телефона Кати'

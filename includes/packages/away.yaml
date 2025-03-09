@@ -113,7 +113,7 @@ away:
           icon_template: mdi:cellphone
 
         sons_phone_presence:
-          friendly_name: 'Телефон Кати дома'
+          friendly_name: 'Телефон Коли дома'
           device_class: presence
           value_template: >
             {% set mac = states('sensor.sons_phone_mac_address') %}
@@ -228,7 +228,8 @@ away:
             - service: script.hallway_door_is_opened_notify
           else:
             - service: lock.lock
-              entity_id: lock.aqara_smart_lock_u200
+              target:
+                entity_id: lock.aqara_smart_lock_u200
             - delay: 00:00:15
             - if:
                 - condition: state
