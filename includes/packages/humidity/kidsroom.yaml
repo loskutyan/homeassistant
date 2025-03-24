@@ -107,16 +107,24 @@ kidsroom_humidity:
         - condition: state
           entity_id: timer.kidsroom_humidifier_fixed_mode
           state: 'idle'
-        - not:
+        - or:
+            - not:
+                - condition: state
+                  entity_id: sensor.kidsroom_humidifier_mode_needs_changes
+                  state: 'keep'
             - condition: state
-              entity_id: sensor.kidsroom_humidifier_mode_needs_changes
-              state: 'keep'
+              entity_id: humidifier.kidsroom_smartmi_humidifier
+              state: 'off'
       action:
         - service: humidifier.set_mode
           entity_id: humidifier.kidsroom_smartmi_humidifier
           data_template:
             mode: >
-              {{ states('sensor.kidsroom_humidifier_mode_needs_changes') }}
+              {% set to_state = states('sensor.kidsroom_humidifier_mode_needs_changes') %}
+              {% if to_state != 'keep' %}
+                {{ to_state }}
+              {% endif %}
+              {{ state_attr('humidifier.kidsroom_smartmi_humidifier', 'mode') }}
 
     - id: 'Нужно увлажнить воздух в детской - уведомление'
       alias: kidsroom_needs_humidification_notify

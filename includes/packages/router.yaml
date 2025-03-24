@@ -1,0 +1,14 @@
+router:
+  automation:
+    - id: 'Смена внешнего ip-адреса на моб. связь - уведомление'
+      alias: wan_ip_changed_to_local_notify
+      trigger:
+        - platform: state
+          entity_id: sensor.keenetic_gateway_external_ip
+          to: '192.168.8.100'
+      action:
+        - service: notify.tg_urgent
+          data:
+            message: >
+              {% set ip_from = trigger.from_state.state | string %}
+              {{ '\U0001F6DC' }} WAN IP изменен с {{ ip_from }} на 192.168.8.100

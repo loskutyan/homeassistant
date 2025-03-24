@@ -107,16 +107,24 @@ bedroom_humidity:
         - condition: state
           entity_id: timer.bedroom_humidifier_fixed_mode
           state: 'idle'
-        - not:
+        - or:
+            - not:
+                - condition: state
+                  entity_id: sensor.bedroom_humidifier_mode_needs_changes
+                  state: 'keep'
             - condition: state
-              entity_id: sensor.bedroom_humidifier_mode_needs_changes
-              state: 'keep'
+              entity_id: humidifier.bedroom_smartmi_humidifier
+              state: 'off'
       action:
         - service: humidifier.set_mode
           entity_id: humidifier.bedroom_smartmi_humidifier
           data_template:
             mode: >
-              {{ states('sensor.bedroom_humidifier_mode_needs_changes') }}
+              {% set to_state = states('sensor.bedroom_humidifier_mode_needs_changes') %}
+              {% if to_state != 'keep' %}
+                {{ to_state }}
+              {% endif %}
+              {{ state_attr('humidifier.bedroom_smartmi_humidifier', 'mode') }}
 
     - id: 'Нужно увлажнить воздух в спальне - уведомление'
       alias: bedroom_needs_humidification_notify

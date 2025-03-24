@@ -337,13 +337,17 @@ cubeserver:
               {% set disk1_temp = states('sensor.cubeserver_disk_1_temperature') %}
               {% set disk2_temp = states('sensor.cubeserver_disk_2_temperature') %}
               {% if overheat %}
-                {% set messages = ['диски перегреты.',
-                                   'дискам жарко!',
-                                   'обнаружен перегрев дисков.'] %}
+                {% set messages = [
+                  'диски перегреты.',
+                  'дискам жарко!',
+                  'обнаружен перегрев дисков.'
+                ] %}
                 {% set emoji = '\U0001F525' %}
               {% else %}
-                {% set messages = ['диски остыли.',
-                                   'диски вернулись к нормальным температурам.'] %}
+                {% set messages = [
+                  'диски остыли.',
+                  'диски вернулись к нормальным температурам.'
+                ] %}
                 {% set emoji = '\U00002744' %}
               {% endif %}
               {{ emoji }} Cubeserver: {{ messages | random }} {{ states('sensor.time_date') }}
