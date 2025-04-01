@@ -269,7 +269,7 @@ cards:
 
           - type: conditional
             conditions:
-              - entity: binary_sensor.hacs_updates_available
+              - entity: update.hacs_update
                 state: 'on'
             card:
               type: custom:mushroom-update-card

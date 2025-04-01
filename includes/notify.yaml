@@ -4,7 +4,7 @@
 
 - name: tg_media
   platform: telegram
-  chat_id: !secret tg_chat_id_unraid_media_group
+  chat_id: !secret tg_chat_id_cubeserver_media_group
 
 - name: tg_urgent
   platform: telegram

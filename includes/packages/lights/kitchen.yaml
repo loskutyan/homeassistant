@@ -39,7 +39,7 @@ kitchen_lights:
           entity_id: input_boolean.kidsroom_asleep
           state: 'off'
         - condition: numeric_state
-          entity_id: sensor.kitchen_motion_sensor_illuminance_lux
+          entity_id: sensor.kitchen_motion_sensor_illuminance
           below: 100
         - condition: state
           entity_id:

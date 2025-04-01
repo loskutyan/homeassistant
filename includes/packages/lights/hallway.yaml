@@ -31,7 +31,7 @@ hallway_lights:
           to: 'on'
       condition:
         - condition: numeric_state
-          entity_id: sensor.hallway_motion_sensor_illuminance_lux
+          entity_id: sensor.hallway_motion_sensor_illuminance
           below: 100
         - condition: state
           entity_id: switch.hallway_lights_switch

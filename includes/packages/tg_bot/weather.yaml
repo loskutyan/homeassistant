@@ -93,6 +93,8 @@ tg_weather:
               {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
               {% set condition_emoji = conditions_emojis.get(condition, '\U0000274C') %}
               {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
+              {% set temp_unit = state_attr('weather.yandex_weather', 'temperature_unit') %}
+              {% set pressure = state_attr('weather.yandex_weather', 'pressure') * 0.750062 %}
               {% set messages = [
                 'Итак.',
                 'Здравствуйте!',
@@ -108,11 +110,11 @@ tg_weather:
               {% endif %}
               {{ messages | random }}
               {{ condition_emoji }} Сейчас на улице {{ friendly_condition.lower() }}.
-              Температура {{ state_attr('weather.yandex_weather', 'temperature') }}°C,
-              ощущается как {{ state_attr('weather.yandex_weather', 'feels_like') }}°C.
+              Температура {{ state_attr('weather.yandex_weather', 'temperature') }}{{ temp_unit }},
+              ощущается как {{ state_attr('weather.yandex_weather', 'feels_like') }}{{ temp_unit }}.
               Влажность {{ state_attr('weather.yandex_weather', 'humidity') }}%.
               Ветер {{ friendly_wind_bearing }}, со скоростью {{ (state_attr('weather.yandex_weather', 'wind_speed') | float(0) / 3.6) | round(1) }} м/с.
-              Давление {{ states('sensor.yandex_weather_pressure_mmhg') }} мм рт.ст.
+              Давление {{ pressure | round(1) }} мм рт.ст.
         - delay: 00:00:15
         - service: notify.tg_bot
           data:
@@ -129,6 +131,7 @@ tg_weather:
               {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
               {% set condition_emoji = conditions_emojis.get(condition, '\U0000274C') %}
               {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
+              {% set temp_unit = state_attr('weather.yandex_weather', 'temperature_unit') %}
               {% set messages = [
                 'Теперь к прогнозам.',
                 'Далее.',
@@ -146,7 +149,7 @@ tg_weather:
               {{ messages | random }}
 
               {{ condition_emoji }} {{ day_part | random }} на улице будет {{ friendly_condition.lower() }}.
-              Температура ожидается около {{ temp_min }} - {{ temp_max }}°C.
+              Температура ожидается около {{ temp_min }} - {{ temp_max }}{{ temp_unit }}.
               Ветер {{ friendly_wind_bearing }}, со скоростью {{ state_attr('weather.yandex_weather', 'forecast')[0]['native_wind_speed'] }} м/с.
         - delay: 00:00:15
         - service: notify.tg_bot
@@ -164,6 +167,7 @@ tg_weather:
               {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
               {% set condition_emoji = conditions_emojis.get(condition, '\U0000274C') %}
               {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
+              {% set temp_unit = state_attr('weather.yandex_weather', 'temperature_unit') %}
               {% set now_hour = now().hour %}
               {% if 18 <= now_hour %}
                 {% set day_part = ['Утром'] %}
@@ -175,7 +179,7 @@ tg_weather:
                 {% set day_part = ['Ночью'] %}
               {% endif %}
               {{ condition_emoji }} {{ day_part | random }} будет {{ friendly_condition.lower() }}.
-              Температура примерно {{ temp_min }} - {{ temp_max }}°C.
+              Температура примерно {{ temp_min }} - {{ temp_max }}{{ temp_unit }}.
               Вероятность осадков {{ state_attr('weather.yandex_weather', 'forecast')[1]['precipitation_probability'] }}%.
               Ветер {{ friendly_wind_bearing }}, скорость {{ state_attr('weather.yandex_weather', 'forecast')[1]['native_wind_speed'] | round(1) }} м/с.
 
