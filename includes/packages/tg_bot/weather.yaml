@@ -126,7 +126,6 @@ tg_weather:
               {{ condition_emoji }} По состоянию на {{ w_time }} на улице {{ friendly_condition.lower() }}.
               Температура {{ state_attr('weather.yandex_weather', 'temperature') }}{{ temp_unit }},
               ощущается как {{ state_attr('weather.yandex_weather', 'feels_like') }}{{ temp_unit }}.
-              Влажность {{ state_attr('weather.yandex_weather', 'humidity') }}%.
               Ветер {{ friendly_wind_bearing }}, со скоростью {{ wind_speed }} м/с.
         - delay: 00:00:15
         - service: notify.tg_bot

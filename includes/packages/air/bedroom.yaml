@@ -161,7 +161,9 @@ bedroom_air:
           device_class: temperature
           unit_of_measurement: '°C'
           value_template: >
-            {{ states('sensor.bedroom_average_temperature') | float - states('input_number.target_temperature') | float(22) }}
+            {{ states('sensor.bedroom_average_temperature') | float(22) - states('input_number.target_temperature') | float(22) }}
+          availability_template: >
+            {{ states('sensor.bedroom_average_temperature') | float(0) > 0 }}
 
         bedroom_airpurifier_target_co2_delta:
           friendly_name: 'Поправка к скорости бризера в спальне'
