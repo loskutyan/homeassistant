@@ -1,4 +1,5 @@
 - name: 'Home'
+  mode: bridge
   port: 21065
   filter:
     include_domains:
@@ -30,9 +31,6 @@
       - switch.bedroom_cooling
       - switch.kidsroom_cooling
       - media_player.kidsroom_mi_tv_stick
-      - camera.intercom
-      - camera.doorbell
-      - lock.intercom_door
     include_entity_globs:
       - binary_sensor.*_water_leak
       - binary_sensor.*_sensor_smoke
@@ -117,13 +115,37 @@
       name: 'Телевизор'
     light.hallway_duty_aqara_led_strip:
       name: 'Подсветка'
+
+- name: 'Intercoom Door'
+  mode: accessory
+  port: 21064
+  filter:
+    include_entities:
+      - lock.intercom_door
+  entity_config:
+    lock.intercom_door:
+      name: 'Дверь в подъезде'
+
+- name: 'Camera Intercom'
+  mode: accessory
+  port: 21063
+  filter:
+    include_entities:
+      - camera.intercom
+  entity_config:
     camera.intercom:
       name: 'Домофон'
       support_audio: false
       linked_doorbell_sensor: binary_sensor.intercom_rings
+
+- name: 'Camera Doorbell'
+  mode: accessory
+  port: 21062
+  filter:
+    include_entities:
+      - camera.doorbell
+  entity_config:
     camera.doorbell:
       name: 'Дверной звонок'
       support_audio: false
       linked_doorbell_sensor: binary_sensor.doorbell_rings
-    lock.intercom_door:
-      name: 'Дверь в подъезде'
