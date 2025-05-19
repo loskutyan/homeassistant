@@ -123,8 +123,9 @@ bedroom_humidity:
               {% set to_state = states('sensor.bedroom_humidifier_mode_needs_changes') %}
               {% if to_state != 'keep' %}
                 {{ to_state }}
+              {% else %}
+                {{ state_attr('humidifier.bedroom_smartmi_humidifier', 'mode') }}
               {% endif %}
-              {{ state_attr('humidifier.bedroom_smartmi_humidifier', 'mode') }}
 
     - id: 'Нужно увлажнить воздух в спальне - уведомление'
       alias: bedroom_needs_humidification_notify

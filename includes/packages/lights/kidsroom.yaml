@@ -76,7 +76,7 @@ kidsroom_lights:
       trigger:
         - platform: state
           entity_id: sensor.kidsroom_wall_switch_action
-          to: 'left'
+          to: 'single_left'
         - platform: state
           entity_id: sensor.kidsroom_aqara_button_action
           to: 'double'
@@ -93,7 +93,7 @@ kidsroom_lights:
           to: 'single_right'
         - platform: state
           entity_id: sensor.kidsroom_wall_switch_action
-          to: 'right'
+          to: 'single_right'
         - platform: state
           entity_id: sensor.kidsroom_aqara_button_action
           to: 'single'

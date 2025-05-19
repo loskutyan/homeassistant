@@ -123,8 +123,9 @@ kidsroom_humidity:
               {% set to_state = states('sensor.kidsroom_humidifier_mode_needs_changes') %}
               {% if to_state != 'keep' %}
                 {{ to_state }}
+              {% else %}
+                {{ state_attr('humidifier.kidsroom_smartmi_humidifier', 'mode') }}
               {% endif %}
-              {{ state_attr('humidifier.kidsroom_smartmi_humidifier', 'mode') }}
 
     - id: 'Нужно увлажнить воздух в детской - уведомление'
       alias: kidsroom_needs_humidification_notify
