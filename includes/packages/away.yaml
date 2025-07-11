@@ -96,30 +96,6 @@ away:
   binary_sensor:
     - platform: template
       sensors:
-        phone_presence:
-          friendly_name: 'Телефон дома'
-          device_class: presence
-          value_template: >
-            {% set mac = states('sensor.phone_mac_address') %}
-            {{ states('device_tracker.' ~ mac) == 'home' }}
-          icon_template: mdi:cellphone
-
-        sisters_phone_presence:
-          friendly_name: 'Телефон Кати дома'
-          device_class: presence
-          value_template: >
-            {% set mac = states('sensor.sisters_phone_mac_address') %}
-            {{ states('device_tracker.' ~ mac) == 'home' }}
-          icon_template: mdi:cellphone
-
-        sons_phone_presence:
-          friendly_name: 'Телефон Коли дома'
-          device_class: presence
-          value_template: >
-            {% set mac = states('sensor.sons_phone_mac_address') %}
-            {{ states('device_tracker.' ~ mac) == 'home' }}
-          icon_template: mdi:cellphone
-
         some_motion_at_home:
           friendly_name: 'Движение дома'
           device_class: motion
@@ -309,10 +285,10 @@ away:
       condition:
         - condition: state
           entity_id:
-            - binary_sensor.phone_presence
-            - binary_sensor.sisters_phone_presence
-            - binary_sensor.sons_phone_presence
-          state: 'on'
+            - person.aleksandr
+            - person.ekaterina
+            - person.nikolai
+          state: 'not_home'
           match: any
         - condition: state
           entity_id: timer.left_home_by_phone_presence_after_door_closed
@@ -326,18 +302,18 @@ away:
       trigger:
         - platform: state
           entity_id:
-            - binary_sensor.phone_presence
-            - binary_sensor.sisters_phone_presence
-            - binary_sensor.sons_phone_presence
-          from: 'on'
-          to: 'off'
+            - person.aleksandr
+            - person.ekaterina
+            - person.nikolai
+          from: 'home'
+          to: 'not_home'
       condition:
         - condition: state
           entity_id:
-            - binary_sensor.phone_presence
-            - binary_sensor.sisters_phone_presence
-            - binary_sensor.sons_phone_presence
-          state: 'off'
+            - person.aleksandr
+            - person.ekaterina
+            - person.nikolai
+          state: 'not_home'
         - condition: state
           entity_id: timer.left_home_by_phone_presence_after_door_closed
           state: 'active'
@@ -387,11 +363,11 @@ away:
           to: 'on'
         - platform: state
           entity_id:
-            - binary_sensor.phone_presence
-            - binary_sensor.sisters_phone_presence
-            - binary_sensor.sons_phone_presence
-          from: 'off'
-          to: 'on'
+            - person.aleksandr
+            - person.ekaterina
+            - person.nikolai
+          from: 'not_home'
+          to: 'home'
       condition:
         - condition: state
           entity_id: input_boolean.somebody_home

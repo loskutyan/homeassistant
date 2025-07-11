@@ -178,11 +178,31 @@ conditioning_bedroom:
         - platform: state
           entity_id:
             - input_select.bedroom_ac_mode
+      condition:
+        - condition: state
+          entity_id: switch.bedroom_ac
+          state: 'on'
+      action:
+        - service: climate.set_temperature
+          entity_id: climate.bedroom_ac
+          data_template:
+            temperature: "{{ states('input_number.bedroom_ac_temperature') | int }}"
+            hvac_mode: "{{ states('input_select.bedroom_ac_mode') }}"
+
+    - id: 'Выбор температуры для кондиционера в спальне'
+      alias: select_bedroom_ac_temperature
+      trigger:
+        - platform: state
+          entity_id:
             - input_number.bedroom_ac_temperature
       condition:
         - condition: state
           entity_id: switch.bedroom_ac
           state: 'on'
+        - condition: state
+          entity_id: switch.bedroom_ac
+          attribute: last_on_operation
+          state: 'cool'
       action:
         - service: climate.set_temperature
           entity_id: climate.bedroom_ac
@@ -332,11 +352,11 @@ conditioning_bedroom:
           to: 'on'
         - platform: numeric_state
           entity_id: sensor.bedroom_average_humidity
-          above: 60
+          above: 50
           for: '00:01:00'
         - platform: numeric_state
           entity_id: sensor.bedroom_average_humidity
-          below: 50
+          below: 40
           for: '00:01:00'
       condition:
         - or:
@@ -358,7 +378,7 @@ conditioning_bedroom:
               state: 'cool'
             - condition: numeric_state
               entity_id: sensor.bedroom_average_humidity
-              above: 60
+              above: 50
           then:
             - service: input_select.select_option
               entity_id: input_select.bedroom_ac_mode
@@ -376,7 +396,7 @@ conditioning_bedroom:
               state: 'dry'
             - condition: numeric_state
               entity_id: sensor.bedroom_average_humidity
-              below: 50
+              below: 40
           then:
             - service: input_select.select_option
               entity_id: input_select.bedroom_ac_mode

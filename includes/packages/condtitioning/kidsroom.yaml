@@ -178,11 +178,31 @@ conditioning_kidsroom:
         - platform: state
           entity_id:
             - input_select.kidsroom_ac_mode
+      condition:
+        - condition: state
+          entity_id: switch.kidsroom_ac
+          state: 'on'
+      action:
+        - service: climate.set_temperature
+          entity_id: climate.kidsroom_ac
+          data_template:
+            temperature: "{{ states('input_number.kidsroom_ac_temperature') | int }}"
+            hvac_mode: "{{ states('input_select.kidsroom_ac_mode') }}"
+
+    - id: 'Выбор температуры для кондиционера в детской'
+      alias: select_kidsroom_ac_temperature
+      trigger:
+        - platform: state
+          entity_id:
             - input_number.kidsroom_ac_temperature
       condition:
         - condition: state
           entity_id: switch.kidsroom_ac
           state: 'on'
+        - condition: state
+          entity_id: switch.kidsroom_ac
+          attribute: last_on_operation
+          state: 'cool'
       action:
         - service: climate.set_temperature
           entity_id: climate.kidsroom_ac
@@ -329,11 +349,11 @@ conditioning_kidsroom:
           to: 'on'
         - platform: numeric_state
           entity_id: sensor.kidsroom_average_humidity
-          above: 60
+          above: 50
           for: '00:01:00'
         - platform: numeric_state
           entity_id: sensor.kidsroom_average_humidity
-          below: 50
+          below: 40
           for: '00:01:00'
       condition:
         - or:
@@ -355,7 +375,7 @@ conditioning_kidsroom:
               state: 'cool'
             - condition: numeric_state
               entity_id: sensor.kidsroom_average_humidity
-              above: 60
+              above: 50
           then:
             - service: input_select.select_option
               entity_id: input_select.kidsroom_ac_mode
@@ -373,7 +393,7 @@ conditioning_kidsroom:
               state: 'dry'
             - condition: numeric_state
               entity_id: sensor.kidsroom_average_humidity
-              below: 50
+              below: 40
           then:
             - service: input_select.select_option
               entity_id: input_select.kidsroom_ac_mode
