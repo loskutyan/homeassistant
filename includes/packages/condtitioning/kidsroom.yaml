@@ -56,12 +56,11 @@ conditioning_kidsroom:
     - platform: template
       sensors:
         kidsroom_ac_power:
-          friendly_name: 'Кондиционер в детской включен'
+          friendly_name: 'Питание кондиционера в детской'
           device_class: power
           value_template: >
             {% set power = states('sensor.kidsroom_ac_plug_power') | float(0) %}
-            {% set input_on = is_state('input_boolean.kidsroom_ac_power', 'on') %}
-            {{ power > 5 or input_on }}
+            {{ power > 1 }}
           availability_template: >
             {% set status =  states('switch.kidsroom_ac_plug') %}
             {% if status == 'off' %}
