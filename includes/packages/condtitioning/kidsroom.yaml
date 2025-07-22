@@ -10,6 +10,9 @@ conditioning_kidsroom:
       power_sensor: binary_sensor.kidsroom_ac_power
 
   input_boolean:
+    kidsroom_ac_power:
+      name: 'Кондиционер в детской включен'
+
     kidsroom_auto_conditioning:
       name: 'Автоматическое охлаждение воздуха в детской'
 
@@ -57,8 +60,8 @@ conditioning_kidsroom:
           device_class: power
           value_template: >
             {% set power = states('sensor.kidsroom_ac_plug_power') | float(0) %}
-            {% set drying_mode = is_state_attr('climate.kidsroom_ac', 'last_on_operation', 'dry') %}
-            {{ power > 4 or (power > 0 and power < 2.7 and drying_mode) }}
+            {% set input_on = is_state('input_boolean.kidsroom_ac_power', 'on') %}
+            {{ power > 5 or input_on }}
           availability_template: >
             {% set status =  states('switch.kidsroom_ac_plug') %}
             {% if status == 'off' %}
@@ -92,14 +95,18 @@ conditioning_kidsroom:
             {% set ac_plug_on = is_state('switch.kidsroom_ac_plug', 'on') %}
             {{ ac_on and ac_plug_on }}
           turn_on:
-            service: climate.set_temperature
-            entity_id: climate.kidsroom_ac
-            data_template:
-              temperature: "{{ states('input_number.kidsroom_ac_temperature') | int }}"
-              hvac_mode: "{{ states('input_select.kidsroom_ac_mode') }}"
+            - service: input_boolean.turn_on
+              entity_id: input_boolean.kidsroom_ac_power
+            - service: climate.set_temperature
+              entity_id: climate.kidsroom_ac
+              data_template:
+                temperature: "{{ states('input_number.kidsroom_ac_temperature') | int }}"
+                hvac_mode: "{{ states('input_select.kidsroom_ac_mode') }}"
           turn_off:
-            service: climate.turn_off
-            entity_id: climate.kidsroom_ac
+            - service: input_boolean.turn_off
+              entity_id: input_boolean.kidsroom_ac_power
+            - service: climate.turn_off
+              entity_id: climate.kidsroom_ac
           icon_template: mdi:air-conditioner
 
         kidsroom_auto_conditioning:

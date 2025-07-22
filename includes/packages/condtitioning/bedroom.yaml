@@ -10,6 +10,8 @@ conditioning_bedroom:
       power_sensor: binary_sensor.bedroom_ac_power
 
   input_boolean:
+    bedroom_ac_power:
+      name: 'Кондиционер в спальне включен'
     bedroom_auto_conditioning:
       name: 'Автоматическое охлаждение воздуха в спальне'
 
@@ -57,8 +59,8 @@ conditioning_bedroom:
           device_class: power
           value_template: >
             {% set power = states('sensor.bedroom_ac_plug_power') | float(0) %}
-            {% set drying_mode = is_state_attr('climate.bedroom_ac', 'last_on_operation', 'dry') %}
-            {{ power > 4 or (power > 2.9 and drying_mode) }}
+            {% set input_on = is_state('input_boolean.bedroom_ac_power', 'on') %}
+            {{ power > 5 or input_on }}
           availability_template: >
             {% set status =  states('switch.bedroom_ac_plug') %}
             {% if status == 'off' %}
@@ -92,14 +94,18 @@ conditioning_bedroom:
             {% set ac_plug_on = is_state('switch.bedroom_ac_plug', 'on') %}
             {{ ac_on and ac_plug_on }}
           turn_on:
-            service: climate.set_temperature
-            entity_id: climate.bedroom_ac
-            data_template:
-              temperature: "{{ states('input_number.bedroom_ac_temperature') | int }}"
-              hvac_mode: "{{ states('input_select.bedroom_ac_mode') }}"
+            - service: input_boolean.turn_on
+              entity_id: input_boolean.bedroom_ac_power
+            - service: climate.set_temperature
+              entity_id: climate.bedroom_ac
+              data_template:
+                temperature: "{{ states('input_number.bedroom_ac_temperature') | int }}"
+                hvac_mode: "{{ states('input_select.bedroom_ac_mode') }}"
           turn_off:
-            service: climate.turn_off
-            entity_id: climate.bedroom_ac
+            - service: input_boolean.turn_off
+              entity_id: input_boolean.bedroom_ac_power
+            - service: climate.turn_off
+              entity_id: climate.bedroom_ac
           icon_template: mdi:air-conditioner
 
         bedroom_auto_conditioning:
