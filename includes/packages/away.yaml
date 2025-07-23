@@ -98,7 +98,7 @@ away:
       sensors:
         some_motion_at_home:
           friendly_name: 'Движение дома'
-          device_class: motion
+          device_class: occupancy
           value_template: >
             {% if is_state('binary_sensor.hallway_motion_sensor_occupancy', 'on')
               or is_state('binary_sensor.kidsroom_motion_sensor_occupancy', 'on')
