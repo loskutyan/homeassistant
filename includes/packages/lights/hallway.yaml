@@ -16,10 +16,25 @@ hallway_lights:
     hallway_lights_turn_off_without_motion:
       name: 'Свет в прихожей погаснет через '
       duration: 1800
-      
+
     hallway_lights_turn_off_without_motion_at_night:
       name: 'Свет ночью в прихожей погаснет через '
       duration: 180
+
+    hallway_welcome_led_light_turn_off:
+      name: 'Мерцание LED-ленты в прихожей погаснет через '
+      duration: 180
+
+  script:
+    hallway_welcome_led_light_turn_on:
+      alias: 'Приветственное мерцание LED-ленты в прихожей'
+      sequence:
+        - service: mqtt.publish
+          data:
+            topic: 'zigbee2mqtt/Hallway Duty Aqara LED Strip/set'
+            payload: '{"preset": {{range(1, 7) | random}}, "brightness": 64}'
+        - service: timer.start
+          entity_id: timer.hallway_welcome_led_light_turn_off
 
   automation:
     - id: 'Свет при движении в прихожей'
@@ -107,8 +122,8 @@ hallway_lights:
       action:
         - service: timer.finish
           entity_id:
-            -  timer.hallway_lights_turn_off_without_motion
-            -  timer.hallway_lights_turn_off_without_motion_at_night
+            - timer.hallway_lights_turn_off_without_motion
+            - timer.hallway_lights_turn_off_without_motion_at_night
 
     - id: 'Сброс таймера выключения света при движении в прихожей'
       alias: hallway_motion_lights_timer_reset
@@ -195,5 +210,21 @@ hallway_lights:
         - service: switch.turn_off
           entity_id: switch.hallway_lights_switch
           continue_on_error: true
+        - service: light.turn_off
+          entity_id: light.hallway_duty_aqara_led_strip
+
+    - id: 'Выключение приветственного мерцания LED-ленты в прихожей'
+      alias: hallway_welcome_led_light_turn_on
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: timer.hallway_welcome_led_light_turn_off
+          from: 'active'
+          to: 'idle'
+      condition:
+        - condition: state
+          entity_id: light.hallway_duty_aqara_led_strip
+          state: 'on'
+      action:
         - service: light.turn_off
           entity_id: light.hallway_duty_aqara_led_strip

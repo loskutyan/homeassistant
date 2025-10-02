@@ -385,7 +385,4 @@ away:
               ] %}
               {{ '\U0001F596' }} {{ messages | random }} {{ '\U0001F60A' }}
           continue_on_error: true
-        - service: mqtt.publish
-          data:
-            topic: 'zigbee2mqtt/Hallway Duty Aqara LED Strip/set'
-            payload: '{"preset": {{range(1, 7) | random}}, "brightness": 64}'
+        - service: script.hallway_welcome_led_light_turn_on

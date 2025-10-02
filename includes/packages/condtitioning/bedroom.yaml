@@ -124,9 +124,10 @@ conditioning_bedroom:
           value_template: >
             {% set ac_on = is_state('switch.bedroom_ac', 'on') %}
             {% set cooling_on = is_state_attr('climate.bedroom_ac', 'last_on_operation', 'cool') %}
+            {% set dry_on = is_state_attr('climate.bedroom_ac', 'last_on_operation', 'dry') %}
             {% set auto_cooling_on = is_state('switch.bedroom_auto_conditioning', 'on') %}
             {% set is_cooling_temp_low = state_attr('climate.bedroom_ac', 'temperature') | int(31) <= 28 %}
-            {{ ac_on and cooling_on and (is_cooling_temp_low or auto_cooling_on) }}
+            {{ ac_on and (dry_on or (cooling_on and (is_cooling_temp_low or auto_cooling_on))) }}
           turn_on:
             - service: climate.set_temperature
               entity_id: climate.bedroom_ac
