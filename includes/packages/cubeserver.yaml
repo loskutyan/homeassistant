@@ -14,6 +14,10 @@ cubeserver:
           friendly_name: 'Windows 10 VM name'
           value_template: 'Windows 10'
 
+        cubeserver_ollama_container_port:
+          friendly_name: 'Cubeserver Ollama Port'
+          value_template: !secret cubeserver_ollama_port
+
         cubeserver_parity_progress:
           unit_of_measurement: '%'
           value_template: >
@@ -253,33 +257,66 @@ cubeserver:
             {% set disk2 = is_state('binary_sensor.cubeserver_disk_2_overheat', 'on') %}
             {{ parity or disk1 or disk2 }}
 
-  # command_line:
-  #   - binary_sensor:
-  #       unique_id: cubeserver_vm_windows10_virsh_status
-  #       name: 'Cubeserver VM Windows10 Virsh Status'
-  #       command: "if test $(ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh list --all | grep 'Windows 10' | awk '{print $4}') == running; then echo running; else echo 'not running'; fi"
-  #       device_class: connectivity
-  #       payload_on: 'running'
-  #       payload_off: 'not running'
+  command_line:
+    - binary_sensor:
+        unique_id: cubeserver_vm_windows10_virsh_status
+        name: 'Cubeserver VM Windows10 Virsh Status'
+        command: "if test $(ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh list --all | grep 'Windows 10' | awk '{print $4}') == running; then echo running; else echo 'not running'; fi"
+        device_class: connectivity
+        payload_on: 'running'
+        payload_off: 'not running'
+        scan_interval: 86400
+
+    - binary_sensor:
+        unique_id: cubeserver_container_ollama_status
+        name: 'Cubeserver Container Ollama Status'
+        command: 'if test $(ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} docker inspect ollama | jq -r ''.[0]["State"]["Status"]'') == running; then echo running; else echo ''not running''; fi'
+        device_class: connectivity
+        payload_on: 'running'
+        payload_off: 'not running'
+        scan_interval: 86400
 
   shell_command:
-    cubeserver_vm_windows10_run: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} 'virsh start \"{{ states('sensor.cubeserver_windows10_vm_name') }}\"'"
-    cubeserver_vm_windows10_shutdown: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} 'virsh shutdown \"{{ states('sensor.cubeserver_windows10_vm_name') }}\"'"
+    cubeserver_vm_windows10_run: 'ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} ''virsh start "{{ states(''sensor.cubeserver_windows10_vm_name'') }}"'''
+    cubeserver_vm_windows10_shutdown: 'ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} ''virsh shutdown "{{ states(''sensor.cubeserver_windows10_vm_name'') }}"'''
     cubeserver_vm_ubuntuyadisk_run: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh start 'Ubuntu'"
     cubeserver_vm_ubuntuyadisk_shutdown: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh shutdown 'Ubuntu'"
     cubeserver_vm_windows10_switch_to_internal_display: "ssh -i /config/ha.key -o StrictHostKeyChecking=no loskutyan@{{ states('sensor.cubeserver_windows10_vm_ip') }} 'psexec -s -i 1 -accepteula C:\\Windows\\System32\\DisplaySwitch.exe /internal'"
     cubeserver_vm_windows10_switch_to_external_display: "ssh -i /config/ha.key -o StrictHostKeyChecking=no loskutyan@{{ states('sensor.cubeserver_windows10_vm_ip') }} 'psexec -s -i 1 -accepteula C:\\Windows\\System32\\DisplaySwitch.exe /external'"
+    cubeserver_docker_ollama_start: 'ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} ''docker start ollama'''
+    cubeserver_docker_ollama_stop: 'ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} ''docker stop ollama'''
 
   script:
     cubeserver_vm_windows10_run:
       alias: 'cubeserver: включение VM Windows 10'
       sequence:
-        - service: shell_command.cubeserver_vm_windows10_run
-        - delay: 00:02:00
+        - service: homeassistant.update_entity
+          entity_id: binary_sensor.cubeserver_container_ollama_status
         - if:
             - condition: state
-              entity_id: switch.cubeserver_vm_windows10
-              state: 'off'
+              entity_id: binary_sensor.cubeserver_container_ollama_status
+              state: 'on'
+          then:
+            - service: notify.tg_bot
+              data:
+                message: >
+                  {{ '\U0001F433' }} Запуск VM Windows: останавливаем Ollama...
+            - service: script.cubeserver_ollama_docker_stop
+        - delay: 00:00:02
+        - service: shell_command.cubeserver_vm_windows10_run
+        - delay: 00:02:00
+        - service: homeassistant.update_entity
+          entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
+        - if:
+            - or:
+                - not:
+                    - condition: state
+                      entity_id: switch.cubeserver_vm_windows10
+                      state: 'on'
+                - not:
+                    - condition: state
+                      entity_id: switch.cubeserver_vm_windows10_virsh_status
+                      state: 'on'
           then:
             - service: notify.tg_bot
               data:
@@ -290,6 +327,46 @@ cubeserver:
       alias: 'cubeserver: выключение VM Windows 10'
       sequence:
         - service: shell_command.cubeserver_vm_windows10_shutdown
+        - delay: 00:02:00
+        - service: homeassistant.update_entity
+          entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
+        - if:
+            - or:
+                - not:
+                    - condition: state
+                      entity_id: switch.cubeserver_vm_windows10
+                      state: 'off'
+                - not:
+                    - condition: state
+                      entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
+                      state: 'off'
+          then:
+            - service: notify.tg_bot
+              data:
+                message: >
+                  {{ '\U000026A0' }} Выключение VM Windows прошло неуспешно
+          else:
+            - service: notify.tg_bot
+              data:
+                message: >
+                  {{ '\U0001F433' }} Выключение VM Windows: запускаем Ollama...
+            - service: script.cubeserver_ollama_docker_start
+
+    cubeserver_ollama_docker_stop:
+      alias: 'cubeserver: остановка контейнера Ollama'
+      sequence:
+        - service: shell_command.cubeserver_docker_ollama_stop
+        - delay: 00:00:05
+        - service: homeassistant.update_entity
+          entity_id: binary_sensor.cubeserver_container_ollama_status
+
+    cubeserver_ollama_docker_start:
+      alias: 'cubeserver: запуск контейнера Ollama'
+      sequence:
+        - service: shell_command.cubeserver_docker_ollama_start
+        - delay: 00:00:20
+        - service: homeassistant.update_entity
+          entity_id: binary_sensor.cubeserver_container_ollama_status
 
   switch:
     - platform: template

@@ -16,7 +16,7 @@ tg_system_status:
 
   automation: 
     - id: 'Отчет при запуске системы в боте'
-      alias: telegram_start_message
+      alias: home_assistant_started_notify
       initial_state: true
       trigger:
         - platform: homeassistant
@@ -31,7 +31,7 @@ tg_system_status:
         - service: script.telegram_system_report
 
     - id: 'Отчет о состоянии системы в боте'
-      alias: telegram_system_report
+      alias: home_assistant_report_notify
       initial_state: true
       trigger:
         - platform: event
