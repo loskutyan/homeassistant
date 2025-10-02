@@ -12,7 +12,7 @@
 
     bedroom_tvoc:
       friendly_name: 'Qingping air2 tVOC'
-      device_class: volatile_organic_compounds_parts
+      device_class: volatile_organic_compounds
       unit_of_measurement: 'ppb'
       availability_template: >
         {% set value = states('sensor.cgllc_cgs2_84ac_tvoc_density') | float(-1) %}

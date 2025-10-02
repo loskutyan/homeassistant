@@ -27,9 +27,9 @@ miio_gateway:
   host: 192.168.1.20
   port: 54321
 
-duckdns:
-  domain: !secret duckdns_domain
-  access_token: !secret duckdns_access_token
+# duckdns:
+#   domain: !secret duckdns_domain
+#   access_token: !secret duckdns_access_token
 
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
@@ -83,13 +83,13 @@ influxdb:
   exclude:
     entity_globs: '*'
 
-telegram_bot:
-  - platform: polling
-    api_key: !secret tg_homeassistant_bot_api_key
-    allowed_chat_ids:
-      - !secret tg_chat_id_loskutyan
-      - !secret tg_chat_id_ha_urgent_group
-      - !secret tg_chat_id_cubeserver_media_group
+# telegram_bot:
+#   - platform: polling
+#     api_key: !secret tg_homeassistant_bot_api_key
+#     allowed_chat_ids:
+#       - !secret tg_chat_id_loskutyan
+#       - !secret tg_chat_id_ha_urgent_group
+#       - !secret tg_chat_id_cubeserver_media_group
 smartir:
   check_updates: false
 
