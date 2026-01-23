@@ -288,7 +288,7 @@ away:
             - person.aleksandr
             - person.ekaterina
             - person.nikolai
-          state: 'not_home'
+          state: 'home'
           match: any
         - condition: state
           entity_id: timer.left_home_by_phone_presence_after_door_closed
@@ -308,12 +308,17 @@ away:
           from: 'home'
           to: 'not_home'
       condition:
-        - condition: state
-          entity_id:
-            - person.aleksandr
-            - person.ekaterina
-            - person.nikolai
-          state: 'not_home'
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: person.aleksandr
+              state: 'home'
+            - condition: state
+              entity_id: person.ekaterina
+              state: 'home'
+            - condition: state
+              entity_id: person.nikolai
+              state: 'home'
         - condition: state
           entity_id: timer.left_home_by_phone_presence_after_door_closed
           state: 'active'
@@ -340,11 +345,12 @@ away:
             - 'on'
             - 'off'
         - platform: state
-          entity_id: sensor.bedroom_aqara_button_action
+          entity_id: sensor.bedroom_aqara_cube_action
           to:
-            - 'single'
-            - 'double'
-            - 'hold'
+            - 'flip90'
+            - 'flip180'
+            - 'rotate_right'
+            - 'rotate_left'
       condition:
         - condition: state
           entity_id: timer.left_home_by_phone_presence_after_door_closed

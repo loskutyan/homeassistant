@@ -234,12 +234,27 @@ bedroom_lights:
           entity_id: switch.somebody_home
           state: 'on'
       action:
-        - parallel:
-            - service: script.bedroom_floor_aqara_led_bulb_wakeup_dimming
-            - sequence:
-                - delay: 00:05:00
-                - service: cover.open_cover
-                  entity_id: cover.bedroom_curtain
+        - service: script.bedroom_floor_aqara_led_bulb_wakeup_dimming
+
+    - id: 'Позднее открытие штор в спальне'
+      alias: bedroom_curtain_morning_open
+      initial_state: true
+      trigger:
+        - platform: time
+          at: '10:55'
+        - platform: state
+          entity_id: input_boolean.bedroom_waking_up
+          from: 'off'
+          to: 'on'
+      condition:
+        - condition: state
+          entity_id: switch.somebody_home
+          state: 'on'
+      action:
+        - sequence:
+            - delay: 00:02:00
+            - service: cover.open_cover
+              entity_id: cover.bedroom_curtain
 
     - id: 'Выключение утреннего режима лампы Aqara торшера в спальне'
       alias: bedroom_floor_aqara_led_bulb_wakeup_light_turn_off
