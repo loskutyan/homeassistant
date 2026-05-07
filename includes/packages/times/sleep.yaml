@@ -240,6 +240,9 @@ sleep_time:
               data:
                 swing_mode: 'on'
 
+        - service: cover.close_cover
+          entity_id: cover.bedroom_curtain
+
         - service: input_boolean.turn_on
           entity_id: input_boolean.bedroom_asleep
 

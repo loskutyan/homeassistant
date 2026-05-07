@@ -489,6 +489,7 @@ kidsroom_air:
                 message: |
                   {{ '\U0001F4A8' }} Бризер в детской выключен.
                   {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
+                  {{ '\U0001F4A7' }} Влажность {{ states('sensor.kidsroom_average_humidity') | round(1) }}%
                   {{ '\U0000269B' }} CO2 {{ states('sensor.kidsroom_co2') | int }}ppm
           else:
             - service: notify.tg_bot

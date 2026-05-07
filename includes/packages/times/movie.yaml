@@ -33,7 +33,7 @@ movie_time:
           entity_id: light.bedroom_floor_aqara_led_bulb
           data:
             brightness: 38
-            color_temp: 350
+            color_temp_kelvin: 2850
             transition: 10
 
     bedroom_movie_dimming_lights_on_pause:
@@ -43,7 +43,7 @@ movie_time:
           entity_id: light.bedroom_floor_aqara_led_bulb
           data:
             brightness: 127
-            color_temp: 325
+            color_temp_kelvin: 3200
             transition: 6
 
   automation:

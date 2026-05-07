@@ -43,16 +43,16 @@ kidsroom_lights:
             {% set now = now() %}
             {% set is_friday = is_state('sensor.weekday', 'Friday') | int(0) %}
             {% set total_minutes = (now.hour - is_friday) * 60 + now.minute %}
-            {% set min_temp = state_attr('light.kidsroom_wall_aqara_led_bulbs', 'min_mireds') %}
-            {% set max_temp = state_attr('light.kidsroom_wall_aqara_led_bulbs', 'max_mireds') %}
+            {% set min_temp = state_attr('light.kidsroom_wall_aqara_led_bulbs', 'min_color_temp_kelvin') %}
+            {% set max_temp = state_attr('light.kidsroom_wall_aqara_led_bulbs', 'max_color_temp_kelvin') %}
             {% if total_minutes > 360 and total_minutes < 1290 %}
-              {{ 0.7 * (max_temp  - min_temp) + min_temp }}
+              {{ 0.3 * (max_temp  - min_temp) + min_temp }}
             {% elif total_minutes >= 1290 and total_minutes < 1305 %}
-              {{ 0.8 * (max_temp  - min_temp) + min_temp }}
+              {{ 0.15 * (max_temp  - min_temp) + min_temp }}
             {% elif total_minutes >= 1305 and total_minutes < 1320 %}
-              {{ 0.9 * (max_temp  - min_temp) + min_temp }}
+              {{ 0.05 * (max_temp  - min_temp) + min_temp }}
             {% else %}
-              {{ max_temp }}
+              {{ min_temp }}
             {% endif %}
 
   switch:
@@ -103,7 +103,7 @@ kidsroom_lights:
           data_template:
             brightness: >
               {{ states('sensor.kidsroom_wall_aqara_led_bulbs_brightness_schedule') }}
-            color_temp: >
+            color_temp_kelvin: >
               {{ states('sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule') }}
             transition: 2
 
@@ -142,7 +142,7 @@ kidsroom_lights:
           data_template:
             brightness: >
               {{ states('sensor.kidsroom_wall_aqara_led_bulbs_brightness_schedule') }}
-            color_temp: >
+            color_temp_kelvin: >
               {{ states('sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule') }}
             transition: 5
 
@@ -156,6 +156,9 @@ kidsroom_lights:
             - sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule
         - platform: time_pattern
           minutes: '/15'
+        - platform: state
+          entity_id: light.kidsroom_wall_aqara_led_bulbs
+          to: 'on'
       condition:
         - condition: state
           entity_id: light.kidsroom_wall_aqara_led_bulbs
@@ -169,7 +172,7 @@ kidsroom_lights:
           data_template:
             brightness: >
               {{ states('sensor.kidsroom_wall_aqara_led_bulbs_brightness_schedule') }}
-            color_temp: >
+            color_temp_kelvin: >
               {{ states('sensor.kidsroom_wall_aqara_led_bulbs_color_temp_schedule') }}
             transition: 5
 

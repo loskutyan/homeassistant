@@ -16,3 +16,4 @@ custom_components/smartir/*
 !custom_components/smartir/codes/
 includes/sensors/devices.yaml
 .ha_run.lock
+.cache/
