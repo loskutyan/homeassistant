@@ -24,6 +24,100 @@ bedroom_air:
       name: 'Фиксированная скорость бризера в спальне, осталось '
       duration: 1800
 
+  template:
+    - sensor:
+        - name: 'Qingping air2 CO²'
+          unique_id: bedroom_co2
+          default_entity_id: sensor.bedroom_co2
+          device_class: carbon_dioxide
+          unit_of_measurement: ppm
+          availability: >
+            {% set value = states('sensor.cgllc_cgs2_84ac_co2_density') | float(0) %}
+            {{ value > 0 and value < 10000 }}
+          state: "{{ states('sensor.cgllc_cgs2_84ac_co2_density') }}"
+          icon: mdi:molecule-co2
+
+        - name: 'Qingping air2 tVOC'
+          unique_id: bedroom_tvoc
+          default_entity_id: sensor.bedroom_tvoc
+          device_class: volatile_organic_compounds
+          unit_of_measurement: ppb
+          availability: >
+            {% set value = states('sensor.cgllc_cgs2_84ac_tvoc_density') | float(-1) %}
+            {{ value >= 0 and value < 1000 }}
+          state: >
+            {% set index = states('sensor.cgllc_cgs2_84ac_tvoc_density') | float %}
+            {% if index < 37 %}
+              {{ (index * 4.5 + 52) | round(0) }}
+            {% elif index < 120 %}
+              {{ (index * 5.3 + 24) | round(0) }}
+            {% else %}
+              {{ (index * 7.75 - 270) | round(0) }}
+            {% endif %}
+          icon: mdi:atom
+
+        - name: 'Qingping air2 PM2.5'
+          unique_id: bedroom_pm25
+          default_entity_id: sensor.bedroom_pm25
+          device_class: pm25
+          unit_of_measurement: µg/m³
+          availability: >
+            {% set value = states('sensor.cgllc_cgs2_84ac_pm25_density') | float(-1) %}
+            {{ value >= 0 and value < 1000 }}
+          state: "{{ states('sensor.cgllc_cgs2_84ac_pm25_density') }}"
+          icon: mdi:molecule
+
+        - name: 'Qingping air2 PM10'
+          unique_id: bedroom_pm10
+          default_entity_id: sensor.bedroom_pm10
+          device_class: pm10
+          unit_of_measurement: µg/m³
+          availability: >
+            {% set value = states('sensor.cgllc_cgs2_84ac_pm10_density') | float(-1) %}
+            {{ value >= 0 and value < 1000 }}
+          state: "{{ states('sensor.cgllc_cgs2_84ac_pm10_density') }}"
+          icon: mdi:grain
+
+        - name: 'Qingping air2 Температура'
+          unique_id: qingping_air2_temperature
+          default_entity_id: sensor.qingping_air2_temperature
+          device_class: temperature
+          unit_of_measurement: °C
+          availability: >
+            {% set value = states('sensor.cgllc_cgs2_84ac_temperature') | float(0) %}
+            {{ value > 0 and value < 100 }}
+          state: "{{ states('sensor.cgllc_cgs2_84ac_temperature') }}"
+
+        - name: 'Bedroom aqara Температура'
+          unique_id: bedroom_aqara_temperature
+          default_entity_id: sensor.bedroom_aqara_temperature
+          device_class: temperature
+          unit_of_measurement: °C
+          availability: >
+            {% set value = states('sensor.bedroom_aqara_air_sensor_temperature') | float(0) %}
+            {{ value > 10 and value < 100 }}
+          state: "{{ states('sensor.bedroom_aqara_air_sensor_temperature') }}"
+
+        - name: 'Температура'
+          unique_id: bedroom_average_temperature
+          default_entity_id: sensor.bedroom_average_temperature
+          device_class: temperature
+          unit_of_measurement: °C
+          availability: >
+            {% set temps = [
+              states('sensor.qingping_air2_temperature'),
+              states('sensor.bedroom_aqara_temperature')
+            ] %}
+            {{ temps | reject('equalto', 'unavailable') | list | count == 2 }}
+          state: >
+            {% set temps = [
+              states('sensor.qingping_air2_temperature'),
+              states('sensor.qingping_air2_temperature'),
+              states('sensor.bedroom_aqara_temperature')
+            ] %}
+            {% set filtered_temps = temps | reject('equalto', 'unavailable') | map('float') | list %}
+            {{ (filtered_temps | sum / filtered_temps | count) | round(2) }}
+
   switch:
     - platform: template
       switches:
@@ -433,6 +527,7 @@ bedroom_air:
                 message: |
                   {{ '\U0001F4A8' }} Бризер в спальне включен.
                   {{ '\U0001F321' }} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
+                  {{ '\U0001F4A7' }} Влажность {{ states('sensor.bedroom_average_humidity') | round(1) }}%
                   {{ '\U0000269B' }} CO2 {{ states('sensor.bedroom_co2') | int }}ppm
 
     - id: 'Выключение бризера в спальне'

@@ -12,3 +12,30 @@ router:
             message: >
               {% set ip_from = trigger.from_state.state | string %}
               {{ '\U0001F6DC' }} WAN IP изменен с {{ ip_from }} на 192.168.8.100
+
+    - id: 'Смена внешнего ip-адреса обратно на Ethernet - уведомление'
+      alias: wan_ip_changed_to_ethernet_notify
+      trigger:
+        - platform: state
+          entity_id: sensor.keenetic_gateway_external_ip
+          not_to: '192.168.8.100'
+      action:
+        - service: notify.tg_urgent
+          data:
+            message: >
+              {% set ip_from = trigger.from_state.state | string %}
+              {% set ip_to = trigger.to_state.state | string %}
+              {{ '\U0001F6DC' }} WAN IP изменен с {{ ip_from }} на {{ ip_to }}
+
+    - id: 'Смена shortId в KVAS Xray на роутере - уведомление'
+      alias: kvas_xray_shortid_changed
+      trigger:
+        - platform: state
+          entity_id: sensor.keenetic_kvas_xray_shortid
+      action:
+        - service: notify.tg_bot
+          data:
+            message: >
+              {% set sid_from = trigger.from_state.state | string %}
+              {% set sid_to = trigger.to_state.state | string %}
+              {{ '\U0001F6DC' }}{{'\U0001F510'}}  Xray ShortID в KVAS на роутере изменен с {{ sid_from }} на {{ sid_to }}

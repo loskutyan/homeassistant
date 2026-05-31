@@ -9,15 +9,20 @@
       - cover
       - climate
     include_entities:
-      - sensor.cleargrass_air_co2
-      - sensor.cleargrass_air_pm25
-      - sensor.qingping_air_lite_co2
-      - sensor.qingping_air_lite_pm25
-      - sensor.bedroom_average_temperature
-      - sensor.bedroom_average_humidity
-      - sensor.kidsroom_average_temperature
-      - sensor.kidsroom_average_humidity
+      - sensor.bedroom_co2
+      - sensor.bedroom_pm25
+      - sensor.kidsroom_co2
+      - sensor.kidsroom_pm25
+      - sensor.qingping_air2_temperature
+      - sensor.qingping_air2_humidity
+      - sensor.cleargrass_air_temperature
+      - sensor.cleargrass_air_humidity
+      - sensor.bedroom_aqara_air_sensor_temperature
+      - sensor.bedroom_aqara_air_sensor_humidity
+      - sensor.kidsroom_aqara_air_sensor_temperature
+      - sensor.kidsroom_aqara_air_sensor_humidity
       - sensor.kitchen_aqara_air_sensor_temperature
+      - sensor.kitchen_aqara_air_sensor_humidity
       - sensor.serverroom_aqara_air_sensor_temperature
       - switch.kidsroom_lights_common_switch_left
       - switch.kitchen_lights_switch_left
@@ -30,7 +35,6 @@
       - switch.bathroom_valves
       - switch.bedroom_cooling
       - switch.kidsroom_cooling
-      - media_player.kidsroom_mi_tv_stick
       - media_player.kdl_50w808c_2
     include_entity_globs:
       - binary_sensor.*_water_leak
@@ -41,6 +45,7 @@
       - light.miio_gateway
       - light.kidsroom_aqara_led_bulb_left
       - light.kidsroom_aqara_led_bulb_right
+      - light.0x70c59cfffe36fe9a
   entity_config:
     vacuum.roborock_s5_max:
       name: 'Пылесос'
@@ -98,10 +103,28 @@
       name: 'Кондиционер'
     climate.kidsroom_ac:
       name: 'Кондиционер'
+    sensor.qingping_air2_temperature:
+      name: 'Qingping air 2'
+    sensor.cleargrass_air_temperature:
+      name: 'Cleargrass air'
+    sensor.qingping_air2_humidity:
+      name: 'Qingping air 2'
+    sensor.cleargrass_air_humidity:
+      name: 'Cleargrass air'
+    sensor.bedroom_aqara_air_sensor_temperature:
+      name: 'Aqara'
+    sensor.bedroom_aqara_air_sensor_humidity:
+      name: 'Aqara'
+    sensor.kidsroom_aqara_air_sensor_temperature:
+      name: 'Aqara'
+    sensor.kidsroom_aqara_air_sensor_humidity:
+      name: 'Aqara'
     sensor.kitchen_aqara_air_sensor_temperature:
-      name: 'Температура'
+      name: 'Aqara'
+    sensor.kitchen_aqara_air_sensor_humidity:
+      name: 'Aqara'
     sensor.serverroom_aqara_air_sensor_temperature:
-      name: 'Температура'
+      name: 'Aqara'
     binary_sensor.kitchen_smoke_sensor_smoke:
       name: 'Датчик дыма'
     binary_sensor.hallway_smoke_sensor_smoke:
