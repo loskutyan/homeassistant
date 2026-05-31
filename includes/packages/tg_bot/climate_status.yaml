@@ -92,13 +92,13 @@ tg_climate_status:
               {% endif %}
               {{'\U0001F6CC'}} Спальня:
               {{'\U0001F321'}} {{ states('sensor.bedroom_average_temperature') | round(1) }}°C  {{'\U0001F4A7'}} {{ states('sensor.bedroom_average_humidity') | round(1) }}%
-              {{'\U0001F332'}} {{ states('sensor.cleargrass_air_co2') | int }}ppm {{'\U0000269B'}} {{ states('sensor.cleargrass_air_pm25') }}ppm
+              {{'\U0001F332'}} {{ states('sensor.bedroom_co2') | int }}ppm {{'\U0000269B'}} {{ states('sensor.bedroom_pm25') }}ppm
               {{'\U0001F6BF'}} Увлажнитель: {{ bedroom_hum_status_message }}
               {{'\U0001F4A8'}} Бризер: {{ bedroom_breezer_status_message }}
               
               {{'\U0001F9D2'}} Детская:
               {{'\U0001F321'}} {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C  {{'\U0001F4A7'}} {{ states('sensor.kidsroom_average_humidity') | round(1) }}%
-              {{'\U0001F332'}} {{ states('sensor.qingping_air_lite_co2') | int }}ppm {{'\U0000269B'}} {{ states('sensor.qingping_air_lite_pm25') }}ppm
+              {{'\U0001F332'}} {{ states('sensor.kidsroom_co2') | int }}ppm {{'\U0000269B'}} {{ states('sensor.kidsroom_pm25') }}ppm
               {{'\U0001F6BF'}} Увлажнитель: {{ kidsroom_hum_status_message }}
               {{'\U0001F4A8'}} Бризер: {{ kidsroom_breezer_status_message }}
 

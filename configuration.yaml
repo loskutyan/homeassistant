@@ -85,13 +85,6 @@ frontend:
 tts:
   - platform: google_translate
 
-# telegram_bot:
-#   - platform: polling
-#     api_key: !secret tg_homeassistant_bot_api_key
-#     allowed_chat_ids:
-#       - !secret tg_chat_id_loskutyan
-#       - !secret tg_chat_id_ha_urgent_group
-#       - !secret tg_chat_id_cubeserver_media_group
 smartir:
   check_updates: false
 
@@ -99,5 +92,4 @@ notify: !include includes/notify.yaml
 recorder: !include includes/recorder.yaml
 fan: !include includes/fan.yaml
 
-binary_sensor: !include_dir_merge_list includes/binary_sensors
 sensor: !include_dir_merge_list includes/sensors

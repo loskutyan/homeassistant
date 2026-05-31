@@ -315,7 +315,7 @@ cubeserver:
                       state: 'on'
                 - not:
                     - condition: state
-                      entity_id: switch.cubeserver_vm_windows10_virsh_status
+                      entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
                       state: 'on'
           then:
             - service: notify.tg_bot

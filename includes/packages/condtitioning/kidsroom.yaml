@@ -133,7 +133,7 @@ conditioning_kidsroom:
             - service: climate.set_temperature
               entity_id: climate.kidsroom_ac
               data_template:
-                temperature: "{{ ('input_number.kidsroom_target_cooling_temperature') | int(25) }}"
+                temperature: "{{ states('input_number.kidsroom_target_cooling_temperature') | int(25) }}"
                 hvac_mode: 'cool'
             - service: switch.turn_on
               entity_id: switch.kidsroom_auto_conditioning
@@ -207,7 +207,7 @@ conditioning_kidsroom:
           entity_id: switch.kidsroom_ac
           state: 'on'
         - condition: state
-          entity_id: switch.kidsroom_ac
+          entity_id: climate.kidsroom_ac
           attribute: last_on_operation
           state: 'cool'
       action:

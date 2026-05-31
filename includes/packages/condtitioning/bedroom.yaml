@@ -132,7 +132,7 @@ conditioning_bedroom:
             - service: climate.set_temperature
               entity_id: climate.bedroom_ac
               data_template:
-                temperature: "{{ ('input_number.bedroom_target_cooling_temperature') | int(25) }}"
+                temperature: "{{ states('input_number.bedroom_target_cooling_temperature') | int(25) }}"
                 hvac_mode: 'cool'
             - service: switch.turn_on
               entity_id: switch.bedroom_auto_conditioning
@@ -206,7 +206,7 @@ conditioning_bedroom:
           entity_id: switch.bedroom_ac
           state: 'on'
         - condition: state
-          entity_id: switch.bedroom_ac
+          entity_id: climate.bedroom_ac
           attribute: last_on_operation
           state: 'cool'
       action:

@@ -283,7 +283,7 @@ cards:
                 state: 'on'
             card:
               type: custom:mushroom-update-card
-              entity: sensor.hacs
+              entity: hacs_update
               name: 'Обновления HACS'
 
           - type: conditional

@@ -173,9 +173,10 @@ kidsroom_air:
             {% set temp_delta_ot = states('sensor.outside_target_temperature_delta') | float(1) %}
             {% set x = temp_delta_ot | abs %}
             {% set k = 0.05 %}
-            {% set exp_2kx =e**(-2*k*x) %}
+            {% set exp_2kx = e**(-2*k*x) %}
             {% set tahn_temp_delta_ot = (1 - exp_2kx) / (1 + exp_2kx) %}
-            {% set temp_delta_sign = (temp_delta_ct * temp_delta_ot / ((temp_delta_ct * temp_delta_ot) | abs)) %}
+            {% set temp_delta_product = temp_delta_ct * temp_delta_ot %}
+            {% set temp_delta_sign = 0 if temp_delta_product == 0 else temp_delta_product / (temp_delta_product | abs) %}
             {{ min(150, (temp_delta_sign * (temp_delta_ct | abs)**1.5 + 10 * tahn_temp_delta_ot) | round * 10) }}
 
         kidsroom_airpurifier_speed_min_co2:

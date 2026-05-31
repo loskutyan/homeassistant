@@ -308,8 +308,7 @@ away:
           from: 'home'
           to: 'not_home'
       condition:
-        - condition: not
-          conditions:
+        - not:
             - condition: state
               entity_id: person.aleksandr
               state: 'home'

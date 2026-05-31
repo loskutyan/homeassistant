@@ -19,7 +19,7 @@ kidsroom_humidity:
           friendly_name: 'Нужно увлажнить воздух в детской'
           value_template: >
             {% set humidifier_state_on = states('humidifier.kidsroom_smartmi_humidifier') | bool(False) %}
-            {% set humidifier_speed = states('sensor.kidsroom_smartmi_humidifier_motor_speed') %}
+            {% set humidifier_speed = states('sensor.kidsroom_smartmi_humidifier_motor_speed') | int(0) %}
             {% set low_hum = states('sensor.kidsroom_average_humidity') | float(100) < 35 %}
             {{ (not humidifier_state_on or humidifier_speed == 0) and low_hum }}
 
@@ -151,7 +151,7 @@ kidsroom_humidity:
               above: 1
         - condition: template
           value_template: >
-            {% set last_triggered = state_attr('automation.telegram_kidsroom_needs_humidification', 'last_triggered') %}
+            {% set last_triggered = state_attr('automation.kidsroom_needs_humidification_notify', 'last_triggered') %}
             {% set now = utcnow() %}
             {% set delta_minutes = (now - last_triggered).total_seconds() / 60 if last_triggered != none else 1000 %}
             {{ delta_minutes > 90 }}
@@ -173,7 +173,7 @@ kidsroom_humidity:
       trigger:
         - platform: numeric_state
           entity_id: sensor.kidsroom_smartmi_humidifier_water_level
-          below: 20
+          below: 30
           for:
             minutes: 5
       condition:
@@ -185,7 +185,7 @@ kidsroom_humidity:
           above: 1
         - condition: template
           value_template: >
-            {% set last_triggered = state_attr('automation.telegram_kidsroom_humidifier_low_water_level', 'last_triggered') %}
+            {% set last_triggered = state_attr('automation.kidsroom_humidifier_low_water_level_notify', 'last_triggered') %}
             {% set now = utcnow() %}
             {% set delta_hours = (now - last_triggered).total_seconds() / 3600 if last_triggered != none else 1000 %}
             {{ delta_hours > 8 }}
@@ -219,7 +219,7 @@ kidsroom_humidity:
           above: 1
         - condition: template
           value_template: >
-            {% set last_triggered = state_attr('automation.telegram_kidsroom_humidifier_no_water', 'last_triggered') %}
+            {% set last_triggered = state_attr('automation.kidsroom_humidifier_no_water_notify', 'last_triggered') %}
             {% set now = utcnow() %}
             {% set delta_hours = (now - last_triggered).total_seconds() / 3600 if last_triggered != none else 1000 %}
             {{ delta_hours > 8 }}
