@@ -37,7 +37,15 @@ default_config:
 homekit: !include includes/homekit.yaml
 
 lovelace:
-  mode: yaml
+  resource_mode: yaml
+  dashboards:
+    lovelace:
+      mode: yaml
+      filename: ui-lovelace.yaml
+      title: Overview
+      icon: mdi:view-dashboard
+      show_in_sidebar: true
+
   resources:
     - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
       type: module
@@ -76,12 +84,6 @@ frontend:
 # Text to speech
 tts:
   - platform: google_translate
-
-influxdb:
-  host: !secret cubeserver_influxdb_host
-  port: !secret cubeserver_influxdb_port
-  exclude:
-    entity_globs: '*'
 
 # telegram_bot:
 #   - platform: polling

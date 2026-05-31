@@ -90,126 +90,126 @@ cubeserver:
               mdi:stop
             {% endif %}
 
-    - platform: influxdb
-      host: !secret cubeserver_influxdb_host
-      port: !secret cubeserver_influxdb_port
-      queries:
-        - name: 'Cubeserver CPU package temperature'
-          unit_of_measurement: '°C'
-          value_template: '{{ value | round(1) }}'
-          group_function: last
-          where: '"feature" = ''package_id_0'' AND "host" = ''cubeserver'''
-          measurement: '"sensors"'
-          field: 'temp_input'
-          database: 'cubeserver_telegraf'
+    # - platform: influxdb
+    #   host: !secret cubeserver_influxdb_host
+    #   port: !secret cubeserver_influxdb_port
+    #   queries:
+    #     - name: 'Cubeserver CPU package temperature'
+    #       unit_of_measurement: '°C'
+    #       value_template: '{{ value | round(1) }}'
+    #       group_function: last
+    #       where: '"feature" = ''package_id_0'' AND "host" = ''cubeserver'''
+    #       measurement: '"sensors"'
+    #       field: 'temp_input'
+    #       database: 'cubeserver_telegraf'
 
-        - name: 'Cubeserver Parity Disk temperature'
-          unit_of_measurement: '°C'
-          value_template: '{{ value | round(2) }}'
-          group_function: last
-          where: '"serial_no" = ''VRG12HJK'' AND "host" = ''cubeserver'''
-          measurement: '"smart_device"'
-          field: 'temp_c'
-          database: 'cubeserver_telegraf'
+    #     - name: 'Cubeserver Parity Disk temperature'
+    #       unit_of_measurement: '°C'
+    #       value_template: '{{ value | round(2) }}'
+    #       group_function: last
+    #       where: '"serial_no" = ''VRG12HJK'' AND "host" = ''cubeserver'''
+    #       measurement: '"smart_device"'
+    #       field: 'temp_c'
+    #       database: 'cubeserver_telegraf'
 
-        - name: 'Cubeserver Disk 1 temperature'
-          unit_of_measurement: '°C'
-          value_template: '{{ value | round(2) }}'
-          group_function: last
-          where: '"serial_no" = ''VRG9GDBK'' AND "host" = ''cubeserver'''
-          measurement: '"smart_device"'
-          field: 'temp_c'
-          database: 'cubeserver_telegraf'
+    #     - name: 'Cubeserver Disk 1 temperature'
+    #       unit_of_measurement: '°C'
+    #       value_template: '{{ value | round(2) }}'
+    #       group_function: last
+    #       where: '"serial_no" = ''VRG9GDBK'' AND "host" = ''cubeserver'''
+    #       measurement: '"smart_device"'
+    #       field: 'temp_c'
+    #       database: 'cubeserver_telegraf'
 
-        - name: 'Cubeserver Disk 2 temperature'
-          unit_of_measurement: '°C'
-          value_template: '{{ value | round(2) }}'
-          group_function: last
-          where: '"serial_no" = ''VRKZS4BP'' AND "host" = ''cubeserver'''
-          measurement: '"smart_device"'
-          field: 'temp_c'
-          database: 'cubeserver_telegraf'
+    #     - name: 'Cubeserver Disk 2 temperature'
+    #       unit_of_measurement: '°C'
+    #       value_template: '{{ value | round(2) }}'
+    #       group_function: last
+    #       where: '"serial_no" = ''VRKZS4BP'' AND "host" = ''cubeserver'''
+    #       measurement: '"smart_device"'
+    #       field: 'temp_c'
+    #       database: 'cubeserver_telegraf'
 
-        - name: 'Cubeserver Cache 1 temperature'
-          unit_of_measurement: '°C'
-          value_template: '{{ value | round(2) }}'
-          group_function: last
-          where: '"serial_no" = ''S3YBNS0N503747B'' AND "host" = ''cubeserver'''
-          measurement: '"smart_device"'
-          field: 'temp_c'
-          database: 'cubeserver_telegraf'
+    #     - name: 'Cubeserver Cache 1 temperature'
+    #       unit_of_measurement: '°C'
+    #       value_template: '{{ value | round(2) }}'
+    #       group_function: last
+    #       where: '"serial_no" = ''S3YBNS0N503747B'' AND "host" = ''cubeserver'''
+    #       measurement: '"smart_device"'
+    #       field: 'temp_c'
+    #       database: 'cubeserver_telegraf'
 
-        - name: 'Cubeserver Cache 2 temperature'
-          unit_of_measurement: '°C'
-          value_template: '{{ value | round(2) }}'
-          group_function: last
-          where: '"serial_no" = ''S626NF0RA10000H'' AND "host" = ''cubeserver'''
-          measurement: '"smart_device"'
-          field: 'temp_c'
-          database: 'cubeserver_telegraf'
+    #     - name: 'Cubeserver Cache 2 temperature'
+    #       unit_of_measurement: '°C'
+    #       value_template: '{{ value | round(2) }}'
+    #       group_function: last
+    #       where: '"serial_no" = ''S626NF0RA10000H'' AND "host" = ''cubeserver'''
+    #       measurement: '"smart_device"'
+    #       field: 'temp_c'
+    #       database: 'cubeserver_telegraf'
 
-        - name: 'Cubeserver VM Disk temperature'
-          unit_of_measurement: '°C'
-          value_template: '{{ value | round(2) }}'
-          group_function: last
-          where: '"serial_no" = ''S413NB0K214724L'' AND "host" = ''cubeserver'''
-          measurement: '"smart_device"'
-          field: 'temp_c'
-          database: 'cubeserver_telegraf'
+    #     - name: 'Cubeserver VM Disk temperature'
+    #       unit_of_measurement: '°C'
+    #       value_template: '{{ value | round(2) }}'
+    #       group_function: last
+    #       where: '"serial_no" = ''S413NB0K214724L'' AND "host" = ''cubeserver'''
+    #       measurement: '"smart_device"'
+    #       field: 'temp_c'
+    #       database: 'cubeserver_telegraf'
 
-        - name: 'Cubeserver Games Disk temperature'
-          unit_of_measurement: '°C'
-          value_template: '{{ value | round(2) }}'
-          group_function: last
-          where: '"serial_no" = ''S6PNNS0T502417K'' AND "host" = ''cubeserver'''
-          measurement: '"smart_device"'
-          field: 'temp_c'
-          database: 'cubeserver_telegraf'
+    #     - name: 'Cubeserver Games Disk temperature'
+    #       unit_of_measurement: '°C'
+    #       value_template: '{{ value | round(2) }}'
+    #       group_function: last
+    #       where: '"serial_no" = ''S6PNNS0T502417K'' AND "host" = ''cubeserver'''
+    #       measurement: '"smart_device"'
+    #       field: 'temp_c'
+    #       database: 'cubeserver_telegraf'
 
-        - name: 'Cubeserver parity common size raw'
-          unit_of_measurement: 'B'
-          value_template: '{{ value }}'
-          group_function: last
-          where: '"host" = ''cubeserver'''
-          measurement: '"mdcmd"'
-          field: 'mdResyncSize'
-          database: 'cubeserver_telegraf'
+    #     - name: 'Cubeserver parity common size raw'
+    #       unit_of_measurement: 'B'
+    #       value_template: '{{ value }}'
+    #       group_function: last
+    #       where: '"host" = ''cubeserver'''
+    #       measurement: '"mdcmd"'
+    #       field: 'mdResyncSize'
+    #       database: 'cubeserver_telegraf'
 
-        - name: 'Cubeserver parity size raw'
-          unit_of_measurement: 'B'
-          value_template: '{{ value }}'
-          group_function: last
-          where: '"host" = ''cubeserver'''
-          measurement: '"mdcmd"'
-          field: 'mdResync'
-          database: 'cubeserver_telegraf'
+    #     - name: 'Cubeserver parity size raw'
+    #       unit_of_measurement: 'B'
+    #       value_template: '{{ value }}'
+    #       group_function: last
+    #       where: '"host" = ''cubeserver'''
+    #       measurement: '"mdcmd"'
+    #       field: 'mdResync'
+    #       database: 'cubeserver_telegraf'
 
-        - name: 'Cubeserver parity pos raw'
-          unit_of_measurement: 'B'
-          value_template: '{{ value }}'
-          group_function: last
-          where: '"host" = ''cubeserver'''
-          measurement: '"mdcmd"'
-          field: 'mdResyncPos'
-          database: 'cubeserver_telegraf'
+    #     - name: 'Cubeserver parity pos raw'
+    #       unit_of_measurement: 'B'
+    #       value_template: '{{ value }}'
+    #       group_function: last
+    #       where: '"host" = ''cubeserver'''
+    #       measurement: '"mdcmd"'
+    #       field: 'mdResyncPos'
+    #       database: 'cubeserver_telegraf'
 
-        - name: 'Cubeserver parity dt raw'
-          unit_of_measurement: 's'
-          value_template: '{{ value }}'
-          group_function: last
-          where: '"host" = ''cubeserver'''
-          measurement: '"mdcmd"'
-          field: 'mdResyncDt'
-          database: 'cubeserver_telegraf'
+    #     - name: 'Cubeserver parity dt raw'
+    #       unit_of_measurement: 's'
+    #       value_template: '{{ value }}'
+    #       group_function: last
+    #       where: '"host" = ''cubeserver'''
+    #       measurement: '"mdcmd"'
+    #       field: 'mdResyncDt'
+    #       database: 'cubeserver_telegraf'
 
-        - name: 'Cubeserver parity db raw'
-          unit_of_measurement: 'B'
-          value_template: '{{ value }}'
-          group_function: last
-          where: '"host" = ''cubeserver'''
-          measurement: '"mdcmd"'
-          field: 'mdResyncDb'
-          database: 'cubeserver_telegraf'
+    #     - name: 'Cubeserver parity db raw'
+    #       unit_of_measurement: 'B'
+    #       value_template: '{{ value }}'
+    #       group_function: last
+    #       where: '"host" = ''cubeserver'''
+    #       measurement: '"mdcmd"'
+    #       field: 'mdResyncDb'
+    #       database: 'cubeserver_telegraf'
 
   binary_sensor:
     - platform: template
