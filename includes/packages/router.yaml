@@ -1,11 +1,69 @@
 router:
+  command_line:
+    - binary_sensor:
+        unique_id: router_xray_status
+        name: "Router Xray Status"
+        command: "if ssh -i /config/ha.key -p 222 -o StrictHostKeyChecking=no root@192.168.1.1 /opt/etc/init.d/S24xray status | grep -q alive; then echo alive; else echo dead; fi"
+        device_class: running
+        payload_on: "alive"
+        payload_off: "dead"
+        scan_interval: 60
+
+  shell_command:
+    router_xray_restart: "ssh -i /config/ha.key -p 222 -o StrictHostKeyChecking=no root@192.168.1.1 /opt/etc/init.d/S24xray restart"
+
   automation:
-    - id: 'Смена внешнего ip-адреса на моб. связь - уведомление'
+    - id: "Xray на роутере упал - попытка рестарта"
+      alias: router_xray_is_down_restart
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.router_xray_status
+          from: "on"
+          to: "off"
+      action:
+        - delay: 00:00:10
+        - condition: state
+          entity_id: binary_sensor.router_xray_status
+          state: "off"
+        - service: shell_command.router_xray_restart
+        - service: notify.tg_urgent
+          data:
+            message: >
+              {{ '\U0001F504' }} Xray на роутере недоступен, произведена попытка рестарта. {{ states('sensor.time_date') }}
+
+    - id: "Xray на роутере упал - уведомление"
+      alias: router_xray_is_down_notify
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.router_xray_status
+          from: "on"
+          to: "off"
+          for: "00:01:00"
+      action:
+        - service: notify.tg_urgent
+          data:
+            message: >
+              {{ '\U000026A0' }} Xray на роутере недоступен. {{ states('sensor.time_date') }}
+
+    - id: "Xray на роутере поднялся - уведомление"
+      alias: router_xray_is_up_notify
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.router_xray_status
+          from: "off"
+          to: "on"
+      action:
+        - service: notify.tg_urgent
+          data:
+            message: >
+              {{ '\U00002705' }} Xray на роутере снова работает. {{ states('sensor.time_date') }}
+
+    - id: "Смена внешнего ip-адреса на моб. связь - уведомление"
       alias: wan_ip_changed_to_modem3g_notify
       trigger:
         - platform: state
           entity_id: sensor.keenetic_gateway_external_ip
-          to: '192.168.8.100'
+          to: "192.168.8.100"
       action:
         - service: notify.tg_urgent
           data:
@@ -13,12 +71,12 @@ router:
               {% set ip_from = trigger.from_state.state | string %}
               {{ '\U0001F6DC' }} WAN IP изменен с {{ ip_from }} на 192.168.8.100
 
-    - id: 'Смена внешнего ip-адреса обратно на Ethernet - уведомление'
+    - id: "Смена внешнего ip-адреса обратно на Ethernet - уведомление"
       alias: wan_ip_changed_to_ethernet_notify
       trigger:
         - platform: state
           entity_id: sensor.keenetic_gateway_external_ip
-          not_to: '192.168.8.100'
+          not_to: "192.168.8.100"
       action:
         - service: notify.tg_urgent
           data:
@@ -27,7 +85,7 @@ router:
               {% set ip_to = trigger.to_state.state | string %}
               {{ '\U0001F6DC' }} WAN IP изменен с {{ ip_from }} на {{ ip_to }}
 
-    - id: 'Смена shortId в KVAS Xray на роутере - уведомление'
+    - id: "Смена shortId в KVAS Xray на роутере - уведомление"
       alias: kvas_xray_shortid_changed
       trigger:
         - platform: state
