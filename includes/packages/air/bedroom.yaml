@@ -594,7 +594,9 @@ bedroom_air:
               entity_id: fan.mijia_airpurifier_bedroom
               state: "on"
           then:
-            - service: notify.tg_bot
+            - action: notify.send_message
+              target:
+                entity_id: notify.tg_bot
               data:
                 message: |
                   {{ '\U0001F4A8' }} Бризер в спальне включен.
@@ -649,7 +651,9 @@ bedroom_air:
               entity_id: fan.mijia_airpurifier_bedroom
               state: "off"
           then:
-            - service: notify.tg_bot
+            - action: notify.send_message
+              target:
+                entity_id: notify.tg_bot
               data:
                 message: |
                   {{ '\U0001F4A8' }} Бризер в спальне выключен.
@@ -657,7 +661,9 @@ bedroom_air:
                   {{ '\U0001F4A7' }} Влажность {{ states('sensor.bedroom_average_humidity') | round(1) }}%
                   {{ '\U0000269B' }} CO2 {{ states('sensor.bedroom_co2') | int }}ppm
           else:
-            - service: notify.tg_bot
+            - action: notify.send_message
+              target:
+                entity_id: notify.tg_bot
               data:
                 message: |
                   {{ '\U000026A0' }} Не получилось выключить бризер в спальне, статус {{ states('fan.mijia_airpurifier_bedroom') }}.

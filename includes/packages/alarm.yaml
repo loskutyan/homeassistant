@@ -239,7 +239,9 @@ alarm:
         - service: switch.turn_off
           entity_id: switch.bathroom_valves_relay_right
           continue_on_error: true
-        - service: notify.tg_urgent
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_urgent
           data:
             message: >
               {{ '\U0001F6B1' }} Краны перекрыты! {{ states('sensor.time_date') }}
@@ -257,7 +259,9 @@ alarm:
         - service: switch.turn_off
           entity_id: switch.bathroom_valves_relay_left
           continue_on_error: true
-        - service: notify.tg_urgent
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_urgent
           data:
             message: >
               {{ '\U0001F6B0' }} Краны открыты! {{ states('sensor.time_date') }}
@@ -268,7 +272,9 @@ alarm:
     hallway_door_is_opened_notify:
       alias: "Входная дверь открыта - уведомление"
       sequence:
-        - service: notify.tg_urgent
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_urgent
           data:
             message: >
               {% set messages = [
@@ -282,7 +288,9 @@ alarm:
     hallway_door_lock_is_unlocked_notify:
       alias: "Замок входной двери не заперт - уведомление"
       sequence:
-        - service: notify.tg_urgent
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_urgent
           data:
             message: >
               {% set messages = [
@@ -316,7 +324,9 @@ alarm:
           entity_id: binary_sensor.ups_not_fine
           state: "off"
       action:
-        - service: notify.tg_urgent
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_urgent
           data:
             message: >
               {{ '\U0001F50C' }} ИБП снова работает от сети! {{ states('sensor.time_date') }}
@@ -330,7 +340,9 @@ alarm:
       action:
         - service: switch.turn_off
           entity_id: switch.bedroom_ac_plug
-        - service: notify.tg_urgent
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_urgent
           data:
             message: >
               {{ '\U0001F50C' }} Розетка в спальне выключена! {{ states('sensor.time_date') }}
@@ -344,7 +356,9 @@ alarm:
       action:
         - service: switch.turn_off
           entity_id: switch.kidsroom_ac_plug
-        - service: notify.tg_urgent
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_urgent
           data:
             message: >
               {{ '\U0001F50C' }} Розетка в детской выключена! {{ states('sensor.time_date') }}
@@ -361,7 +375,9 @@ alarm:
           entity_id: timer.hallway_door_time_to_close
           state: "idle"
       action:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set messages = [

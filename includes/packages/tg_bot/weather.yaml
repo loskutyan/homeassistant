@@ -98,7 +98,9 @@ tg_weather:
     sending_yandex_weather_forecast:
       alias: "Отправка прогноза погоды"
       sequence:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: |
               {% set w_dt = states('sensor.yandex_weather_data_update_time') %}
@@ -134,7 +136,9 @@ tg_weather:
               ощущается как {{ state_attr('weather.yandex_weather', 'feels_like') }}{{ temp_unit }}.
               Ветер {{ friendly_wind_bearing }}, со скоростью {{ wind_speed }} м/с.
         - delay: 00:00:15
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: |
               {% set temp = state_attr('weather.yandex_weather', 'forecastHourly')[6]['native_temperature'] %}
@@ -175,7 +179,9 @@ tg_weather:
               будет ощущаться как {{ temp_feels_like }}{{ temp_unit }}.
               Ветер {{ friendly_wind_bearing }}, скорость {{ wind_speed }} м/с (с порывами до {{ wind_gust_speed }} м/с).
         - delay: 00:00:15
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: |
               {% set temp = state_attr('weather.yandex_weather', 'forecastHourly')[12]['native_temperature'] %}

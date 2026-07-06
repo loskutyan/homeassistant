@@ -115,7 +115,9 @@ kidsroom_heating:
             - timer.kidsroom_airpurifier_heater_remind
         - service: timer.finish
           entity_id: timer.kidsroom_airpurifier_heater_cooldown
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set messages = [
@@ -141,7 +143,9 @@ kidsroom_heating:
           entity_id: switch.kidsroom_airpurifier_ptc
           state: "on"
       action:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set messages = [
@@ -168,7 +172,9 @@ kidsroom_heating:
             - timer.kidsroom_airpurifier_heater_turn_off
         - service: timer.start
           entity_id: timer.kidsroom_airpurifier_heater_cooldown
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set messages = [

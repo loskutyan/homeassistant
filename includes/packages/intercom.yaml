@@ -180,7 +180,9 @@ intercom:
           from: "off"
           to: "on"
       action:
-        - service: notify.tg_urgent
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_urgent
           data:
             message: >
               {% set messages = [
@@ -206,7 +208,9 @@ intercom:
           from: "off"
           to: "on"
       action:
-        - service: notify.tg_urgent
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_urgent
           data:
             message: >
               {% set messages = [

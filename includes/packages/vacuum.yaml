@@ -282,7 +282,9 @@ vacuum:
             - "idle"
           to: "cleaning"
       action:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {{ '\U0001F9F9' }} Пылесос начал уборку в {{ states('sensor.time') }}, режим {{ state_attr('vacuum.roborock_s5_max', 'fan_speed') }}
@@ -300,7 +302,9 @@ vacuum:
             - "idle"
       action:
         - service: script.roborock_s5_max_vacuum_map_to_telegram
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set cleaned_area = states('sensor.roborock_s5_max_last_clean_area') %}
@@ -315,7 +319,9 @@ vacuum:
           from: "returning"
           to: "docked"
       action:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {{ '\U0001F9F9' }} Пылесос вернулся на док-станцию

@@ -340,7 +340,9 @@ cubeserver:
               entity_id: binary_sensor.cubeserver_container_ollama_status
               state: "on"
           then:
-            - service: notify.tg_bot
+            - action: notify.send_message
+              target:
+                entity_id: notify.tg_bot
               data:
                 message: >
                   {{ '\U0001F433' }} Запуск VM Windows: останавливаем Ollama...
@@ -361,7 +363,9 @@ cubeserver:
                       entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
                       state: "on"
           then:
-            - service: notify.tg_bot
+            - action: notify.send_message
+              target:
+                entity_id: notify.tg_bot
               data:
                 message: >
                   {{ '\U000026A0' }} Запуск VM Windows прошел неуспешно
@@ -384,12 +388,16 @@ cubeserver:
                       entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
                       state: "off"
           then:
-            - service: notify.tg_bot
+            - action: notify.send_message
+              target:
+                entity_id: notify.tg_bot
               data:
                 message: >
                   {{ '\U000026A0' }} Выключение VM Windows прошло неуспешно
           else:
-            - service: notify.tg_bot
+            - action: notify.send_message
+              target:
+                entity_id: notify.tg_bot
               data:
                 message: >
                   {{ '\U0001F433' }} Выключение VM Windows: запускаем Ollama...
@@ -426,7 +434,9 @@ cubeserver:
             - "on"
           for: "00:01:00"
       action:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: |
               {% set overheat = trigger.to_state.state | bool %}
@@ -467,7 +477,9 @@ cubeserver:
             - "on"
           for: "00:00:10"
       action:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set in_progress = trigger.to_state.state | bool %}
@@ -492,7 +504,9 @@ cubeserver:
             - "on"
           for: "00:00:10"
       action:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set paused = trigger.to_state.state | bool %}
@@ -511,7 +525,9 @@ cubeserver:
         - platform: event
           event_type: transmission_started_torrent
       action:
-        - service: notify.tg_media
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_media
           data:
             message: >
               {{ '\U00002B07' }} Cubeserver: Началась загрузка торрента. {{ trigger.event.data.name }}
@@ -523,7 +539,9 @@ cubeserver:
         - platform: event
           event_type: transmission_downloaded_torrent
       action:
-        - service: notify.tg_media
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_media
           data:
             message: >
               {{ '\U00002705' }} Cubeserver: Завершена загрузка торрента. {{ trigger.event.data.name }}

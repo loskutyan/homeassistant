@@ -3,7 +3,9 @@ tg_system_status:
     telegram_system_report:
       alias: 'Отправка отчета о состоянии системы'
       sequence:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: |
               {{'\U0001F6C0'}} Состояние системы
@@ -22,7 +24,9 @@ tg_system_status:
         - platform: homeassistant
           event: start
       action:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: |
               {{'\U0001F4AC'}} Основной сервер MiniPC

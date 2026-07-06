@@ -170,7 +170,9 @@ conditioning_bedroom:
           entity_id: climate.bedroom_ac
           data:
             fan_mode: "high"
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {{'\U0001F4A6'}} Запущено осушение кондиционера в спальне!
@@ -183,7 +185,9 @@ conditioning_bedroom:
           entity_id: switch.bedroom_auto_conditioning
         - service: switch.turn_off
           entity_id: switch.bedroom_ac
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {{'\U00002600'}} Осушение кондиционера в спальне закончено!
@@ -401,7 +405,9 @@ conditioning_bedroom:
               entity_id: input_select.bedroom_ac_mode
               data_template:
                 option: "dry"
-            - service: notify.tg_bot
+            - action: notify.send_message
+              target:
+                entity_id: notify.tg_bot
               data:
                 message: |
                   {{ '\U00002600' }} Кондиционер в спальне переключен в режим осушения.
@@ -419,7 +425,9 @@ conditioning_bedroom:
               entity_id: input_select.bedroom_ac_mode
               data_template:
                 option: "cool"
-            - service: notify.tg_bot
+            - action: notify.send_message
+              target:
+                entity_id: notify.tg_bot
               data:
                 message: |
                   {{ '\U00002744' }} Кондиционер в спальне переключен в режим охлаждения.

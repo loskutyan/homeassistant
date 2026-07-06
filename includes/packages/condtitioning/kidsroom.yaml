@@ -171,7 +171,9 @@ conditioning_kidsroom:
           entity_id: climate.kidsroom_ac
           data:
             fan_mode: "high"
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {{'\U0001F4A6'}} Запущено осушение кондиционера в детской!
@@ -184,7 +186,9 @@ conditioning_kidsroom:
           entity_id: switch.kidsroom_auto_conditioning
         - service: switch.turn_off
           entity_id: switch.kidsroom_ac
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {{'\U00002600'}} Осушение кондиционера в детской закончено!
@@ -399,7 +403,9 @@ conditioning_kidsroom:
               entity_id: input_select.kidsroom_ac_mode
               data_template:
                 option: "dry"
-            - service: notify.tg_bot
+            - action: notify.send_message
+              target:
+                entity_id: notify.tg_bot
               data:
                 message: |
                   {{ '\U00002600' }} Кондиционер в детской переключен в режим осушения.
@@ -417,7 +423,9 @@ conditioning_kidsroom:
               entity_id: input_select.kidsroom_ac_mode
               data_template:
                 option: "cool"
-            - service: notify.tg_bot
+            - action: notify.send_message
+              target:
+                entity_id: notify.tg_bot
               data:
                 message: |
                   {{ '\U00002744' }} Кондиционер в детской переключен в режим охлаждения.

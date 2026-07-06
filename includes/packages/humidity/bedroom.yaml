@@ -156,7 +156,9 @@ bedroom_humidity:
             {% set delta_minutes = (now - last_triggered).total_seconds() / 60 if last_triggered != none else 1000 %}
             {{ delta_minutes > 90 }}
       action:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set hum = states('sensor.bedroom_average_humidity') %}
@@ -190,7 +192,9 @@ bedroom_humidity:
             {% set delta_hours = (now - last_triggered).total_seconds() / 3600 if last_triggered != none else 1000 %}
             {{ delta_hours > 8 }}
       action:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set lvl = states('sensor.bedroom_smartmi_humidifier_water_level') %}
@@ -224,7 +228,9 @@ bedroom_humidity:
             {% set delta_hours = (now - last_triggered).total_seconds() / 3600 if last_triggered != none else 1000 %}
             {{ delta_hours > 8 }}
       action:
-        - service: notify.tg_urgent
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_urgent
           data:
             message: >
               {% set lvl = states('sensor.bedroom_smartmi_humidifier_water_level') %}

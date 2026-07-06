@@ -9,7 +9,9 @@ tg_common:
           event_data:
             command: '/start'
       action:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: |
               {% set messages = [
@@ -35,7 +37,9 @@ tg_common:
           event_data:
             text: 'Управление'
       action:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: |
               {% set messages = ['Панель управления', 'Контрольная панель'] %}
@@ -59,7 +63,9 @@ tg_common:
           data_template:
             callback_query_id: '{{ trigger.event.data.id }}'
             message: 'Что нужно сделать с кранами?'
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: 'Управляем кранами..'
             data:

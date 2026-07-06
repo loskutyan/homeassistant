@@ -88,7 +88,6 @@ tts:
 smartir:
   check_updates: false
 
-notify: !include includes/notify.yaml
 recorder: !include includes/recorder.yaml
 fan: !include includes/fan.yaml
 

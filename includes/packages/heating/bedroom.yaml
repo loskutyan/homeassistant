@@ -118,7 +118,9 @@ bedroom_heating:
             - timer.bedroom_airpurifier_heater_remind
         - service: timer.finish
           entity_id: timer.bedroom_airpurifier_heater_cooldown
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set messages = [
@@ -144,7 +146,9 @@ bedroom_heating:
           entity_id: switch.bedroom_airpurifier_ptc
           state: "on"
       action:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set messages = [
@@ -171,7 +175,9 @@ bedroom_heating:
             - timer.bedroom_airpurifier_heater_turn_off
         - service: timer.start
           entity_id: timer.bedroom_airpurifier_heater_cooldown
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set messages = [

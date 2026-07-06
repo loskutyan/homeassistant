@@ -3,7 +3,9 @@ tg_climate_status:
     telegram_climate_report:
       alias: "Отправка отчета о состоянии воздуха"
       sequence:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: |
               {%- macro humidifier_status(room) -%}

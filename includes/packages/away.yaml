@@ -174,7 +174,9 @@ away:
           data_template:
             entity_id: >-
               {{ states('sensor.lights_switches_list_turned_on') | from_json }}
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set messages = [
@@ -191,7 +193,9 @@ away:
           data_template:
             entity_id: >-
               {{ states('sensor.heaters_list_turned_on') | from_json }}
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set messages = [
@@ -204,7 +208,9 @@ away:
     hallway_door_lock_was_locked_notify:
       alias: "Замок входной двери закрыт - уведомление"
       sequence:
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set messages = [
@@ -399,7 +405,9 @@ away:
       action:
         - service: input_boolean.turn_on
           entity_id: input_boolean.somebody_home
-        - service: notify.tg_bot
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_bot
           data:
             message: >
               {% set messages = [

@@ -31,7 +31,9 @@ doorbell:
                 media_content_type: 'music'
                 media_content_id: 10
           continue_on_error: true
-        - service: notify.tg_urgent
+        - action: notify.send_message
+          target:
+            entity_id: notify.tg_urgent
           data:
             message: >
               {% set messages = [

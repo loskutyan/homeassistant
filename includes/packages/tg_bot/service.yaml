@@ -9,7 +9,9 @@ tg_service:
           time: '12:00:00'
           day: 2
           actions:
-          - service: notify.tg_bot
+          - action: notify.send_message
+            target:
+              entity_id: notify.tg_bot
             data:
               message: |
                 {{'\U0001FAAB'}} Низкий заряд батарей:
