@@ -1,23 +1,23 @@
 alarm:
   timer:
     hallway_door_left_opened:
-      name: 'Проверить, открыта ли дверь в прихожей, через '
+      name: "Проверить, открыта ли дверь в прихожей, через "
       duration: 300
 
     hallway_door_time_to_close:
-      name: 'Надежно закрыть дверь через '
+      name: "Надежно закрыть дверь через "
       duration: 20
 
   input_boolean:
     bathroom_valves:
-      name: 'Шаровые краны в ванной'
+      name: "Шаровые краны в ванной"
 
-  sensor:
-    - platform: template
-      sensors:
-        found_water_leaks:
-          friendly_name: 'Найденные протечки'
-          value_template: >
+  template:
+    - sensor:
+        - name: "Найденные протечки"
+          unique_id: found_water_leaks
+          default_entity_id: sensor.found_water_leaks
+          state: >
             {% set leakage_sensors = [
               'binary_sensor.bathroom_aqara_leak_sensor_water_leak',
               'binary_sensor.washing_machine_aqara_leak_sensor_water_leak',
@@ -30,9 +30,10 @@ alarm:
               | join(', ')
               | lower }}
 
-        found_smokes:
-          friendly_name: 'Найденные задымления'
-          value_template: >
+        - name: "Найденные задымления"
+          unique_id: found_smokes
+          default_entity_id: sensor.found_smokes
+          state: >
             {% set smoke_sensors = [
               'binary_sensor.hallway_smoke_sensor_smoke',
               'binary_sensor.kitchen_smoke_sensor_smoke',
@@ -44,13 +45,12 @@ alarm:
               | join(', ')
               | lower }}
 
-  binary_sensor:
-    - platform: template
-      sensors:
-        water_leak_detected:
-          friendly_name: 'Обнаружена протечка'
+    - binary_sensor:
+        - name: "Обнаружена протечка"
+          unique_id: water_leak_detected
+          default_entity_id: binary_sensor.water_leak_detected
           device_class: moisture
-          value_template: >
+          state: >
             {% set found_water_leaks = states('sensor.found_water_leaks') %}
             {% if found_water_leaks != 'unknown' %}
               {{ found_water_leaks | length > 0 }}
@@ -58,10 +58,11 @@ alarm:
               false
             {% endif %}
 
-        smoke_detected:
-          friendly_name: 'Обнаружено задымление'
+        - name: "Обнаружено задымление"
+          unique_id: smoke_detected
+          default_entity_id: binary_sensor.smoke_detected
           device_class: smoke
-          value_template: >
+          state: >
             {% set found_smokes = states('sensor.found_smokes') %}
             {% if found_smokes != 'unknown' %}
               {{ found_smokes | length > 0 }}
@@ -69,28 +70,29 @@ alarm:
               false
             {% endif %}
 
-        ups_not_fine:
-          friendly_name: 'Проблема с ИБП'
+        - name: "Проблема с ИБП"
+          unique_id: ups_not_fine
+          default_entity_id: binary_sensor.ups_not_fine
           device_class: problem
-          value_template: >
+          state: >
             {{ states('sensor.ups_status') not in ['Online', 'Online Battery Charging', 'On Battery Battery Discharging'] }}
 
-        ups_powered_by_battery:
-          friendly_name: 'ИБП работает от аккумулятора'
-          value_template: >
+        - name: "ИБП работает от аккумулятора"
+          unique_id: ups_powered_by_battery
+          default_entity_id: binary_sensor.ups_powered_by_battery
+          state: >
             {{ states('sensor.ups_status') == 'On Battery Battery Discharging' }}
-          icon_template: >
+          icon: >
             {% if is_state('binary_sensor.ups_powered_by_battery', 'on') %}
               mdi:battery-arrow-down
             {% else %}
               mdi:battery-charging-100
             {% endif %}
 
-        bedroom_ac_plug_overload:
-          friendly_name: 'Перегрузка розетки кондиционера в спальне'
-          value_template: >
-            {{ states('sensor.bedroom_ac_plug_power') | float > 1000 }}
-          availability_template: >
+        - name: "Перегрузка розетки кондиционера в спальне"
+          unique_id: bedroom_ac_plug_overload
+          default_entity_id: binary_sensor.bedroom_ac_plug_overload
+          availability: >
             {% set status =  states('switch.bedroom_ac_plug') %}
             {% if status == 'off' %}
               True
@@ -99,18 +101,19 @@ alarm:
             {% else %}
               False
             {% endif %}
-          icon_template: >
+          state: >
+            {{ states('sensor.bedroom_ac_plug_power') | float > 1000 }}
+          icon: >
             {% if is_state('binary_sensor.bedroom_ac_plug_overload', 'on') %}
               mdi:lightning-bolt
             {% else %}
               mdi:power-plug
             {% endif %}
 
-        kidsroom_ac_plug_overload:
-          friendly_name: 'Перегрузка розетки кондиционера в детской'
-          value_template: >
-            {{ states('sensor.kidsroom_ac_plug_power') | float > 1000 }}
-          availability_template: >
+        - name: "Перегрузка розетки кондиционера в детской"
+          unique_id: kidsroom_ac_plug_overload
+          default_entity_id: binary_sensor.kidsroom_ac_plug_overload
+          availability: >
             {% set status =  states('switch.kidsroom_ac_plug') %}
             {% if status == 'off' %}
               True
@@ -119,18 +122,37 @@ alarm:
             {% else %}
               False
             {% endif %}
-          icon_template: >
+          state: >
+            {{ states('sensor.kidsroom_ac_plug_power') | float > 1000 }}
+          icon: >
             {% if is_state('binary_sensor.kidsroom_ac_plug_overload', 'on') %}
               mdi:lightning-bolt
             {% else %}
               mdi:power-plug
             {% endif %}
 
+    - switch:
+        - name: "Шаровые краны в ванной"
+          unique_id: bathroom_valves
+          default_entity_id: switch.bathroom_valves
+          state: >
+            {{ states('input_boolean.bathroom_valves') }}
+          turn_on:
+            service: script.open_bathroom_valves
+          turn_off:
+            service: script.close_bathroom_valves
+          icon: >
+            {% if is_state('input_boolean.bathroom_valves', 'on') %}
+              mdi:valve-open
+            {% else %}
+              mdi:valve-closed
+            {% endif %}
+
   alert:
     water_leak_detected:
-      name: 'Протечка воды'
+      name: "Протечка воды"
       entity_id: binary_sensor.water_leak_detected
-      state: 'on'
+      state: "on"
       message: >
         {{ '\U0001F30A' }} Протечка воды: {{ states('sensor.found_water_leaks') }}
       done_message: >
@@ -141,9 +163,9 @@ alarm:
         - tg_urgent
 
     smoke_detected:
-      name: 'Задымление'
+      name: "Задымление"
       entity_id: binary_sensor.smoke_detected
-      state: 'on'
+      state: "on"
       message: >
         {{ '\U0001F525' }} Задымление: {{ states('sensor.found_smokes') }}
       done_message: >
@@ -154,9 +176,9 @@ alarm:
         - tg_urgent
 
     fridge_door_left_opened:
-      name: 'Дверь холодильника не закрыта'
+      name: "Дверь холодильника не закрыта"
       entity_id: binary_sensor.fridge_door
-      state: 'on'
+      state: "on"
       repeat: 5
       skip_first: true
       message: >
@@ -165,9 +187,9 @@ alarm:
         - tg_urgent
 
     ups_power_went_down:
-      name: 'ИБП работает от аккумулятора'
+      name: "ИБП работает от аккумулятора"
       entity_id: binary_sensor.ups_powered_by_battery
-      state: 'on'
+      state: "on"
       repeat: 15
       message: >
         {{ '\U0001F50B' }} ИБП работает от аккумулятора! {{ states('sensor.time_date') }}
@@ -175,9 +197,9 @@ alarm:
         - tg_urgent
 
     ups_is_not_fine:
-      name: 'Проблема с ИБП'
+      name: "Проблема с ИБП"
       entity_id: binary_sensor.ups_not_fine
-      state: 'on'
+      state: "on"
       repeat: 60
       message: >
         {{ '\U000026A0' }} Проблема с ИБП, статус {{ states('sensor.ups_status') }}. {{ states('sensor.time_date') }}
@@ -187,9 +209,9 @@ alarm:
         - tg_urgent
 
     bedroom_ac_plug_overload:
-      name: 'Перегрузка розетки кондиционера в спальне'
+      name: "Перегрузка розетки кондиционера в спальне"
       entity_id: binary_sensor.bedroom_ac_plug_overload
-      state: 'on'
+      state: "on"
       repeat: 5
       message: >
         {{ '\U000026A0' }} Перегрузка розетки в спальне, потребление {{ states('sensor.bedroom_ac_plug_power') }}Вт, температура {{ states('sensor.bedroom_ac_plug_device_temperature') }}
@@ -197,9 +219,9 @@ alarm:
         - tg_urgent
 
     kidsroom_ac_plug_overload:
-      name: 'Перегрузка розетки кондиционера в детской'
+      name: "Перегрузка розетки кондиционера в детской"
       entity_id: binary_sensor.kidsroom_ac_plug_overload
-      state: 'on'
+      state: "on"
       repeat: 5
       message: >
         {{ '\U000026A0' }} Перегрузка розетки в детской, потребление {{ states('sensor.kidsroom_ac_plug_power') }}Вт, температура {{ states('sensor.kidsroom_ac_plug_device_temperature') }}
@@ -208,7 +230,7 @@ alarm:
 
   script:
     close_bathroom_valves:
-      alias: 'Закрытие кранов в ванной'
+      alias: "Закрытие кранов в ванной"
       sequence:
         - service: switch.turn_on
           entity_id: switch.bathroom_valves_relay_right
@@ -226,7 +248,7 @@ alarm:
           entity_id: input_boolean.bathroom_valves
 
     open_bathroom_valves:
-      alias: 'Открытие кранов в ванной'
+      alias: "Открытие кранов в ванной"
       sequence:
         - service: switch.turn_on
           entity_id: switch.bathroom_valves_relay_left
@@ -244,7 +266,7 @@ alarm:
           entity_id: input_boolean.bathroom_valves
 
     hallway_door_is_opened_notify:
-      alias: 'Входная дверь открыта - уведомление'
+      alias: "Входная дверь открыта - уведомление"
       sequence:
         - service: notify.tg_urgent
           data:
@@ -258,7 +280,7 @@ alarm:
               {{ '\U0001F6AA' }} {{ states('sensor.time') }} - {{ messages | random }}
 
     hallway_door_lock_is_unlocked_notify:
-      alias: 'Замок входной двери не заперт - уведомление'
+      alias: "Замок входной двери не заперт - уведомление"
       sequence:
         - service: notify.tg_urgent
           data:
@@ -268,26 +290,8 @@ alarm:
               ] %}
               {{ '\U0001F513' }} {{ states('sensor.time') }} - {{ messages | random }}
 
-  switch:
-    - platform: template
-      switches:
-        bathroom_valves:
-          friendly_name: 'Шаровые краны в ванной'
-          value_template: >
-            {{ states('input_boolean.bathroom_valves') }}
-          turn_on:
-            service: script.open_bathroom_valves
-          turn_off:
-            service: script.close_bathroom_valves
-          icon_template: >
-            {% if is_state('input_boolean.bathroom_valves', 'on') %}
-              mdi:valve-open
-            {% else %}
-              mdi:valve-closed
-            {% endif %}
-
   automation:
-    - id: 'Протечка воды'
+    - id: "Протечка воды"
       alias: water_leak_detected_alarm
       trigger:
         - platform: state
@@ -295,34 +299,34 @@ alarm:
             - binary_sensor.bathroom_aqara_leak_sensor_water_leak
             - binary_sensor.washing_machine_aqara_leak_sensor_water_leak
             - binary_sensor.dishwasher_aqara_leak_sensor_water_leak
-          to: 'on'
+          to: "on"
       action:
         - service: script.close_bathroom_valves
         - service: alarm_control_panel.alarm_trigger
           entity_id: alarm_control_panel.miio_gateway
 
-    - id: 'ИБП снова работает от сети'
+    - id: "ИБП снова работает от сети"
       alias: ups_power_is_up_again
       trigger:
         - platform: state
           entity_id: binary_sensor.ups_powered_by_battery
-          from: 'on'
+          from: "on"
       condition:
         - condition: state
           entity_id: binary_sensor.ups_not_fine
-          state: 'off'
+          state: "off"
       action:
         - service: notify.tg_urgent
           data:
             message: >
               {{ '\U0001F50C' }} ИБП снова работает от сети! {{ states('sensor.time_date') }}
 
-    - id: 'Перегрузка розетки кондиционера в спальне'
+    - id: "Перегрузка розетки кондиционера в спальне"
       alias: bedroom_ac_plug_overload
       trigger:
         - platform: state
           entity_id: binary_sensor.bedroom_ac_plug_overload
-          to: 'on'
+          to: "on"
       action:
         - service: switch.turn_off
           entity_id: switch.bedroom_ac_plug
@@ -331,12 +335,12 @@ alarm:
             message: >
               {{ '\U0001F50C' }} Розетка в спальне выключена! {{ states('sensor.time_date') }}
 
-    - id: 'Перегрузка розетки кондиционера в детской'
+    - id: "Перегрузка розетки кондиционера в детской"
       alias: kidsroom_ac_plug_overload
       trigger:
         - platform: state
           entity_id: binary_sensor.kidsroom_ac_plug_overload
-          to: 'on'
+          to: "on"
       action:
         - service: switch.turn_off
           entity_id: switch.kidsroom_ac_plug
@@ -345,17 +349,17 @@ alarm:
             message: >
               {{ '\U0001F50C' }} Розетка в детской выключена! {{ states('sensor.time_date') }}
 
-    - id: 'Дверь в прихожей открылась'
+    - id: "Дверь в прихожей открылась"
       alias: hallway_door_was_opened
       initial_state: true
       trigger:
         - platform: state
           entity_id: binary_sensor.hallway_door_sensor_contact
-          to: 'on'
+          to: "on"
       condition:
         - condition: state
           entity_id: timer.hallway_door_time_to_close
-          state: 'idle'
+          state: "idle"
       action:
         - service: notify.tg_bot
           data:
@@ -371,18 +375,18 @@ alarm:
             - timer.hallway_door_left_opened
             - timer.hallway_door_time_to_close
 
-    - id: 'Проверка закрытия двери'
+    - id: "Проверка закрытия двери"
       alias: hallway_door_was_closed_check
       initial_state: true
       trigger:
         - platform: state
           entity_id: timer.hallway_door_left_opened
-          from: 'active'
-          to: 'idle'
+          from: "active"
+          to: "idle"
       condition:
         - condition: state
           entity_id: binary_sensor.hallway_door_sensor_contact
-          state: 'on'
+          state: "on"
       action:
         - service: script.hallway_door_is_opened_notify
         - service: timer.start

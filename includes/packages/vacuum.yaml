@@ -6,7 +6,7 @@ vacuum:
       username: !secret xiaomi_cloud_username
       password: !secret xiaomi_cloud_password
       name: roborock_s5_max_vacuum_map
-      country: 'de'
+      country: "de"
       colors:
         color_map_inside: [32, 115, 185]
         color_map_outside: [19, 87, 148]
@@ -35,7 +35,7 @@ vacuum:
         color_room_names: [0, 0, 0]
         color_unknown: [0, 0, 0]
         color_scan: [0xDF, 0xDF, 0xDF]
-      draw: ['all']
+      draw: ["all"]
       room_colors:
         1: [240, 178, 122]
         2: [133, 193, 233]
@@ -102,7 +102,7 @@ vacuum:
       auto_update: true
       store_map_raw: false
       store_map_image: true
-      store_map_path: '/tmp'
+      store_map_path: "/tmp"
       force_api: xiaomi
 
   input_number:
@@ -147,7 +147,7 @@ vacuum:
             - hallway
             - none
       sensor:
-        - name: 'Roborock S5 Max Selected Rooms'
+        - name: "Roborock S5 Max Selected Rooms"
           state: >-
             {% set new_room = trigger.to_state.state %}
             {% set current_rooms = states('sensor.roborock_s5_max_selected_rooms') %}
@@ -164,48 +164,49 @@ vacuum:
               {{ current_rooms | to_json }}
             {% endif %}
 
-  sensor:
-    - platform: template
-      sensors:
-        vacuum_main_brush_left:
-          friendly_name: 'Roborock S5 Max Часов уборки до замены основной щетки'
+    - sensor:
+        - name: "Roborock S5 Max Часов уборки до замены основной щетки"
+          unique_id: vacuum_main_brush_left
+          default_entity_id: sensor.vacuum_main_brush_left
           device_class: duration
-          unit_of_measurement: 'h'
-          value_template: >
-            {{ states('sensor.roborock_s5_max_main_brush_left') | float / 3600 }}
-          availability_template: >
+          unit_of_measurement: "h"
+          availability: >
             {{ states('sensor.roborock_s5_max_main_brush_left') | float(-1) >= 0 }}
-          icon_template: mdi:robot-vacuum
+          state: >
+            {{ states('sensor.roborock_s5_max_main_brush_left') | float / 3600 }}
+          icon: mdi:robot-vacuum
 
-        vacuum_side_brush_left:
-          friendly_name: 'Roborock S5 Max Часов уборки до замены боковой щетки'
+        - name: "Roborock S5 Max Часов уборки до замены боковой щетки"
+          unique_id: vacuum_side_brush_left
+          default_entity_id: sensor.vacuum_side_brush_left
           device_class: duration
-          unit_of_measurement: 'h'
-          value_template: >
-            {{ states('sensor.roborock_s5_max_side_brush_left') | float / 3600 }}
-          availability_template: >
+          unit_of_measurement: "h"
+          availability: >
             {{ states('sensor.roborock_s5_max_side_brush_left') | float(-1) >= 0 }}
-          icon_template: mdi:robot-vacuum
+          state: >
+            {{ states('sensor.roborock_s5_max_side_brush_left') | float / 3600 }}
+          icon: mdi:robot-vacuum
 
-        vacuum_filter_left:
-          friendly_name: 'Roborock S5 Max Часов уборки до замены фильтра'
+        - name: "Roborock S5 Max Часов уборки до замены фильтра"
+          unique_id: vacuum_filter_left
+          default_entity_id: sensor.vacuum_filter_left
           device_class: duration
-          unit_of_measurement: 'h'
-          value_template: >
-            {{ states('sensor.roborock_s5_max_filter_left') | float / 3600 }}
-          availability_template: >
+          unit_of_measurement: "h"
+          availability: >
             {{ states('sensor.roborock_s5_max_filter_left') | float(-1) >= 0 }}
-          icon_template: mdi:air-filter
+          state: >
+            {{ states('sensor.roborock_s5_max_filter_left') | float / 3600 }}
+          icon: mdi:air-filter
 
   script:
     roborock_s5_max_vacuum_clean_room:
-      alias: 'Пылесос - уборка комнаты'
+      alias: "Пылесос - уборка комнаты"
       mode: queued
       fields:
         room:
-          name: 'Room'
+          name: "Room"
           required: true
-          example: 'bedroom'
+          example: "bedroom"
           selector:
             select:
               options:
@@ -223,35 +224,35 @@ vacuum:
               {{ room_id }}
 
     roborock_s5_max_vacuum_map_to_telegram:
-      alias: 'Отправка снимка карты пылесоса'
+      alias: "Отправка снимка карты пылесоса"
       sequence:
         - service: camera.snapshot
           data:
             entity_id: camera.roborock_s5_max_vacuum_map
-            filename: '/config/www/cam_captures/roborock_s5_max_vacuum_map.jpg'
+            filename: "/config/www/cam_captures/roborock_s5_max_vacuum_map.jpg"
         - delay: 00:00:03
         - service: telegram_bot.send_photo
           data_template:
             target:
               - !secret tg_chat_id_loskutyan
-            file: '/config/www/cam_captures/roborock_s5_max_vacuum_map.jpg'
+            file: "/config/www/cam_captures/roborock_s5_max_vacuum_map.jpg"
 
   automation:
-    - id: 'Запустить пылесос в комнате'
+    - id: "Запустить пылесос в комнате"
       alias: roborock_s5_max_vacuum_start_room_cleaning
       trigger:
         - platform: state
           entity_id: sensor.roborock_s5_max_selected_rooms
       condition:
         - condition: template
-          value_template: '{{ trigger.to_state.state | length > 2 }}'
+          value_template: "{{ trigger.to_state.state | length > 2 }}"
       action:
         - service: script.roborock_s5_max_vacuum_clean_room
           data_template:
             room: >
               {{ trigger.to_state.state | from_json | last }}
 
-    - id: 'Сброс списка комнат для уборки пылесоса'
+    - id: "Сброс списка комнат для уборки пылесоса"
       alias: roborock_s5_max_vacuum_clear_rooms_list
       trigger:
         - platform: state
@@ -261,42 +262,42 @@ vacuum:
             - condition: state
               entity_id: vacuum.roborock_s5_max
               attribute: status
-              state: 'Segment cleaning'
+              state: "Segment cleaning"
             - condition: state
               entity_id: vacuum.roborock_s5_max
-              state: 'paused'
+              state: "paused"
       action:
         - service: input_select.select_option
           entity_id: input_select.roborock_s5_max_room
           data:
-            option: 'none'
+            option: "none"
 
-    - id: 'Пылесос начал уборку - уведомление'
+    - id: "Пылесос начал уборку - уведомление"
       alias: vacuum_started_cleaning_notify
       trigger:
         - platform: state
           entity_id: vacuum.roborock_s5_max
           from:
-            - 'docked'
-            - 'idle'
-          to: 'cleaning'
+            - "docked"
+            - "idle"
+          to: "cleaning"
       action:
         - service: notify.tg_bot
           data:
             message: >
               {{ '\U0001F9F9' }} Пылесос начал уборку в {{ states('sensor.time') }}, режим {{ state_attr('vacuum.roborock_s5_max', 'fan_speed') }}
 
-    - id: 'Пылесос закончил уборку - уведомление'
+    - id: "Пылесос закончил уборку - уведомление"
       alias: vacuum_finished_cleaning_notify
       trigger:
         - platform: state
           entity_id: vacuum.roborock_s5_max
           from:
-            - 'cleaning'
-            - 'paused'
+            - "cleaning"
+            - "paused"
           to:
-            - 'returning'
-            - 'idle'
+            - "returning"
+            - "idle"
       action:
         - service: script.roborock_s5_max_vacuum_map_to_telegram
         - service: notify.tg_bot
@@ -306,13 +307,13 @@ vacuum:
               {% set cleaning_duration = (states('sensor.roborock_s5_max_last_clean_duration') | float(-999) / 60) | round(2) %}
               {{ '\U0001F9F9' }} Пылесос закончил уборку, убрано {{ cleaned_area }}м² за {{ cleaning_duration }}мин.
 
-    - id: 'Пылесос вернулся на док-станцию - уведомление'
+    - id: "Пылесос вернулся на док-станцию - уведомление"
       alias: vacuum_docked_notify
       trigger:
         - platform: state
           entity_id: vacuum.roborock_s5_max
-          from: 'returning'
-          to: 'docked'
+          from: "returning"
+          to: "docked"
       action:
         - service: notify.tg_bot
           data:

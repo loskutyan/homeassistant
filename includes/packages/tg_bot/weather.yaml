@@ -1,22 +1,24 @@
 tg_weather:
-  sensor:
-    - platform: template
-      sensors:
-        yandex_weather_hourly_forecast_6th_hour:
-          friendly_name: 'Шестой час почасового прозноза погоды'
-          value_template: >
+  template:
+    - sensor:
+        - name: "Шестой час почасового прозноза погоды"
+          unique_id: yandex_weather_hourly_forecast_6th_hour
+          default_entity_id: sensor.yandex_weather_hourly_forecast_6th_hour
+          state: >
             {% set dt = state_attr('weather.yandex_weather', 'forecastHourly')[6]['datetime'] %}
             {{ as_datetime(dt).hour }}
 
-        yandex_weather_hourly_forecast_12th_hour:
-          friendly_name: 'Двенадцатый час почасового прозноза погоды'
-          value_template: >
+        - name: "Двенадцатый час почасового прозноза погоды"
+          unique_id: yandex_weather_hourly_forecast_12th_hour
+          default_entity_id: sensor.yandex_weather_hourly_forecast_12th_hour
+          state: >
             {% set dt = state_attr('weather.yandex_weather', 'forecastHourly')[12]['datetime'] %}
             {{ as_datetime(dt).hour }}
 
-        weather_friendly_rainfall_conditions:
-          friendly_name: 'Перевод состояний погоды - осадки'
-          value_template: >
+        - name: "Перевод состояний погоды - осадки"
+          unique_id: weather_friendly_rainfall_conditions
+          default_entity_id: sensor.weather_friendly_rainfall_conditions
+          state: >
             {% set friendly_conditions = {
               'rainy': 'Дождь', 
               'pouring': 'Ливень',
@@ -28,9 +30,10 @@ tg_weather:
             } %}
             {{ friendly_conditions | to_json(ensure_ascii=False) }}
 
-        weather_friendly_dry_conditions:
-          friendly_name: 'Перевод состояний погоды - без осадков'
-          value_template: >
+        - name: "Перевод состояний погоды - без осадков"
+          unique_id: weather_friendly_dry_conditions
+          default_entity_id: sensor.weather_friendly_dry_conditions
+          state: >
             {% set friendly_conditions = {
               'sunny': 'Ясно',
               'clear-night': 'Ясно',
@@ -43,9 +46,10 @@ tg_weather:
             } %}
             {{ friendly_conditions | to_json(ensure_ascii=False) }}
 
-        weather_rainfall_conditions_emojis:
-          friendly_name: 'Emoji состояний погоды - осадки'
-          value_template: >
+        - name: "Emoji состояний погоды - осадки"
+          unique_id: weather_rainfall_conditions_emojis
+          default_entity_id: sensor.weather_rainfall_conditions_emojis
+          state: >
             {% set emojis = {
               'rainy': '\U0001F327',
               'pouring': '\U0001F327\U0001F327',
@@ -57,9 +61,10 @@ tg_weather:
             } %}
             {{ emojis | to_json(ensure_ascii=False) }}
 
-        weather_dry_conditions_emojis:
-          friendly_name: 'Emoji состояний погоды - без осадков'
-          value_template: >
+        - name: "Emoji состояний погоды - без осадков"
+          unique_id: weather_dry_conditions_emojis
+          default_entity_id: sensor.weather_dry_conditions_emojis
+          state: >
             {% set emojis = {
               'sunny': '\U00002600',
               'clear-night': '\U0001F30C',
@@ -72,9 +77,10 @@ tg_weather:
             } %}
             {{ emojis | to_json(ensure_ascii=False) }}
 
-        weather_friendly_wind_bearings:
-          friendly_name: 'Расшифровка направлений ветра'
-          value_template: >
+        - name: "Расшифровка направлений ветра"
+          unique_id: weather_friendly_wind_bearings
+          default_entity_id: sensor.weather_friendly_wind_bearings
+          state: >
             {% set friendly_wind_bearings = {
               '0': 'Северный',
               '45': 'Северо-восточный',
@@ -90,7 +96,7 @@ tg_weather:
 
   script:
     sending_yandex_weather_forecast:
-      alias: 'Отправка прогноза погоды'
+      alias: "Отправка прогноза погоды"
       sequence:
         - service: notify.tg_bot
           data:
@@ -211,11 +217,11 @@ tg_weather:
               Ветер {{ friendly_wind_bearing }}, скорость {{ wind_speed }} м/с (с порывами до {{ wind_gust_speed }} м/с).
 
   automation:
-    - id: 'Прогноз погоды на день'
+    - id: "Прогноз погоды на день"
       alias: telegram_morning_weather_forecast
       initial_state: true
       trigger:
         - platform: time
-          at: '08:00:00'
+          at: "08:00:00"
       action:
         - service: script.sending_yandex_weather_forecast

@@ -1,21 +1,21 @@
 aqara_hub:
   input_number:
     aqara_hub_volume:
-      name: 'Aqara Hub Громкость'
+      name: "Aqara Hub Громкость"
       min: 0
       max: 100
       step: 1
       icon: mdi:volume-high
 
-  sensor:
-    - platform: template
-      sensors:
-        aqara_hub_volume:
-          friendly_name: 'Aqara Hub Громкость'
-          unit_of_measurement: '%'
-          value_template: "{{ (state_attr('media_player.miio_gateway', 'volume_level') | float * 100) | int }}"
-          availability_template: "{{ state_attr('media_player.miio_gateway', 'volume_level') | float(-1) >= 0 }}"
-          icon_template: >
+  template:
+    - sensor:
+        - name: "Aqara Hub Громкость"
+          unique_id: aqara_hub_volume
+          default_entity_id: sensor.aqara_hub_volume
+          unit_of_measurement: "%"
+          availability: "{{ state_attr('media_player.miio_gateway', 'volume_level') | float(-1) >= 0 }}"
+          state: "{{ (state_attr('media_player.miio_gateway', 'volume_level') | float * 100) | int }}"
+          icon: >
             {% set vol = states('sensor.aqara_hub_volume') | int(0) %}
             {% if vol > 60  %}
               mdi:volume-high
@@ -28,7 +28,7 @@ aqara_hub:
             {% endif %}
 
   automation:
-    - id: 'Выбор громкости хаба Aqara'
+    - id: "Выбор громкости хаба Aqara"
       alias: select_aqara_hub_volume
       trigger:
         - platform: state
@@ -37,9 +37,9 @@ aqara_hub:
         - service: media_player.volume_set
           entity_id: media_player.miio_gateway
           data_template:
-            volume_level: '{{ min(max(trigger.to_state.state | float / 100, 0), 1) }}'
+            volume_level: "{{ min(max(trigger.to_state.state | float / 100, 0), 1) }}"
 
-    - id: 'Отслеживание громкости хаба Aqara'
+    - id: "Отслеживание громкости хаба Aqara"
       alias: tracking_aqara_hub_volume
       trigger:
         - platform: state

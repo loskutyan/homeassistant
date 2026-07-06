@@ -1,26 +1,37 @@
 cubeserver:
-  sensor:
-    - platform: template
-      sensors:
-        cubeserver_ip:
-          friendly_name: 'Cubeserver IP'
-          value_template: !secret cubeserver_ip
+  template:
+    - sensor:
+        - name: "Cubeserver IP"
+          unique_id: cubeserver_ip
+          default_entity_id: sensor.cubeserver_ip
+          state: !secret cubeserver_ip
 
-        cubeserver_windows10_vm_ip:
-          friendly_name: 'Windows 10 VM IP'
-          value_template: !secret cubeserver_windows10_vm_ip
+        - name: "Windows 10 VM IP"
+          unique_id: cubeserver_windows10_vm_ip
+          default_entity_id: sensor.cubeserver_windows10_vm_ip
+          state: !secret cubeserver_windows10_vm_ip
 
-        cubeserver_windows10_vm_name:
-          friendly_name: 'Windows 10 VM name'
-          value_template: 'Windows 10'
+        - name: "Windows 10 VM name"
+          unique_id: cubeserver_windows10_vm_name
+          default_entity_id: sensor.cubeserver_windows10_vm_name
+          state: "Windows 10"
 
-        cubeserver_ollama_container_port:
-          friendly_name: 'Cubeserver Ollama Port'
-          value_template: !secret cubeserver_ollama_port
+        - name: "Cubeserver Ollama Port"
+          unique_id: cubeserver_ollama_container_port
+          default_entity_id: sensor.cubeserver_ollama_container_port
+          state: !secret cubeserver_ollama_port
 
-        cubeserver_parity_progress:
-          unit_of_measurement: '%'
-          value_template: >
+        - name: "cubeserver_parity_progress"
+          unique_id: cubeserver_parity_progress
+          default_entity_id: sensor.cubeserver_parity_progress
+          unit_of_measurement: "%"
+          availability: >
+            {% set valid_parity_common_size = states('sensor.cubeserver_parity_common_size_raw') | int(0) > 0 %}
+            {% set valid_parity_size = states('sensor.cubeserver_parity_size_raw') | int(-1) >= 0 %}
+            {% set valid_parity_pos = states('sensor.cubeserver_parity_pos_raw') | int(-1) >= 0 %}
+            {{ valid_parity_common_size and valid_parity_size and valid_parity_pos }}
+
+          state: >
             {% set parity_common_size = states('sensor.cubeserver_parity_common_size_raw') | int %}
             {% set parity_size = states('sensor.cubeserver_parity_size_raw') | int %}
             {% set parity_pos = states('sensor.cubeserver_parity_pos_raw') | int %}
@@ -33,16 +44,18 @@ cubeserver:
             {% else %}
               {{ parity_pos / parity_size * 100 }}
             {% endif %}
-          availability_template: >
-            {% set valid_parity_common_size = states('sensor.cubeserver_parity_common_size_raw') | int(0) > 0 %}
-            {% set valid_parity_size = states('sensor.cubeserver_parity_size_raw') | int(-1) >= 0 %}
-            {% set valid_parity_pos = states('sensor.cubeserver_parity_pos_raw') | int(-1) >= 0 %}
-            {{ valid_parity_common_size and valid_parity_size and valid_parity_pos }}
 
-        cubeserver_parity_speed:
+        - name: "cubeserver_parity_speed"
+          unique_id: cubeserver_parity_speed
+          default_entity_id: sensor.cubeserver_parity_speed
           device_class: data_rate
-          unit_of_measurement: 'MB/s'
-          value_template: >
+          unit_of_measurement: "MB/s"
+          availability: >
+            {% set valid_parity_db = states('sensor.cubeserver_parity_db_raw') | int(-1) >= 0 %}
+            {% set valid_parity_dt = states('sensor.cubeserver_parity_dt_raw') | int(-1) >= 0 %}
+            {{ valid_parity_db and valid_parity_dt }}
+
+          state: >
             {% set parity_db = states('sensor.cubeserver_parity_db_raw') | int %}
             {% set parity_dt = states('sensor.cubeserver_parity_dt_raw') | int %}
             {% if parity_dt == 0 %}
@@ -50,27 +63,28 @@ cubeserver:
             {% else %}
               {{ (parity_db / parity_dt * 1024 / 1e6) | round(1) }}
             {% endif %}
-          availability_template: >
-            {% set valid_parity_db = states('sensor.cubeserver_parity_db_raw') | int(-1) >= 0 %}
-            {% set valid_parity_dt = states('sensor.cubeserver_parity_dt_raw') | int(-1) >= 0 %}
-            {{ valid_parity_db and valid_parity_dt }}
 
-        cubeserver_parity_finish_timestamp:
+        - name: "cubeserver_parity_finish_timestamp"
+          unique_id: cubeserver_parity_finish_timestamp
+          default_entity_id: sensor.cubeserver_parity_finish_timestamp
           device_class: timestamp
-          value_template: >
+          availability: >
+            {% set valid_parity_db = states('sensor.cubeserver_parity_db_raw') | int(0) > 0 %}
+            {% set valid_parity_size = states('sensor.cubeserver_parity_size_raw') | int(0) > 0 %}
+            {{ valid_parity_db and valid_parity_size }}
+
+          state: >
             {% set parity_db = states('sensor.cubeserver_parity_db_raw') | float %}
             {% set parity_dt = states('sensor.cubeserver_parity_dt_raw') | float %}
             {% set parity_size = states('sensor.cubeserver_parity_size_raw') | float %}
             {% set parity_pos = states('sensor.cubeserver_parity_pos_raw') | float %}
             {% set seconds = ((parity_size - parity_pos) * parity_dt / parity_db) | round(0) %}
             {{ now() + timedelta(seconds=seconds) }}
-          availability_template: >
-            {% set valid_parity_db = states('sensor.cubeserver_parity_db_raw') | int(0) > 0 %}
-            {% set valid_parity_size = states('sensor.cubeserver_parity_size_raw') | int(0) > 0 %}
-            {{ valid_parity_db and valid_parity_size }}
 
-        cubeserver_parity_status:
-          value_template: >
+        - name: "cubeserver_parity_status"
+          unique_id: cubeserver_parity_status
+          default_entity_id: sensor.cubeserver_parity_status
+          state: >
             {% set in_progress = is_state('binary_sensor.cubeserver_parity_check_in_progress', 'on') %}
             {% set paused = is_state('binary_sensor.cubeserver_parity_check_paused', 'on') %}
             {% if paused %}
@@ -80,7 +94,7 @@ cubeserver:
             {% else %}
               Завершено
             {% endif %}
-          icon_template: >
+          icon: >
             {% set status = states('sensor.cubeserver_parity_status') %}
             {% if status == 'Пауза' %}
               mdi:pause
@@ -211,69 +225,98 @@ cubeserver:
     #       field: 'mdResyncDb'
     #       database: 'cubeserver_telegraf'
 
-  binary_sensor:
-    - platform: template
-      sensors:
-        cubeserver_parity_check_in_progress:
-          friendly_name: 'Parity-Check in progress'
+    - binary_sensor:
+        - name: "Parity-Check in progress"
+          unique_id: cubeserver_parity_check_in_progress
+          default_entity_id: binary_sensor.cubeserver_parity_check_in_progress
           device_class: running
-          value_template: >
+          availability: "{{ states('sensor.cubeserver_parity_progress') | float(0) > 0 }}"
+
+          state: >
             {% set progress = states('sensor.cubeserver_parity_progress') | float %}
             {{ 0 < progress < 100 }}
-          availability_template: "{{ states('sensor.cubeserver_parity_progress') | float(0) > 0 }}"
 
-        cubeserver_parity_check_paused:
-          friendly_name: 'Parity-Check paused'
-          value_template: >
-            {% set in_progress = is_state('binary_sensor.cubeserver_parity_check_in_progress', 'on') %}
-            {% set in_progress_size = states('sensor.cubeserver_parity_size_raw') | int == 0 %}
-            {{ in_progress_size and in_progress }}
-          availability_template: >
+        - name: "Parity-Check paused"
+          unique_id: cubeserver_parity_check_paused
+          default_entity_id: binary_sensor.cubeserver_parity_check_paused
+          availability: >
             {% set valid_size = states('sensor.cubeserver_parity_size_raw') | int(-1) >= 0 %}
             {% set valid_in_progress = states('binary_sensor.cubeserver_parity_check_in_progress') in ['on', 'off'] %}
             {{ valid_size and valid_in_progress }}
 
-        cubeserver_parity_disk_overheat:
-          friendly_name: 'Перегрев Parity Disk'
-          device_class: heat
-          value_template: "{{ states('sensor.cubeserver_parity_disk_temperature') | float > 44 }}"
+          state: >
+            {% set in_progress = is_state('binary_sensor.cubeserver_parity_check_in_progress', 'on') %}
+            {% set in_progress_size = states('sensor.cubeserver_parity_size_raw') | int == 0 %}
+            {{ in_progress_size and in_progress }}
 
-        cubeserver_disk_1_overheat:
-          friendly_name: 'Перегрев Disk 1'
+        - name: "Перегрев Parity Disk"
+          unique_id: cubeserver_parity_disk_overheat
+          default_entity_id: binary_sensor.cubeserver_parity_disk_overheat
           device_class: heat
-          value_template: "{{ states('sensor.cubeserver_disk_1_temperature') | float > 44 }}"
+          state: "{{ states('sensor.cubeserver_parity_disk_temperature') | float > 44 }}"
 
-        cubeserver_disk_2_overheat:
-          friendly_name: 'Перегрев Disk 2'
+        - name: "Перегрев Disk 1"
+          unique_id: cubeserver_disk_1_overheat
+          default_entity_id: binary_sensor.cubeserver_disk_1_overheat
           device_class: heat
-          value_template: "{{ states('sensor.cubeserver_disk_2_temperature') | float > 44 }}"
+          state: "{{ states('sensor.cubeserver_disk_1_temperature') | float > 44 }}"
 
-        cubeserver_disks_overheat:
-          friendly_name: 'Перегрев дисков'
+        - name: "Перегрев Disk 2"
+          unique_id: cubeserver_disk_2_overheat
+          default_entity_id: binary_sensor.cubeserver_disk_2_overheat
           device_class: heat
-          value_template: >
+          state: "{{ states('sensor.cubeserver_disk_2_temperature') | float > 44 }}"
+
+        - name: "Перегрев дисков"
+          unique_id: cubeserver_disks_overheat
+          default_entity_id: binary_sensor.cubeserver_disks_overheat
+          device_class: heat
+          state: >
             {% set parity = is_state('binary_sensor.cubeserver_parity_disk_overheat', 'on') %}
             {% set disk1 = is_state('binary_sensor.cubeserver_disk_1_overheat', 'on') %}
             {% set disk2 = is_state('binary_sensor.cubeserver_disk_2_overheat', 'on') %}
             {{ parity or disk1 or disk2 }}
 
+    - switch:
+        - name: "VM Windows 10"
+          unique_id: cubeserver_vm_windows10
+          default_entity_id: switch.cubeserver_vm_windows10
+          state: >
+            {{ states('binary_sensor.cubeserver_vm_windows10_ping') }}
+          turn_on:
+            service: script.cubeserver_vm_windows10_run
+          turn_off:
+            service: script.cubeserver_vm_windows10_shutdown
+          icon: mdi:microsoft-windows
+
+        - name: "VM Ubuntu YaDisk"
+          unique_id: cubeserver_vm_ubuntuyadisk
+          default_entity_id: switch.cubeserver_vm_ubuntuyadisk
+          state: >
+            {{ states('binary_sensor.cubeserver_vm_ubuntuyadisk_ping') }}
+          turn_on:
+            service: shell_command.cubeserver_vm_ubuntuyadisk_run
+          turn_off:
+            service: shell_command.cubeserver_vm_ubuntuyadisk_shutdown
+          icon: mdi:ubuntu
+
   command_line:
     - binary_sensor:
         unique_id: cubeserver_vm_windows10_virsh_status
-        name: 'Cubeserver VM Windows10 Virsh Status'
+        name: "Cubeserver VM Windows10 Virsh Status"
         command: "if test $(ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh list --all | grep 'Windows 10' | awk '{print $4}') == running; then echo running; else echo 'not running'; fi"
         device_class: connectivity
-        payload_on: 'running'
-        payload_off: 'not running'
+        payload_on: "running"
+        payload_off: "not running"
         scan_interval: 86400
 
     - binary_sensor:
         unique_id: cubeserver_container_ollama_status
-        name: 'Cubeserver Container Ollama Status'
+        name: "Cubeserver Container Ollama Status"
         command: 'if test $(ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} docker inspect ollama | jq -r ''.[0]["State"]["Status"]'') == running; then echo running; else echo ''not running''; fi'
         device_class: connectivity
-        payload_on: 'running'
-        payload_off: 'not running'
+        payload_on: "running"
+        payload_off: "not running"
         scan_interval: 86400
 
   shell_command:
@@ -283,19 +326,19 @@ cubeserver:
     cubeserver_vm_ubuntuyadisk_shutdown: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh shutdown 'Ubuntu'"
     cubeserver_vm_windows10_switch_to_internal_display: "ssh -i /config/ha.key -o StrictHostKeyChecking=no loskutyan@{{ states('sensor.cubeserver_windows10_vm_ip') }} 'psexec -s -i 1 -accepteula C:\\Windows\\System32\\DisplaySwitch.exe /internal'"
     cubeserver_vm_windows10_switch_to_external_display: "ssh -i /config/ha.key -o StrictHostKeyChecking=no loskutyan@{{ states('sensor.cubeserver_windows10_vm_ip') }} 'psexec -s -i 1 -accepteula C:\\Windows\\System32\\DisplaySwitch.exe /external'"
-    cubeserver_docker_ollama_start: 'ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} ''docker start ollama'''
-    cubeserver_docker_ollama_stop: 'ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} ''docker stop ollama'''
+    cubeserver_docker_ollama_start: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} 'docker start ollama'"
+    cubeserver_docker_ollama_stop: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} 'docker stop ollama'"
 
   script:
     cubeserver_vm_windows10_run:
-      alias: 'cubeserver: включение VM Windows 10'
+      alias: "cubeserver: включение VM Windows 10"
       sequence:
         - service: homeassistant.update_entity
           entity_id: binary_sensor.cubeserver_container_ollama_status
         - if:
             - condition: state
               entity_id: binary_sensor.cubeserver_container_ollama_status
-              state: 'on'
+              state: "on"
           then:
             - service: notify.tg_bot
               data:
@@ -312,11 +355,11 @@ cubeserver:
                 - not:
                     - condition: state
                       entity_id: switch.cubeserver_vm_windows10
-                      state: 'on'
+                      state: "on"
                 - not:
                     - condition: state
                       entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
-                      state: 'on'
+                      state: "on"
           then:
             - service: notify.tg_bot
               data:
@@ -324,7 +367,7 @@ cubeserver:
                   {{ '\U000026A0' }} Запуск VM Windows прошел неуспешно
 
     cubeserver_vm_windows10_shutdown:
-      alias: 'cubeserver: выключение VM Windows 10'
+      alias: "cubeserver: выключение VM Windows 10"
       sequence:
         - service: shell_command.cubeserver_vm_windows10_shutdown
         - delay: 00:02:00
@@ -335,11 +378,11 @@ cubeserver:
                 - not:
                     - condition: state
                       entity_id: switch.cubeserver_vm_windows10
-                      state: 'off'
+                      state: "off"
                 - not:
                     - condition: state
                       entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
-                      state: 'off'
+                      state: "off"
           then:
             - service: notify.tg_bot
               data:
@@ -353,7 +396,7 @@ cubeserver:
             - service: script.cubeserver_ollama_docker_start
 
     cubeserver_ollama_docker_stop:
-      alias: 'cubeserver: остановка контейнера Ollama'
+      alias: "cubeserver: остановка контейнера Ollama"
       sequence:
         - service: shell_command.cubeserver_docker_ollama_stop
         - delay: 00:00:05
@@ -361,50 +404,27 @@ cubeserver:
           entity_id: binary_sensor.cubeserver_container_ollama_status
 
     cubeserver_ollama_docker_start:
-      alias: 'cubeserver: запуск контейнера Ollama'
+      alias: "cubeserver: запуск контейнера Ollama"
       sequence:
         - service: shell_command.cubeserver_docker_ollama_start
         - delay: 00:00:20
         - service: homeassistant.update_entity
           entity_id: binary_sensor.cubeserver_container_ollama_status
 
-  switch:
-    - platform: template
-      switches:
-        cubeserver_vm_windows10:
-          friendly_name: 'VM Windows 10'
-          value_template: >
-            {{ states('binary_sensor.cubeserver_vm_windows10_ping') }}
-          turn_on:
-            service: script.cubeserver_vm_windows10_run
-          turn_off:
-            service: script.cubeserver_vm_windows10_shutdown
-          icon_template: mdi:microsoft-windows
-
-        cubeserver_vm_ubuntuyadisk:
-          friendly_name: 'VM Ubuntu YaDisk'
-          value_template: >
-            {{ states('binary_sensor.cubeserver_vm_ubuntuyadisk_ping') }}
-          turn_on:
-            service: shell_command.cubeserver_vm_ubuntuyadisk_run
-          turn_off:
-            service: shell_command.cubeserver_vm_ubuntuyadisk_shutdown
-          icon_template: mdi:ubuntu
-
   automation:
-    - id: 'Перегрев дисков - уведомление'
+    - id: "Перегрев дисков - уведомление"
       alias: cubeserver_disks_overheat_notify
       initial_state: true
       trigger:
         - platform: state
           entity_id: binary_sensor.cubeserver_disks_overheat
           from:
-            - 'off'
-            - 'on'
+            - "off"
+            - "on"
           to:
-            - 'off'
-            - 'on'
-          for: '00:01:00'
+            - "off"
+            - "on"
+          for: "00:01:00"
       action:
         - service: notify.tg_bot
           data:
@@ -433,19 +453,19 @@ cubeserver:
               Disk 1: {{ disk1_temp }}°C
               Disk 2: {{ disk2_temp }}°C
 
-    - id: 'Начало/окончание Parity-Check - уведомление'
+    - id: "Начало/окончание Parity-Check - уведомление"
       alias: cubeserver_parity_check_start_finish_notify
       initial_state: true
       trigger:
         - platform: state
           entity_id: binary_sensor.cubeserver_parity_check_in_progress
           from:
-            - 'off'
-            - 'on'
+            - "off"
+            - "on"
           to:
-            - 'off'
-            - 'on'
-          for: '00:00:10'
+            - "off"
+            - "on"
+          for: "00:00:10"
       action:
         - service: notify.tg_bot
           data:
@@ -458,19 +478,19 @@ cubeserver:
               {% endif %}
               {{ '\U0001F4BF' }} Cubeserver: {{ message }} {{ states('sensor.time_date') }}
 
-    - id: 'Пауза Parity-Check - уведомление'
+    - id: "Пауза Parity-Check - уведомление"
       alias: cubeserver_parity_check_pause_notify
       initial_state: true
       trigger:
         - platform: state
           entity_id: binary_sensor.cubeserver_parity_check_paused
           from:
-            - 'off'
-            - 'on'
+            - "off"
+            - "on"
           to:
-            - 'off'
-            - 'on'
-          for: '00:00:10'
+            - "off"
+            - "on"
+          for: "00:00:10"
       action:
         - service: notify.tg_bot
           data:
@@ -484,7 +504,7 @@ cubeserver:
               {% endif %}
               {{ '\U0001F4C0' }} Cubeserver: {{ message }} {{ states('sensor.time_date') }}
 
-    - id: 'Началась загрузка торрента - уведомление'
+    - id: "Началась загрузка торрента - уведомление"
       alias: torrent_downloading_started_notify
       initial_state: true
       trigger:
@@ -496,7 +516,7 @@ cubeserver:
             message: >
               {{ '\U00002B07' }} Cubeserver: Началась загрузка торрента. {{ trigger.event.data.name }}
 
-    - id: 'Загрузка торрента завершена - уведомление'
+    - id: "Загрузка торрента завершена - уведомление"
       alias: torrent_downloading_completed_notify
       initial_state: true
       trigger:

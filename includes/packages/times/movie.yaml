@@ -1,10 +1,10 @@
 movie_time:
-  sensor:
-    - platform: template
-      sensors:
-        bedroom_movie_status:
-          friendly_name: 'Включен фильм в спальне'
-          value_template: >
+  template:
+    - sensor:
+        - name: "Включен фильм в спальне"
+          unique_id: bedroom_movie_status
+          default_entity_id: sensor.bedroom_movie_status
+          state: >
             {% set status = states('media_player.plex_plex_for_android_tv_bravia_vh2') %}
             {% if status != 'unavailable' and status != 'idle' %}
               {% set library = state_attr('media_player.plex_plex_for_android_tv_bravia_vh2', 'media_library_title') %}
@@ -19,7 +19,7 @@ movie_time:
 
   script:
     bedroom_movie_dimming_lights_on_playing:
-      alias: 'Приглушение света в спальне для фильма - проигрывание'
+      alias: "Приглушение света в спальне для фильма - проигрывание"
       sequence:
         - service: switch.turn_off
           entity_id:
@@ -37,7 +37,7 @@ movie_time:
             transition: 10
 
     bedroom_movie_dimming_lights_on_pause:
-      alias: 'Приглушение света в спальне для фильма - пауза'
+      alias: "Приглушение света в спальне для фильма - пауза"
       sequence:
         - service: light.turn_on
           entity_id: light.bedroom_floor_aqara_led_bulb
@@ -47,22 +47,22 @@ movie_time:
             transition: 6
 
   automation:
-    - id: 'Включен фильм в спальне, приглушаем свет'
+    - id: "Включен фильм в спальне, приглушаем свет"
       alias: bedroom_movie_playing_dimming_lights
       initial_state: true
       trigger:
         - platform: state
           entity_id: sensor.bedroom_movie_status
-          to: 'playing'
+          to: "playing"
       action:
         - service: script.bedroom_movie_dimming_lights_on_playing
 
-    - id: 'Фильм на паузе в спальне, приглушаем свет'
+    - id: "Фильм на паузе в спальне, приглушаем свет"
       alias: bedroom_movie_paused_dimming_lights
       initial_state: true
       trigger:
         - platform: state
           entity_id: sensor.bedroom_movie_status
-          to: 'paused'
+          to: "paused"
       action:
         - service: script.bedroom_movie_dimming_lights_on_pause

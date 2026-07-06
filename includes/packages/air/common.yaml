@@ -1,19 +1,20 @@
 air_common:
-  sensor:
-    - platform: template
-      sensors:
-        breezers_turnoff_co2_threshold:
-          friendly_name: 'Порог CO2 выключения бризеров'
+  template:
+    - sensor:
+        - name: "Порог CO2 выключения бризеров"
+          unique_id: breezers_turnoff_co2_threshold
+          default_entity_id: sensor.breezers_turnoff_co2_threshold
           device_class: carbon_dioxide
-          unit_of_measurement: 'ppm'
-          value_template: >
+          unit_of_measurement: "ppm"
+          state: >
             {% set outside_t = state_attr('weather.yandex_weather', 'temperature') | float(0) %}
             {{ 500 + max(0, min(5, (outside_t - 15) | abs - 5)) * 10 }}
 
-        breezers_turnon_co2_threshold:
-          friendly_name: 'Порог CO2 включения бризеров'
+        - name: "Порог CO2 включения бризеров"
+          unique_id: breezers_turnon_co2_threshold
+          default_entity_id: sensor.breezers_turnon_co2_threshold
           device_class: carbon_dioxide
-          unit_of_measurement: 'ppm'
-          value_template: >
+          unit_of_measurement: "ppm"
+          state: >
             {% set outside_t = state_attr('weather.yandex_weather', 'temperature') | float(0) %}
             {{ 550 + max(0, min(5, (outside_t - 15) | abs - 5)) * 10 }}

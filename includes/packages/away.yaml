@@ -1,47 +1,46 @@
 away:
   input_boolean:
     somebody_home:
-      name: 'Дома'
+      name: "Дома"
 
   timer:
     left_home_by_phone_presence_after_door_closed:
-      name: 'Проверка присутствия телефона в сети в течение '
+      name: "Проверка присутствия телефона в сети в течение "
       duration: 1800
 
   template:
     - trigger:
         - platform: state
           entity_id: person.aleksandr
-          from: 'home'
+          from: "home"
       sensor:
-        - name: 'Aleksandr Last Time Left Home Timestamp'
+        - name: "Aleksandr Last Time Left Home Timestamp"
           device_class: timestamp
-          state: '{{ now() }}'
+          state: "{{ now() }}"
 
     - trigger:
         - platform: state
           entity_id: person.ekaterina
-          from: 'home'
+          from: "home"
       sensor:
-        - name: 'Ekaterina Last Time Left Home Timestamp'
+        - name: "Ekaterina Last Time Left Home Timestamp"
           device_class: timestamp
-          state: '{{ now() }}'
+          state: "{{ now() }}"
 
     - trigger:
         - platform: state
           entity_id: person.nikolai
-          from: 'home'
+          from: "home"
       sensor:
-        - name: 'Nikolai Last Time Left Home Timestamp'
+        - name: "Nikolai Last Time Left Home Timestamp"
           device_class: timestamp
-          state: '{{ now() }}'
+          state: "{{ now() }}"
 
-  sensor:
-    - platform: template
-      sensors:
-        lights_switches_list_turned_on:
-          friendly_name: 'Список включенных выключателей света'
-          value_template: >
+    - sensor:
+        - name: "Список включенных выключателей света"
+          unique_id: lights_switches_list_turned_on
+          default_entity_id: sensor.lights_switches_list_turned_on
+          state: >
             {% set lights_switches_entities_ids = [
               'switch.kidsroom_lights_common_switch_left',
               'switch.kitchen_lights_switch_left',
@@ -58,9 +57,10 @@ away:
               | list
               | to_json(ensure_ascii=False) }}
 
-        lights_list_turned_on:
-          friendly_name: 'Список включенных светильников'
-          value_template: >
+        - name: "Список включенных светильников"
+          unique_id: lights_list_turned_on
+          default_entity_id: sensor.lights_list_turned_on
+          state: >
             {% set lights_entities_ids = [
               'light.bedroom_floor_aqara_led_bulb',
               'light.bedroom_nightstand_aqara_led_bulb_left',
@@ -76,9 +76,10 @@ away:
               | list
               | to_json(ensure_ascii=False) }}
 
-        heaters_list_turned_on:
-          friendly_name: 'Список включенных нагревателей'
-          value_template: >
+        - name: "Список включенных нагревателей"
+          unique_id: heaters_list_turned_on
+          default_entity_id: sensor.heaters_list_turned_on
+          state: >
             {% set heaters_switches_entities_ids = [
               'switch.bedroom_airpurifier_ptc',
               'switch.kidsroom_airpurifier_ptc',
@@ -90,31 +91,33 @@ away:
               | list
               | to_json(ensure_ascii=False) }}
 
-        aleksandr_since_last_time_at_home_hours:
-          friendly_name: '''Александр ушел, часов назад'''
-          value_template: >
+        - name: "'Александр ушел, часов назад'"
+          unique_id: aleksandr_since_last_time_at_home_hours
+          default_entity_id: sensor.aleksandr_since_last_time_at_home_hours
+          state: >
             {% set last_at_home = states('''sensor.aleksandr_last_time_left_home_timestamp''') %}
             {{ (now().timestamp() - as_timestamp(last_at_home, default=0)) / 3600 }}
 
-        ekaterina_since_last_time_at_home_hours:
-          friendly_name: 'Екатерина ушла, часов назад'
-          value_template: >
+        - name: "Екатерина ушла, часов назад"
+          unique_id: ekaterina_since_last_time_at_home_hours
+          default_entity_id: sensor.ekaterina_since_last_time_at_home_hours
+          state: >
             {% set last_at_home = states('sensor.ekaterina_last_time_left_home_timestamp') %}
             {{ (now().timestamp() - as_timestamp(last_at_home, default=0)) / 3600 }}
 
-        nikolai_since_last_time_at_home_hours:
-          friendly_name: 'Николай ушел, часов назад'
-          value_template: >
+        - name: "Николай ушел, часов назад"
+          unique_id: nikolai_since_last_time_at_home_hours
+          default_entity_id: sensor.nikolai_since_last_time_at_home_hours
+          state: >
             {% set last_at_home = states('sensor.nikolai_last_time_left_home_timestamp') %}
             {{ (now().timestamp() - as_timestamp(last_at_home, default=0)) / 3600 }}
 
-  binary_sensor:
-    - platform: template
-      sensors:
-        some_motion_at_home:
-          friendly_name: 'Движение дома'
+    - binary_sensor:
+        - name: "Движение дома"
+          unique_id: some_motion_at_home
+          default_entity_id: binary_sensor.some_motion_at_home
           device_class: occupancy
-          value_template: >
+          state: >
             {% if is_state('binary_sensor.hallway_motion_sensor_occupancy', 'on')
               or is_state('binary_sensor.kidsroom_motion_sensor_occupancy', 'on')
               or is_state('binary_sensor.kitchen_motion_sensor_occupancy', 'on')
@@ -126,24 +129,25 @@ away:
           delay_off:
             minutes: 10
 
-        any_light_is_on:
-          friendly_name: 'Дома включен свет'
+        - name: "Дома включен свет"
+          unique_id: any_light_is_on
+          default_entity_id: binary_sensor.any_light_is_on
           device_class: light
-          value_template: >
+          state: >
             {{ (states('sensor.lights_switches_list_turned_on') | from_json | length + states('sensor.lights_list_turned_on') | from_json | length) > 0 }}
 
-        any_heater_is_on:
-          friendly_name: 'Дома включен подогрев воздуха'
+        - name: "Дома включен подогрев воздуха"
+          unique_id: any_heater_is_on
+          default_entity_id: binary_sensor.any_heater_is_on
           device_class: heat
-          value_template: >
+          state: >
             {{ states('sensor.heaters_list_turned_on') | from_json | length > 0 }}
 
-  switch:
-    - platform: template
-      switches:
-        somebody_home:
-          friendly_name: 'Дома'
-          value_template: >
+    - switch:
+        - name: "Дома"
+          unique_id: somebody_home
+          default_entity_id: switch.somebody_home
+          state: >
             {{ states('input_boolean.somebody_home') }}
           turn_on:
             service: input_boolean.turn_on
@@ -151,7 +155,7 @@ away:
           turn_off:
             service: input_boolean.turn_off
             entity_id: input_boolean.somebody_home
-          icon_template: >
+          icon: >
             {% if is_state('input_boolean.somebody_home', 'on') %}
               mdi:home-account
             {% else %}
@@ -160,7 +164,7 @@ away:
 
   script:
     turn_off_all_lights:
-      alias: 'Выключение всех светильников'
+      alias: "Выключение всех светильников"
       sequence:
         - service: light.turn_off
           data_template:
@@ -181,7 +185,7 @@ away:
               {{ '\U0001F4A1' }} {{ messages | random }}
 
     turn_off_all_heaters:
-      alias: 'Выключение всех обогревателей'
+      alias: "Выключение всех обогревателей"
       sequence:
         - service: switch.turn_off
           data_template:
@@ -198,7 +202,7 @@ away:
               {{ '\U0001F525' }} {{ messages | random }}
 
     hallway_door_lock_was_locked_notify:
-      alias: 'Замок входной двери закрыт - уведомление'
+      alias: "Замок входной двери закрыт - уведомление"
       sequence:
         - service: notify.tg_bot
           data:
@@ -209,12 +213,12 @@ away:
               {{ '\U0001F510' }} {{ messages | random }}
 
     lock_the_door:
-      alias: 'Закрытие входной двери'
+      alias: "Закрытие входной двери"
       sequence:
         - if:
             - condition: state
               entity_id: binary_sensor.hallway_door_sensor_contact
-              state: 'on'
+              state: "on"
           then:
             - service: script.hallway_door_is_opened_notify
           else:
@@ -225,62 +229,62 @@ away:
             - if:
                 - condition: state
                   entity_id: lock.aqara_smart_lock_u200
-                  state: 'locked'
+                  state: "locked"
               then:
                 - service: script.hallway_door_lock_was_locked_notify
               else:
                 - service: script.hallway_door_lock_is_unlocked_notify
 
   automation:
-    - id: 'Все ушли из дома, закрываем дверь'
+    - id: "Все ушли из дома, закрываем дверь"
       alias: everyone_left_home_lock_the_door
       trigger:
         - platform: state
           entity_id: input_boolean.somebody_home
-          from: 'on'
-          to: 'off'
+          from: "on"
+          to: "off"
       condition:
         - condition: state
           entity_id: lock.aqara_smart_lock_u200
-          state: 'unlocked'
+          state: "unlocked"
       action:
         - service: script.lock_the_door
 
-    - id: 'Все ушли из дома, выключаем свет'
+    - id: "Все ушли из дома, выключаем свет"
       alias: everyone_left_home_turn_off_lights
       trigger:
         - platform: state
           entity_id: input_boolean.somebody_home
-          from: 'on'
-          to: 'off'
+          from: "on"
+          to: "off"
       condition:
         - condition: state
           entity_id: binary_sensor.any_light_is_on
-          state: 'on'
+          state: "on"
       action:
         - service: script.turn_off_all_lights
 
-    - id: 'Все ушли из дома, выключаем нагреватели'
+    - id: "Все ушли из дома, выключаем нагреватели"
       alias: everyone_left_home_turn_off_heaters
       trigger:
         - platform: state
           entity_id: input_boolean.somebody_home
-          from: 'on'
-          to: 'off'
+          from: "on"
+          to: "off"
       condition:
         - condition: state
           entity_id: binary_sensor.any_heater_is_on
-          state: 'on'
+          state: "on"
       action:
         - service: script.turn_off_all_heaters
 
-    - id: 'Все ушли из дома, выключаем ТВ и колонки'
+    - id: "Все ушли из дома, выключаем ТВ и колонки"
       alias: everyone_left_home_turn_off_media
       trigger:
         - platform: state
           entity_id: input_boolean.somebody_home
-          from: 'on'
-          to: 'off'
+          from: "on"
+          to: "off"
       action:
         - service: media_player.turn_off
           entity_id: media_player.sony_xr_65a80j
@@ -290,29 +294,29 @@ away:
             - media_player.bedroom_homepod_mini_right
             - media_player.kidsroom_homepod_mini
 
-    - id: 'Входная дверь закрылась, запуск таймера проверки отсутствия'
+    - id: "Входная дверь закрылась, запуск таймера проверки отсутствия"
       alias: left_home_check_timer_start
       trigger:
         - platform: state
           entity_id: binary_sensor.hallway_door_sensor_contact
-          from: 'on'
-          to: 'off'
+          from: "on"
+          to: "off"
       condition:
         - condition: state
           entity_id:
             - person.aleksandr
             - person.ekaterina
             - person.nikolai
-          state: 'home'
+          state: "home"
           match: any
         - condition: state
           entity_id: timer.left_home_by_phone_presence_after_door_closed
-          state: 'idle'
+          state: "idle"
       action:
         - service: timer.start
           entity_id: timer.left_home_by_phone_presence_after_door_closed
 
-    - id: 'Телефон вышел из сети после закрытия двери'
+    - id: "Телефон вышел из сети после закрытия двери"
       alias: phone_left_home_after_door_was_closed
       trigger:
         - platform: state
@@ -320,78 +324,78 @@ away:
             - person.aleksandr
             - person.ekaterina
             - person.nikolai
-          from: 'home'
-          to: 'not_home'
+          from: "home"
+          to: "not_home"
       condition:
         - not:
             - condition: state
               entity_id: person.aleksandr
-              state: 'home'
+              state: "home"
             - condition: state
               entity_id: person.ekaterina
-              state: 'home'
+              state: "home"
             - condition: state
               entity_id: person.nikolai
-              state: 'home'
+              state: "home"
         - condition: state
           entity_id: timer.left_home_by_phone_presence_after_door_closed
-          state: 'active'
+          state: "active"
       action:
         - service: input_boolean.turn_off
           entity_id: input_boolean.somebody_home
         - service: timer.finish
           entity_id: timer.left_home_by_phone_presence_after_door_closed
 
-    - id: 'Кто-то дома после закрытия двери'
+    - id: "Кто-то дома после закрытия двери"
       alias: somebody_home_after_door_was_closed
       trigger:
         - platform: state
           entity_id:
             - binary_sensor.some_motion_at_home
             - binary_sensor.hallway_door_sensor_contact
-          to: 'on'
+          to: "on"
         - platform: state
           entity_id: binary_sensor.bathroom_door_sensor_contact
           from:
-            - 'on'
-            - 'off'
+            - "on"
+            - "off"
           to:
-            - 'on'
-            - 'off'
+            - "on"
+            - "off"
         - platform: state
           entity_id: sensor.bedroom_aqara_cube_action
           to:
-            - 'flip90'
-            - 'flip180'
-            - 'rotate_right'
-            - 'rotate_left'
+            - "flip90"
+            - "flip180"
+            - "rotate_right"
+            - "rotate_left"
       condition:
         - condition: state
           entity_id: timer.left_home_by_phone_presence_after_door_closed
-          state: 'active'
+          state: "active"
       action:
         - service: input_boolean.turn_on
           entity_id: input_boolean.somebody_home
         - service: timer.finish
           entity_id: timer.left_home_by_phone_presence_after_door_closed
 
-    - id: 'Кто-то вернулся домой'
+    - id: "Кто-то вернулся домой"
       alias: somebody_back_home
       trigger:
         - platform: state
           entity_id: binary_sensor.hallway_door_sensor_contact
-          to: 'on'
+          to: "on"
         - platform: state
           entity_id:
             - person.aleksandr
             - person.ekaterina
             - person.nikolai
-          from: 'not_home'
-          to: 'home'
+          from: "not_home"
+          to: "home"
       condition:
         - condition: state
           entity_id: input_boolean.somebody_home
-          state: 'off'
+          state: "off"
       action:
         - service: input_boolean.turn_on
           entity_id: input_boolean.somebody_home

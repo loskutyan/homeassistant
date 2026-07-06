@@ -1,20 +1,21 @@
 sleep_time:
   input_boolean:
     kidsroom_asleep:
-      name: 'В детской спят'
+      name: "В детской спят"
 
     bedroom_asleep:
-      name: 'В спальне спят'
+      name: "В спальне спят"
 
     bedroom_waking_up:
-      name: 'Просыпаемся в спальне'
+      name: "Просыпаемся в спальне"
 
-  sensor:
-    - platform: template
-      sensors:
-        kidsroom_wakeup_time:
+  template:
+    - sensor:
+        - name: "kidsroom_wakeup_time"
+          unique_id: kidsroom_wakeup_time
+          default_entity_id: sensor.kidsroom_wakeup_time
           device_class: timestamp
-          value_template: >
+          state: >
             {% set is_workday = is_state('binary_sensor.workday_sensor', 'on') %}
             {% if is_workday %}
               {{ today_at('07:50').isoformat() }}
@@ -22,9 +23,11 @@ sleep_time:
               {{ today_at('10:30').isoformat() }}
             {% endif %}
 
-        bedroom_wakeup_time:
+        - name: "bedroom_wakeup_time"
+          unique_id: bedroom_wakeup_time
+          default_entity_id: sensor.bedroom_wakeup_time
           device_class: timestamp
-          value_template: >
+          state: >
             {% set is_workday = is_state('binary_sensor.workday_sensor', 'on') %}
             {% if is_workday %}
               {{ today_at('09:30').isoformat() }}
@@ -32,12 +35,11 @@ sleep_time:
               {{ today_at('10:30').isoformat() }}
             {% endif %}
 
-  switch:
-    - platform: template
-      switches:
-        kidsroom_asleep:
-          friendly_name: 'В детской спят'
-          value_template: >
+    - switch:
+        - name: "В детской спят"
+          unique_id: kidsroom_asleep
+          default_entity_id: switch.kidsroom_asleep
+          state: >
             {{ states('input_boolean.kidsroom_asleep') }}
           turn_on:
             service: input_boolean.turn_on
@@ -45,16 +47,17 @@ sleep_time:
           turn_off:
             service: input_boolean.turn_off
             entity_id: input_boolean.kidsroom_asleep
-          icon_template: >
+          icon: >
             {% if is_state('input_boolean.kidsroom_asleep', 'on') %}
               mdi:bed
             {% else %}
               mdi:human-child
             {% endif %}
 
-        bedroom_asleep:
-          friendly_name: 'В спальне спят'
-          value_template: >
+        - name: "В спальне спят"
+          unique_id: bedroom_asleep
+          default_entity_id: switch.bedroom_asleep
+          state: >
             {{ states('input_boolean.bedroom_asleep') }}
           turn_on:
             service: input_boolean.turn_on
@@ -62,7 +65,7 @@ sleep_time:
           turn_off:
             service: input_boolean.turn_off
             entity_id: input_boolean.bedroom_asleep
-          icon_template: >
+          icon: >
             {% if is_state('input_boolean.bedroom_asleep', 'on') %}
               mdi:bed-king
             {% else %}
@@ -70,20 +73,20 @@ sleep_time:
             {% endif %}
 
   automation:
-    - id: 'Отход ко сну в детской'
+    - id: "Отход ко сну в детской"
       alias: kidsroom_going_to_sleep
       initial_state: true
       trigger:
         - platform: state
           entity_id: sensor.kidsroom_lights_common_switch_action
-          to: 'double_right'
+          to: "double_right"
         - platform: state
           entity_id: sensor.kidsroom_aqara_button_action
-          to: 'hold'
+          to: "hold"
       condition:
         - condition: state
           entity_id: input_boolean.kidsroom_asleep
-          state: 'off'
+          state: "off"
       action:
         - service: switch.turn_off
           entity_id: switch.kidsroom_lights_common_switch_left
@@ -95,7 +98,7 @@ sleep_time:
         - service: input_select.select_option
           entity_id: input_select.kidsroom_airpurifier_mode
           data:
-            option: 'Favorite'
+            option: "Favorite"
           continue_on_error: true
         - service: timer.start
           entity_id: timer.kidsroom_airpurifier_fixed_speed
@@ -108,7 +111,7 @@ sleep_time:
         - service: humidifier.set_mode
           entity_id: humidifier.kidsroom_smartmi_humidifier
           data:
-            mode: 'Silent'
+            mode: "Silent"
           continue_on_error: true
         - service: timer.start
           entity_id: timer.kidsroom_humidifier_fixed_mode
@@ -133,21 +136,21 @@ sleep_time:
         - if:
             - condition: state
               entity_id: switch.kidsroom_ac
-              state: 'on'
+              state: "on"
             - condition: state
               entity_id: climate.kidsroom_ac
               attribute: swing_mode
-              state: 'on'
+              state: "on"
           then:
             - service: climate.set_swing_mode
               entity_id: climate.kidsroom_ac
               data:
-                swing_mode: 'off'
+                swing_mode: "off"
 
         - service: input_boolean.turn_on
           entity_id: input_boolean.kidsroom_asleep
 
-    - id: 'В детской уже не спят'
+    - id: "В детской уже не спят"
       alias: kidsroom_supposed_to_wake_up
       initial_state: true
       trigger:
@@ -155,14 +158,14 @@ sleep_time:
           at: sensor.kidsroom_wakeup_time
         - platform: state
           entity_id: sensor.kidsroom_lights_common_switch_action
-          to: 'double_right'
+          to: "double_right"
         - platform: state
           entity_id: sensor.kidsroom_aqara_button_action
-          to: 'hold'
+          to: "hold"
       condition:
         - condition: state
           entity_id: input_boolean.kidsroom_asleep
-          state: 'on'
+          state: "on"
       action:
         - service: input_boolean.turn_off
           entity_id: input_boolean.kidsroom_asleep
@@ -177,22 +180,22 @@ sleep_time:
         - if:
             - condition: state
               entity_id: switch.smartintercom_otkliuchit_trubku_domofona
-              state: 'on'
+              state: "on"
           then:
             - service: switch.turn_off
               entity_id: switch.smartintercom_otkliuchit_trubku_domofona
 
-    - id: 'Отход ко сну в спальне'
+    - id: "Отход ко сну в спальне"
       alias: bedroom_going_to_sleep
       initial_state: true
       trigger:
         - platform: state
           entity_id: sensor.bedroom_aqara_cube_action
-          to: 'flip180'
+          to: "flip180"
       condition:
         - condition: state
           entity_id: input_boolean.bedroom_asleep
-          state: 'off'
+          state: "off"
       action:
         - service: light.turn_off
           entity_id:
@@ -214,7 +217,7 @@ sleep_time:
         - service: input_select.select_option
           entity_id: input_select.bedroom_airpurifier_mode
           data:
-            option: 'Favorite'
+            option: "Favorite"
           continue_on_error: true
         - service: timer.start
           entity_id: timer.bedroom_airpurifier_fixed_speed
@@ -239,16 +242,16 @@ sleep_time:
         - if:
             - condition: state
               entity_id: switch.bedroom_ac
-              state: 'on'
+              state: "on"
             - condition: state
               entity_id: climate.bedroom_ac
               attribute: swing_mode
-              state: 'off'
+              state: "off"
           then:
             - service: climate.set_swing_mode
               entity_id: climate.bedroom_ac
               data:
-                swing_mode: 'on'
+                swing_mode: "on"
 
         - service: cover.close_cover
           entity_id: cover.bedroom_curtain
@@ -256,7 +259,7 @@ sleep_time:
         - service: input_boolean.turn_on
           entity_id: input_boolean.bedroom_asleep
 
-    - id: 'В спальне уже не спят'
+    - id: "В спальне уже не спят"
       alias: bedroom_supposed_to_wake_up
       initial_state: true
       trigger:
@@ -264,21 +267,21 @@ sleep_time:
           at: sensor.bedroom_wakeup_time
         - platform: state
           entity_id: sensor.bedroom_aqara_cube_action
-          to: 'flip180'
+          to: "flip180"
       condition:
         - condition: state
           entity_id: input_boolean.bedroom_asleep
-          state: 'on'
+          state: "on"
       action:
         - service: input_boolean.turn_off
           entity_id: input_boolean.bedroom_asleep
 
-    - id: 'Закрытие шторы в детской'
+    - id: "Закрытие шторы в детской"
       alias: kidsroom_closing_curtain
       initial_state: true
       trigger:
         - platform: time
-          at: '03:00'
+          at: "03:00"
         - platform: homeassistant
           event: start
       condition:
@@ -288,7 +291,7 @@ sleep_time:
           above: 50
         - condition: state
           entity_id: input_boolean.kidsroom_asleep
-          state: 'on'
+          state: "on"
         - condition: template
           value_template: >
             {% set sun_next_rising = states('sensor.sun_next_rising') %}

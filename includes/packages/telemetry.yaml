@@ -1,90 +1,106 @@
 telemetry:
-  sensor:
-    - platform: template
-      sensors:
-        automations_count:
-          friendly_name: 'Автоматизаций всего'
-          value_template: '{{ states.automation | list | length }}'
-          icon_template: mdi:head
+  template:
+    - sensor:
+        - name: "Автоматизаций всего"
+          unique_id: automations_count
+          default_entity_id: sensor.automations_count
+          state: "{{ states.automation | list | length }}"
+          icon: mdi:head
 
-        automations_on_count:
-          friendly_name: 'Автоматизаций включено'
-          value_template: '{{ states.automation | selectattr (''state'', ''equalto'', ''on'') | list | length }}'
-          icon_template: mdi:head-check
+        - name: "Автоматизаций включено"
+          unique_id: automations_on_count
+          default_entity_id: sensor.automations_on_count
+          state: "{{ states.automation | selectattr ('state', 'equalto', 'on') | list | length }}"
+          icon: mdi:head-check
 
-        automations_off_count:
-          friendly_name: 'Автоматизаций выключено'
-          value_template: '{{ states.automation | selectattr (''state'', ''equalto'', ''off'') | list | length }}'
-          icon_template: mdi:head-remove
+        - name: "Автоматизаций выключено"
+          unique_id: automations_off_count
+          default_entity_id: sensor.automations_off_count
+          state: "{{ states.automation | selectattr ('state', 'equalto', 'off') | list | length }}"
+          icon: mdi:head-remove
 
-        automations_unavailable_count:
-          friendly_name: 'Автоматизаций недоступно'
-          value_template: '{{ states.automation | selectattr (''state'', ''equalto'', ''unavailable'') | list | length }}'
-          icon_template: mdi:head-question
+        - name: "Автоматизаций недоступно"
+          unique_id: automations_unavailable_count
+          default_entity_id: sensor.automations_unavailable_count
+          state: "{{ states.automation | selectattr ('state', 'equalto', 'unavailable') | list | length }}"
+          icon: mdi:head-question
 
-        scripts_count:
-          friendly_name: 'Скриптов всего'
-          value_template: '{{ states.script | list | length }}'
-          icon_template: mdi:file
+        - name: "Скриптов всего"
+          unique_id: scripts_count
+          default_entity_id: sensor.scripts_count
+          state: "{{ states.script | list | length }}"
+          icon: mdi:file
 
-        scripts_on_count:
-          friendly_name: 'Скриптов включено'
-          value_template: '{{ states.script | selectattr (''state'', ''equalto'', ''on'') | list | length }}'
-          icon_template: mdi:file-check
+        - name: "Скриптов включено"
+          unique_id: scripts_on_count
+          default_entity_id: sensor.scripts_on_count
+          state: "{{ states.script | selectattr ('state', 'equalto', 'on') | list | length }}"
+          icon: mdi:file-check
 
-        scripts_off_count:
-          friendly_name: 'Скриптов выключено'
-          value_template: '{{ states.script | selectattr (''state'', ''equalto'', ''off'') | list | length }}'
-          icon_template: mdi:file-remove
+        - name: "Скриптов выключено"
+          unique_id: scripts_off_count
+          default_entity_id: sensor.scripts_off_count
+          state: "{{ states.script | selectattr ('state', 'equalto', 'off') | list | length }}"
+          icon: mdi:file-remove
 
-        scripts_unavailable_count:
-          friendly_name: 'Скриптов недоступно'
-          value_template: '{{ states.script | selectattr (''state'', ''equalto'', ''unavailable'') | list | length }}'
-          icon_template: mdi:file-question
+        - name: "Скриптов недоступно"
+          unique_id: scripts_unavailable_count
+          default_entity_id: sensor.scripts_unavailable_count
+          state: "{{ states.script | selectattr ('state', 'equalto', 'unavailable') | list | length }}"
+          icon: mdi:file-question
 
-        lights_count:
-          friendly_name: 'Светильников всего'
-          value_template: '{{ states.light | list | length }}'
-          icon_template: mdi:lightbulb-group
+        - name: "Светильников всего"
+          unique_id: lights_count
+          default_entity_id: sensor.lights_count
+          state: "{{ states.light | list | length }}"
+          icon: mdi:lightbulb-group
 
-        lights_on_count:
-          friendly_name: 'Светильников включено'
-          value_template: '{{ states.light | selectattr (''state'', ''equalto'', ''on'') | list | length }}'
-          icon_template: mdi:lightbulb-on
+        - name: "Светильников включено"
+          unique_id: lights_on_count
+          default_entity_id: sensor.lights_on_count
+          state: "{{ states.light | selectattr ('state', 'equalto', 'on') | list | length }}"
+          icon: mdi:lightbulb-on
 
-        lights_off_count:
-          friendly_name: 'Светильников выключено'
-          value_template: '{{ states.light | selectattr (''state'', ''equalto'', ''off'') | list | length }}'
-          icon_template: mdi:lightbulb
+        - name: "Светильников выключено"
+          unique_id: lights_off_count
+          default_entity_id: sensor.lights_off_count
+          state: "{{ states.light | selectattr ('state', 'equalto', 'off') | list | length }}"
+          icon: mdi:lightbulb
 
-        lights_unavailable_count:
-          friendly_name: 'Светильников недоступно'
-          value_template: '{{ states.light | selectattr (''state'', ''equalto'', ''unavailable'') | list | length }}'
-          icon_template: mdi:lightbulb-question
+        - name: "Светильников недоступно"
+          unique_id: lights_unavailable_count
+          default_entity_id: sensor.lights_unavailable_count
+          state: "{{ states.light | selectattr ('state', 'equalto', 'unavailable') | list | length }}"
+          icon: mdi:lightbulb-question
 
-        switches_count:
-          friendly_name: 'Переключателей всего'
-          value_template: '{{ states.switch | list | length }}'
-          icon_template: mdi:toggle-switch
+        - name: "Переключателей всего"
+          unique_id: switches_count
+          default_entity_id: sensor.switches_count
+          state: "{{ states.switch | list | length }}"
+          icon: mdi:toggle-switch
 
-        switches_on_count:
-          friendly_name: 'Переключателей включено'
-          value_template: '{{ states.switch | selectattr (''state'', ''equalto'', ''on'') | list | length }}'
-          icon_template: mdi:toggle-switch-variant
+        - name: "Переключателей включено"
+          unique_id: switches_on_count
+          default_entity_id: sensor.switches_on_count
+          state: "{{ states.switch | selectattr ('state', 'equalto', 'on') | list | length }}"
+          icon: mdi:toggle-switch-variant
 
-        switches_off_count:
-          friendly_name: 'Переключателей выключено'
-          value_template: '{{ states.switch | selectattr (''state'', ''equalto'', ''off'') | list | length }}'
-          icon_template: mdi:toggle-switch-variant-off
+        - name: "Переключателей выключено"
+          unique_id: switches_off_count
+          default_entity_id: sensor.switches_off_count
+          state: "{{ states.switch | selectattr ('state', 'equalto', 'off') | list | length }}"
+          icon: mdi:toggle-switch-variant-off
 
-        switches_unavailable_count:
-          friendly_name: 'Переключателей недоступно'
-          value_template: '{{ states.switch | selectattr (''state'', ''equalto'', ''unavailable'') | list | length }}'
-          icon_template: mdi:toggle-switch-outline
+        - name: "Переключателей недоступно"
+          unique_id: switches_unavailable_count
+          default_entity_id: sensor.switches_unavailable_count
+          state: "{{ states.switch | selectattr ('state', 'equalto', 'unavailable') | list | length }}"
+          icon: mdi:toggle-switch-outline
 
-        sensors_unavailable_count:
-          friendly_name: 'Сенсоров недоступно'
-          value_template: >
+        - name: "Сенсоров недоступно"
+          unique_id: sensors_unavailable_count
+          default_entity_id: sensor.sensors_unavailable_count
+          state: >
             {% set dishwasher_unavailable_sensors = [
               'sensor.dishwasher_remaining_program_time',
               'sensor.dishwasher_program_progress',
@@ -97,9 +113,10 @@ telemetry:
               | rejectattr ('entity_id', 'match', 'sensor.cubeserver_parity_finish_timestamp*')
               | list
               | length }}
-          icon_template: mdi:eye-off
+          icon: mdi:eye-off
 
-        binary_sensors_unavailable_count:
-          friendly_name: 'Бинарных сенсоров недоступно'
-          value_template: '{{ states.binary_sensor | selectattr (''state'', ''equalto'', ''unavailable'') | list | length }}'
-          icon_template: mdi:alert-circle
+        - name: "Бинарных сенсоров недоступно"
+          unique_id: binary_sensors_unavailable_count
+          default_entity_id: sensor.binary_sensors_unavailable_count
+          state: "{{ states.binary_sensor | selectattr ('state', 'equalto', 'unavailable') | list | length }}"
+          icon: mdi:alert-circle

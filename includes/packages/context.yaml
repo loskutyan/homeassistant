@@ -1,10 +1,31 @@
 context:
   input_number:
     electricity_price:
-      name: 'Тариф электроэнергии'
+      name: "Тариф электроэнергии"
       min: 0
       max: 100
       step: 0.01
-      unit_of_measurement: 'RUB/kWh'
+      unit_of_measurement: "RUB/kWh"
       initial: 7.28
       icon: mdi:currency-rub
+
+  sensor:
+    - platform: time_date
+      display_options:
+        - "time"
+        - "date"
+        - "time_date"
+
+  template:
+    - sensor:
+        - name: "weekday"
+          unique_id: weekday
+          default_entity_id: sensor.weekday
+          state: >
+            {{ ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][now().weekday()] }}
+
+        - name: "electricity_price"
+          unique_id: electricity_price
+          default_entity_id: sensor.electricity_price
+          unit_of_measurement: "RUB/kWh"
+          state: '{{ states("input_number.electricity_price") }}'
