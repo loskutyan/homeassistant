@@ -1,0 +1,10 @@
+context:
+  input_number:
+    electricity_price:
+      name: 'Тариф электроэнергии'
+      min: 0
+      max: 100
+      step: 0.01
+      unit_of_measurement: 'RUB/kWh'
+      initial: 7.28
+      icon: mdi:currency-rub

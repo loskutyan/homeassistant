@@ -41,7 +41,6 @@ mushroom_mode_control_3buttons:
       - flex-shrink: 1
       - width: 100%
       - justify-content: flex-end
-      - width: 100%
       - '--mdc-ripple-press-opacity': 0
     grid:
       - grid-template-areas: >-

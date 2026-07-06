@@ -11,5 +11,5 @@
         {{ ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][now().weekday()] }}
 
     electricity_price:
-      value_template: '6.15'
+      value_template: '{{ states("input_number.electricity_price") }}'
       unit_of_measurement: 'RUB/kWh'

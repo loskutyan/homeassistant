@@ -3,22 +3,22 @@ telemetry:
     - platform: template
       sensors:
         automations_count:
-          friendly_name: 'Автомазаций всего'
+          friendly_name: 'Автоматизаций всего'
           value_template: '{{ states.automation | list | length }}'
           icon_template: mdi:head
 
         automations_on_count:
-          friendly_name: 'Автомазаций включено'
+          friendly_name: 'Автоматизаций включено'
           value_template: '{{ states.automation | selectattr (''state'', ''equalto'', ''on'') | list | length }}'
           icon_template: mdi:head-check
 
         automations_off_count:
-          friendly_name: 'Автомазаций выключено'
+          friendly_name: 'Автоматизаций выключено'
           value_template: '{{ states.automation | selectattr (''state'', ''equalto'', ''off'') | list | length }}'
           icon_template: mdi:head-remove
 
         automations_unavailable_count:
-          friendly_name: 'Автомазаций недоступно'
+          friendly_name: 'Автоматизаций недоступно'
           value_template: '{{ states.automation | selectattr (''state'', ''equalto'', ''unavailable'') | list | length }}'
           icon_template: mdi:head-question
 

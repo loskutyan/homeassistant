@@ -197,7 +197,7 @@ alarm:
         - tg_urgent
 
     kidsroom_ac_plug_overload:
-      name: 'Перегрузка розетки кондиционера в спальне'
+      name: 'Перегрузка розетки кондиционера в детской'
       entity_id: binary_sensor.kidsroom_ac_plug_overload
       state: 'on'
       repeat: 5
@@ -211,13 +211,11 @@ alarm:
       alias: 'Закрытие кранов в ванной'
       sequence:
         - service: switch.turn_on
-          data_template:
-            entity_id: switch.bathroom_valves_relay_right
+          entity_id: switch.bathroom_valves_relay_right
           continue_on_error: false
         - delay: 00:00:30
         - service: switch.turn_off
-          data_template:
-            entity_id: switch.bathroom_valves_relay_right
+          entity_id: switch.bathroom_valves_relay_right
           continue_on_error: true
         - service: notify.tg_urgent
           data:
@@ -231,13 +229,11 @@ alarm:
       alias: 'Открытие кранов в ванной'
       sequence:
         - service: switch.turn_on
-          data_template:
-            entity_id: switch.bathroom_valves_relay_left
+          entity_id: switch.bathroom_valves_relay_left
           continue_on_error: false
         - delay: 00:00:20
         - service: switch.turn_off
-          data_template:
-            entity_id: switch.bathroom_valves_relay_left
+          entity_id: switch.bathroom_valves_relay_left
           continue_on_error: true
         - service: notify.tg_urgent
           data:

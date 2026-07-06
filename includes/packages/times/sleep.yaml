@@ -22,6 +22,16 @@ sleep_time:
               {{ today_at('10:30').isoformat() }}
             {% endif %}
 
+        bedroom_wakeup_time:
+          device_class: timestamp
+          value_template: >
+            {% set is_workday = is_state('binary_sensor.workday_sensor', 'on') %}
+            {% if is_workday %}
+              {{ today_at('09:30').isoformat() }}
+            {% else %}
+              {{ today_at('10:30').isoformat() }}
+            {% endif %}
+
   switch:
     - platform: template
       switches:
@@ -251,7 +261,7 @@ sleep_time:
       initial_state: true
       trigger:
         - platform: time
-          at: '07:30'
+          at: sensor.bedroom_wakeup_time
         - platform: state
           entity_id: sensor.bedroom_aqara_cube_action
           to: 'flip180'

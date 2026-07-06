@@ -14,7 +14,7 @@ homeassistant:
   packages: !include_dir_merge_named includes/packages
 
 logger:
-  default: info
+  default: warn
   logs:
     libav.rtsp: critical
 

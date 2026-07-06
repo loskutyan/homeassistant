@@ -3,7 +3,7 @@ router:
     - binary_sensor:
         unique_id: router_xray_status
         name: "Router Xray Status"
-        command: "if ssh -i /config/ha.key -p 222 -o StrictHostKeyChecking=no root@192.168.1.1 /opt/etc/init.d/S24xray status | grep -q alive; then echo alive; else echo dead; fi"
+        command: "if nc -z -w 5 192.168.1.1 10001; then echo alive; else echo dead; fi"
         device_class: running
         payload_on: "alive"
         payload_off: "dead"
@@ -19,7 +19,8 @@ router:
         - platform: state
           entity_id: binary_sensor.router_xray_status
           from: "on"
-          to: "off"
+          for:
+            minutes: 4
       action:
         - delay: 00:00:10
         - condition: state
@@ -37,8 +38,8 @@ router:
         - platform: state
           entity_id: binary_sensor.router_xray_status
           from: "on"
-          to: "off"
-          for: "00:01:00"
+          for:
+            minutes: 2
       action:
         - service: notify.tg_urgent
           data:

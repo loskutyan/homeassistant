@@ -181,45 +181,20 @@ bedroom_lights:
           entity_id: light.bedroom_floor_aqara_led_bulb
           state: 'off'
       action:
-        - if:
-            - condition: state
-              entity_id: light.bedroom_floor_aqara_led_bulb
-              state: 'off'
-          then:
-            - service: light.turn_on
-              entity_id: light.bedroom_floor_aqara_led_bulb
-              data_template:
-                brightness: >
-                  {{ states('sensor.bedroom_aqara_led_bulbs_brightness_schedule') }}
-                color_temp_kelvin: >
-                  {{ states('sensor.bedroom_aqara_led_bulbs_color_temp_schedule') }}
-                transition: 2
-        - if:
-            - condition: state
-              entity_id: light.bedroom_nightstand_aqara_led_bulb_left
-              state: 'off'
-          then:
-            - service: light.turn_on
-              entity_id: light.bedroom_nightstand_aqara_led_bulb_left
-              data_template:
-                brightness: >
-                  {{ states('sensor.bedroom_aqara_led_bulbs_brightness_schedule') }}
-                color_temp_kelvin: >
-                  {{ states('sensor.bedroom_aqara_led_bulbs_color_temp_schedule') }}
-                transition: 2
-        - if:
-            - condition: state
-              entity_id: light.bedroom_nightstand_aqara_led_bulb_right
-              state: 'off'
-          then:
-            - service: light.turn_on
-              entity_id: light.bedroom_nightstand_aqara_led_bulb_right
-              data_template:
-                brightness: >
-                  {{ states('sensor.bedroom_aqara_led_bulbs_brightness_schedule') }}
-                color_temp_kelvin: >
-                  {{ states('sensor.bedroom_aqara_led_bulbs_color_temp_schedule') }}
-                transition: 2
+        - service: light.turn_on
+          data_template:
+            entity_id: >
+              {% set bulbs = [
+                states.light.bedroom_floor_aqara_led_bulb,
+                states.light.bedroom_nightstand_aqara_led_bulb_left,
+                states.light.bedroom_nightstand_aqara_led_bulb_right
+              ] %}
+              {{ bulbs | selectattr('state', '==', 'off') | map(attribute='entity_id') | join(', ') }}
+            brightness: >
+              {{ states('sensor.bedroom_aqara_led_bulbs_brightness_schedule') }}
+            color_temp_kelvin: >
+              {{ states('sensor.bedroom_aqara_led_bulbs_color_temp_schedule') }}
+            transition: 2
 
     - id: 'Включение утреннего режима лампы Aqara торшера в спальне'
       alias: bedroom_floor_aqara_led_bulb_wakeup_light_turn_on
@@ -317,42 +292,17 @@ bedroom_lights:
               entity_id: timer.bedroom_floor_aqara_led_bulb_wakeup_light_turn_off
               state: 'active'
       action:
-        - if:
-            - condition: state
-              entity_id: light.bedroom_floor_aqara_led_bulb
-              state: 'on'
-          then:
-            - service: light.turn_on
-              entity_id: light.bedroom_floor_aqara_led_bulb
-              data_template:
-                brightness: >
-                  {{ states('sensor.bedroom_aqara_led_bulbs_brightness_schedule') }}
-                color_temp_kelvin: >
-                  {{ states('sensor.bedroom_aqara_led_bulbs_color_temp_schedule') }}
-                transition: 5
-        - if:
-            - condition: state
-              entity_id: light.bedroom_nightstand_aqara_led_bulb_left
-              state: 'on'
-          then:
-            - service: light.turn_on
-              entity_id: light.bedroom_nightstand_aqara_led_bulb_left
-              data_template:
-                brightness: >
-                  {{ states('sensor.bedroom_aqara_led_bulbs_brightness_schedule') }}
-                color_temp_kelvin: >
-                  {{ states('sensor.bedroom_aqara_led_bulbs_color_temp_schedule') }}
-                transition: 5
-        - if:
-            - condition: state
-              entity_id: light.bedroom_nightstand_aqara_led_bulb_right
-              state: 'on'
-          then:
-            - service: light.turn_on
-              entity_id: light.bedroom_nightstand_aqara_led_bulb_right
-              data_template:
-                brightness: >
-                  {{ states('sensor.bedroom_aqara_led_bulbs_brightness_schedule') }}
-                color_temp_kelvin: >
-                  {{ states('sensor.bedroom_aqara_led_bulbs_color_temp_schedule') }}
-                transition: 5
+        - service: light.turn_on
+          data_template:
+            entity_id: >
+              {% set bulbs = [
+                states.light.bedroom_floor_aqara_led_bulb,
+                states.light.bedroom_nightstand_aqara_led_bulb_left,
+                states.light.bedroom_nightstand_aqara_led_bulb_right
+              ] %}
+              {{ bulbs | selectattr('state', '==', 'on') | map(attribute='entity_id') | join(', ') }}
+            brightness: >
+              {{ states('sensor.bedroom_aqara_led_bulbs_brightness_schedule') }}
+            color_temp_kelvin: >
+              {{ states('sensor.bedroom_aqara_led_bulbs_color_temp_schedule') }}
+            transition: 5

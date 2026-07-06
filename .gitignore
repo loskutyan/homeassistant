@@ -1,8 +1,10 @@
+*.key
 cubeserver.key
 ha.key*
 secrets.yaml
 known_devices.yaml
 home-assistant.*
+home-assistant*.db*
 home-assistant_v2.db
 .storage/
 image/
