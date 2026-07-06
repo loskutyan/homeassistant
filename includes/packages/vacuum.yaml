@@ -233,7 +233,7 @@ vacuum:
         - delay: 00:00:03
         - service: telegram_bot.send_photo
           data_template:
-            target:
+            chat_id:
               - !secret tg_chat_id_loskutyan
             file: "/config/www/cam_captures/roborock_s5_max_vacuum_map.jpg"
 
