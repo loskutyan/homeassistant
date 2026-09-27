@@ -19,3 +19,4 @@ custom_components/smartir/*
 includes/sensors/devices.yaml
 .ha_run.lock
 .cache/
+.DS_Store

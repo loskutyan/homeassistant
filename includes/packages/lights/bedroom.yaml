@@ -45,7 +45,8 @@ bedroom_lights:
             color_temp_kelvin: >
               {{ state_attr('light.bedroom_floor_aqara_led_bulb', 'max_color_temp_kelvin') }}
             transition: 3
-        - delay: 00:01:00
+        - delay:
+            minutes: 1
         - repeat:
             while: >
               {{ state_attr('light.bedroom_floor_aqara_led_bulb', 'brightness') < 225 }}
@@ -228,12 +229,14 @@ bedroom_lights:
           state: "on"
       action:
         - sequence:
-            - delay: 00:02:00
+            - delay:
+                minutes: 2
             - service: cover.set_cover_position
               entity_id: cover.bedroom_curtain
               data:
                 position: 50
-            - delay: 00:03:00
+            - delay:
+                minutes: 3
             - service: cover.open_cover
               entity_id: cover.bedroom_curtain
 

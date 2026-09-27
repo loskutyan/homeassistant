@@ -33,6 +33,15 @@ conditioning_bedroom:
       step: 0.5
       icon: mdi:thermometer-auto
 
+    bedroom_ac_drying_upper_humidity_threshold:
+      name: "Верхний порог влажности для осушения спальни"
+      min: 0
+      max: 100
+      step: 1
+      initial: 50
+      unit_of_measurement: "%"
+      icon: mdi:water-percent
+
   input_select:
     bedroom_ac_mode:
       name: "Режим работы кондиционера в спальне"
@@ -371,9 +380,11 @@ conditioning_bedroom:
             - switch.bedroom_ac
             - switch.bedroom_auto_conditioning
           to: "on"
+        - platform: state
+          entity_id: input_number.bedroom_ac_drying_upper_humidity_threshold
         - platform: numeric_state
           entity_id: sensor.bedroom_average_humidity
-          above: 50
+          above: input_number.bedroom_ac_drying_upper_humidity_threshold
           for: "00:01:00"
         - platform: numeric_state
           entity_id: sensor.bedroom_average_humidity
@@ -399,7 +410,7 @@ conditioning_bedroom:
               state: "cool"
             - condition: numeric_state
               entity_id: sensor.bedroom_average_humidity
-              above: 50
+              above: input_number.bedroom_ac_drying_upper_humidity_threshold
           then:
             - service: input_select.select_option
               entity_id: input_select.bedroom_ac_mode

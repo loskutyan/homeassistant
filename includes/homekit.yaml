@@ -127,7 +127,7 @@
       name: 'Aqara'
     binary_sensor.kitchen_smoke_sensor_smoke:
       name: 'Датчик дыма'
-    binary_sensor.hallway_smoke_sensor_smoke:
+    binary_sensor.serverroom_smoke_sensor_smoke:
       name: 'Датчик дыма'
     switch.bathroom_valves:
       name: 'Шаровые краны в ванной'

@@ -35,7 +35,7 @@ alarm:
           default_entity_id: sensor.found_smokes
           state: >
             {% set smoke_sensors = [
-              'binary_sensor.hallway_smoke_sensor_smoke',
+              'binary_sensor.serverroom_smoke_sensor_smoke',
               'binary_sensor.kitchen_smoke_sensor_smoke',
             ] %}
             {{ states.binary_sensor
