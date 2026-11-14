@@ -235,7 +235,8 @@ alarm:
         - service: switch.turn_on
           entity_id: switch.bathroom_valves_relay_right
           continue_on_error: false
-        - delay: 00:00:30
+        - delay:
+            seconds: 30
         - service: switch.turn_off
           entity_id: switch.bathroom_valves_relay_right
           continue_on_error: true
@@ -255,7 +256,8 @@ alarm:
         - service: switch.turn_on
           entity_id: switch.bathroom_valves_relay_left
           continue_on_error: false
-        - delay: 00:00:20
+        - delay:
+            seconds: 20
         - service: switch.turn_off
           entity_id: switch.bathroom_valves_relay_left
           continue_on_error: true

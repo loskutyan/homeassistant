@@ -177,7 +177,8 @@ conditioning_kidsroom:
           data:
             message: >
               {{'\U0001F4A6'}} Запущено осушение кондиционера в детской!
-        - delay: 04:00:00
+        - delay:
+            hours: 4
         - service: climate.set_fan_mode
           entity_id: climate.kidsroom_ac
           data:
@@ -372,11 +373,13 @@ conditioning_kidsroom:
         - platform: numeric_state
           entity_id: sensor.kidsroom_average_humidity
           above: 50
-          for: "00:01:00"
+          for:
+            minutes: 1
         - platform: numeric_state
           entity_id: sensor.kidsroom_average_humidity
           below: 40
-          for: "00:01:00"
+          for:
+            minutes: 1
       condition:
         - or:
             - condition: state

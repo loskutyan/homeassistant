@@ -347,9 +347,11 @@ cubeserver:
                 message: >
                   {{ '\U0001F433' }} Запуск VM Windows: останавливаем Ollama...
             - service: script.cubeserver_ollama_docker_stop
-        - delay: 00:00:02
+        - delay:
+            seconds: 2
         - service: shell_command.cubeserver_vm_windows10_run
-        - delay: 00:02:00
+        - delay:
+            minutes: 2
         - service: homeassistant.update_entity
           entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
         - if:
@@ -374,7 +376,8 @@ cubeserver:
       alias: "cubeserver: выключение VM Windows 10"
       sequence:
         - service: shell_command.cubeserver_vm_windows10_shutdown
-        - delay: 00:02:00
+        - delay:
+            minutes: 2
         - service: homeassistant.update_entity
           entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
         - if:
@@ -407,7 +410,8 @@ cubeserver:
       alias: "cubeserver: остановка контейнера Ollama"
       sequence:
         - service: shell_command.cubeserver_docker_ollama_stop
-        - delay: 00:00:05
+        - delay:
+            seconds: 5
         - service: homeassistant.update_entity
           entity_id: binary_sensor.cubeserver_container_ollama_status
 
@@ -415,7 +419,8 @@ cubeserver:
       alias: "cubeserver: запуск контейнера Ollama"
       sequence:
         - service: shell_command.cubeserver_docker_ollama_start
-        - delay: 00:00:20
+        - delay:
+            seconds: 20
         - service: homeassistant.update_entity
           entity_id: binary_sensor.cubeserver_container_ollama_status
 
@@ -432,7 +437,8 @@ cubeserver:
           to:
             - "off"
             - "on"
-          for: "00:01:00"
+          for:
+            minutes: 1
       action:
         - action: notify.send_message
           target:
@@ -475,7 +481,8 @@ cubeserver:
           to:
             - "off"
             - "on"
-          for: "00:00:10"
+          for:
+            seconds: 10
       action:
         - action: notify.send_message
           target:
@@ -502,7 +509,8 @@ cubeserver:
           to:
             - "off"
             - "on"
-          for: "00:00:10"
+          for:
+            seconds: 10
       action:
         - action: notify.send_message
           target:

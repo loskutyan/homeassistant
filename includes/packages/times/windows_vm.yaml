@@ -85,7 +85,8 @@ windows_vm_time:
           then:
             - service: remote.turn_on
               entity_id: remote.sony_xr_65a80j
-            - delay: 00:00:10
+            - delay:
+                seconds: 10
         - service: media_player.select_source
           entity_id: media_player.sony_xr_65a80j
           data:
@@ -135,7 +136,8 @@ windows_vm_time:
               entity_id: switch.cubeserver_vm_windows10
         - service: switch.turn_on
           entity_id: switch.bedroom_tv_gaming_mode
-        - delay: 00:00:05
+        - delay:
+            seconds: 5
         - service: media_player.volume_set
           entity_id: media_player.sony_xr_65a80j
           data:
@@ -174,7 +176,8 @@ windows_vm_time:
           to:
             - "on"
             - "off"
-          for: "00:00:03"
+          for:
+            seconds: 3
       condition:
         - condition: state
           entity_id: switch.cubeserver_vm_windows10
@@ -198,7 +201,8 @@ windows_vm_time:
           entity_id: switch.cubeserver_vm_windows10
           from: "off"
           to: "on"
-          for: "00:01:00"
+          for:
+            minutes: 1
       action:
         - service: script.turn_on
           target:
@@ -214,12 +218,14 @@ windows_vm_time:
           entity_id: binary_sensor.bedroom_monitor_is_on
           from: "off"
           to: "on"
-          for: "00:00:30"
+          for:
+            seconds: 30
         - platform: state
           entity_id: media_player.sony_xr_65a80j
           attribute: source
           to: "HDMI 4"
-          for: "00:00:10"
+          for:
+            seconds: 10
       condition:
         - condition: state
           entity_id: switch.cubeserver_vm_windows10

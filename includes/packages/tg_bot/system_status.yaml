@@ -31,7 +31,9 @@ tg_system_status:
             message: |
               {{'\U0001F4AC'}} Основной сервер MiniPC
               {{'\U0001F567'}} Зафиксирован запуск в {{ states('sensor.time_date') }}
-        - delay: 00:01:10
+        - delay:
+            minutes: 1
+            seconds: 10
         - service: script.telegram_system_report
 
     - id: 'Отчет о состоянии системы в боте'

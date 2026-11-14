@@ -588,7 +588,8 @@ bedroom_air:
       action:
         - service: fan.turn_on
           entity_id: fan.mijia_airpurifier_bedroom
-        - delay: 00:00:30
+        - delay:
+            seconds: 30
         - if:
             - condition: state
               entity_id: fan.mijia_airpurifier_bedroom
@@ -645,7 +646,8 @@ bedroom_air:
           continue_on_error: true
         - service: fan.turn_off
           entity_id: fan.mijia_airpurifier_bedroom
-        - delay: 00:00:45
+        - delay:
+            seconds: 45
         - if:
             - condition: state
               entity_id: fan.mijia_airpurifier_bedroom

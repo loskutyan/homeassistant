@@ -8,7 +8,8 @@ intercom:
       binary_sensor:
         - name: "Intercom Rings"
           state: "on"
-          auto_off: "00:00:45"
+          auto_off:
+            seconds: 45
 
     - trigger:
         - platform: state
@@ -18,7 +19,8 @@ intercom:
       binary_sensor:
         - name: "Intercom Lock Opened"
           state: "on"
-          auto_off: "00:00:10"
+          auto_off:
+            seconds: 10
           device_class: lock
 
     - switch:
@@ -63,7 +65,8 @@ intercom:
           data_template:
             volume_level: 0.05
           continue_on_error: true
-        - delay: 00:00:01
+        - delay:
+            seconds: 1
         - repeat:
             count: 2
             sequence:
@@ -73,7 +76,8 @@ intercom:
                   media_content_type: "music"
                   media_content_id: 13
                 continue_on_error: true
-              - delay: 00:00:05
+              - delay:
+                  seconds: 5
         - service: scene.turn_on
           data:
             entity_id: scene.aqara_hub_state_revert
@@ -95,14 +99,16 @@ intercom:
           data_template:
             volume_level: 0.05
           continue_on_error: true
-        - delay: 00:00:01
+        - delay:
+            seconds: 1
         - service: media_player.play_media
           entity_id: media_player.miio_gateway
           data:
             media_content_type: "music"
             media_content_id: 14
           continue_on_error: true
-        - delay: 00:00:08
+        - delay:
+            seconds: 8
         - service: scene.turn_on
           data:
             entity_id: scene.aqara_hub_state_revert
@@ -134,7 +140,8 @@ intercom:
                             color_name: "{{ repeat.item }}"
                             brightness_pct: 40
                           continue_on_error: true
-                    - delay: 00:00:02
+                    - delay:
+                        seconds: 2
               - service: light.turn_off
                 entity_id:
                   - light.miio_gateway

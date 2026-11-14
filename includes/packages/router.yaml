@@ -22,7 +22,8 @@ router:
           for:
             minutes: 4
       action:
-        - delay: 00:00:10
+        - delay:
+            seconds: 10
         - condition: state
           entity_id: binary_sensor.router_xray_status
           state: "off"

@@ -37,7 +37,8 @@
 #           data_template:
 #             volume_level: 0.05
 #           continue_on_error: true
-#         - delay: 00:00:03
+#         - delay:
+#             seconds: 3
 #         - repeat:
 #             count: 2
 #             sequence:
@@ -47,7 +48,8 @@
 #                   media_content_type: 'music'
 #                   media_content_id: 11
 #                 continue_on_error: true
-#               - delay: 00:00:05
+#               - delay:
+#                   seconds: 5
 #         - service: scene.turn_on
 #           data:
 #             entity_id: scene.aqara_hub_state_revert
@@ -89,7 +91,8 @@
 #                             color_name: '{{ repeat.item }}'
 #                             brightness_pct: 40
 #                           continue_on_error: true
-#                     - delay: 00:00:01
+#                     - delay:
+#                         seconds: 1
 #               - service: light.turn_off
 #                 entity_id:
 #                   - light.miio_gateway
@@ -97,7 +100,8 @@
 
 #     aqara_hub_signal_light_turn_on:
 #       sequence:
-#         - delay: 00:02:00
+#         - delay:
+#             minutes: 2
 #         - service: light.turn_on
 #           entity_id: light.miio_gateway
 #           data:

@@ -185,7 +185,8 @@ conditioning_bedroom:
           data:
             message: >
               {{'\U0001F4A6'}} Запущено осушение кондиционера в спальне!
-        - delay: 04:00:00
+        - delay:
+            hours: 4
         - service: climate.set_fan_mode
           entity_id: climate.bedroom_ac
           data:
@@ -385,11 +386,13 @@ conditioning_bedroom:
         - platform: numeric_state
           entity_id: sensor.bedroom_average_humidity
           above: input_number.bedroom_ac_drying_upper_humidity_threshold
-          for: "00:01:00"
+          for:
+            minutes: 1
         - platform: numeric_state
           entity_id: sensor.bedroom_average_humidity
           below: 40
-          for: "00:01:00"
+          for:
+            minutes: 1
       condition:
         - or:
             - condition: state

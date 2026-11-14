@@ -135,7 +135,8 @@ tg_weather:
               Температура {{ state_attr('weather.yandex_weather', 'temperature') }}{{ temp_unit }},
               ощущается как {{ state_attr('weather.yandex_weather', 'feels_like') }}{{ temp_unit }}.
               Ветер {{ friendly_wind_bearing }}, со скоростью {{ wind_speed }} м/с.
-        - delay: 00:00:15
+        - delay:
+            seconds: 15
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot
@@ -178,7 +179,8 @@ tg_weather:
               Температура ожидается около {{ temp }}{{ temp_unit }},
               будет ощущаться как {{ temp_feels_like }}{{ temp_unit }}.
               Ветер {{ friendly_wind_bearing }}, скорость {{ wind_speed }} м/с (с порывами до {{ wind_gust_speed }} м/с).
-        - delay: 00:00:15
+        - delay:
+            seconds: 15
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot

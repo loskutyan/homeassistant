@@ -63,7 +63,8 @@ kidsroom_humidity:
         - platform: state
           entity_id: humidifier.kidsroom_smartmi_humidifier
           attribute: mode
-          for: "00:00:01"
+          for:
+            seconds: 1
       condition:
         - condition: template
           value_template: "{{ trigger.to_state.attributes.mode is defined and trigger.to_state.attributes.mode not in ['unknown', 'unavailable'] }}"
@@ -102,7 +103,8 @@ kidsroom_humidity:
           not_to:
             - "unknown"
             - "unavailable"
-          for: "00:01:00"
+          for:
+            minutes: 1
       condition:
         - condition: state
           entity_id: timer.kidsroom_humidifier_fixed_mode
