@@ -174,7 +174,8 @@ sleep_time:
           continue_on_error: true
         - service: cover.stop_cover
           entity_id: cover.kidsroom_curtain
-        - delay: 00:00:05
+        - delay:
+            seconds: 5
         - service: cover.open_cover
           entity_id: cover.kidsroom_curtain
         - if:

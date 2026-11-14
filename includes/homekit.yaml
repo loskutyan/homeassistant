@@ -175,3 +175,14 @@
       name: 'Дверной звонок'
       support_audio: false
       linked_doorbell_sensor: binary_sensor.doorbell_rings
+
+- name: 'G.Craftsman Camera'
+  mode: accessory
+  port: 21066
+  filter:
+    include_entities:
+      - camera.barinovo_park_2_g_craftsman_camera_substream
+  entity_config:
+    camera.barinovo_park_2_g_craftsman_camera_substream:
+      name: 'Камера'
+      support_audio: true
