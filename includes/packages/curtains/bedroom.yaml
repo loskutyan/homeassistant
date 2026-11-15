@@ -1,0 +1,132 @@
+bedroom_curtain:
+  input_select:
+    bedroom_curtain_motion:
+      name: "Движение шторы в спальне"
+      options:
+        - idle
+        - opening
+        - closing
+      initial: idle
+
+  template:
+    - cover:
+        - name: "Штора в спальне с управлением по времени"
+          unique_id: bedroom_curtain_timed
+          default_entity_id: cover.bedroom_curtain_timed
+          device_class: curtain
+          availability: >-
+            {{ expand('cover.bedroom_curtain') | count > 0
+               and not is_state('cover.bedroom_curtain', 'unavailable') }}
+          state: >-
+            {% set motion = states('input_select.bedroom_curtain_motion') %}
+            {{ motion if is_state('script.bedroom_curtain_timed_move', 'on')
+               and motion in ['opening', 'closing'] else 'open' }}
+          # Это условная позиция для HomeKit, а не измерение положения шторы.
+          # Изменение 51/49 → 50 сбрасывает цель HomeKit после каждого движения.
+          position: >-
+            {% set motion = states('input_select.bedroom_curtain_motion') %}
+            {{ {'opening': 51, 'closing': 49}.get(motion, 50)
+               if is_state('script.bedroom_curtain_timed_move', 'on') else 50 }}
+          # Не ждём конца движения, чтобы повторная команда дошла до restart-скрипта.
+          open_cover:
+            action: script.turn_on
+            target:
+              entity_id: script.bedroom_curtain_timed_move
+            data:
+              variables:
+                command: open
+          close_cover:
+            action: script.turn_on
+            target:
+              entity_id: script.bedroom_curtain_timed_move
+            data:
+              variables:
+                command: close
+          stop_cover:
+            action: script.turn_on
+            target:
+              entity_id: script.bedroom_curtain_timed_move
+            data:
+              variables:
+                command: stop
+          set_cover_position:
+            # HomeKit отправляет 100 для открытия и 0 для закрытия.
+            # Остальные значения задают направление относительно нейтральных 50.
+            action: script.turn_on
+            target:
+              entity_id: script.bedroom_curtain_timed_move
+            data:
+              variables:
+                command: >-
+                  {{ 'open' if position | int > 50 else 'close' if position | int < 50 else 'stop' }}
+
+  script:
+    bedroom_curtain_timed_move:
+      alias: "Движение шторы в спальне по времени"
+      mode: restart
+      fields:
+        command:
+          name: "Команда"
+          required: true
+          selector:
+            select:
+              options:
+                - open
+                - close
+                - stop
+        duration:
+          name: "Длительность движения"
+          description: "Не более 4 секунд на открытие и 5 секунд на закрытие."
+          selector:
+            number:
+              min: 0.1
+              max: 5
+              step: 0.1
+              unit_of_measurement: s
+      variables:
+        movement_timeout: "{{ 4 if command == 'open' else 5 }}"
+        movement_duration: >-
+          {% set requested = duration | default(movement_timeout) | float(movement_timeout) %}
+          {{ requested if 0.1 <= requested <= movement_timeout else movement_timeout }}
+      sequence:
+        # Смена idle → направление нужна и при повторе команды во время движения.
+        - action: input_select.select_option
+          target:
+            entity_id: input_select.bedroom_curtain_motion
+          data:
+            option: idle
+        - action: input_select.select_option
+          target:
+            entity_id: input_select.bedroom_curtain_motion
+          data:
+            option: "{{ {'open': 'opening', 'close': 'closing'}.get(command, 'idle') }}"
+        # restart отменяет старый delay; сначала останавливаем прежнее движение.
+        - action: cover.stop_cover
+          target:
+            entity_id: cover.bedroom_curtain
+        - if: "{{ command in ['open', 'close'] }}"
+          then:
+            - action: "{{ 'cover.open_cover' if command == 'open' else 'cover.close_cover' }}"
+              target:
+                entity_id: cover.bedroom_curtain
+            - delay:
+                seconds: "{{ movement_duration }}"
+            - action: cover.stop_cover
+              target:
+                entity_id: cover.bedroom_curtain
+        - action: input_select.select_option
+          target:
+            entity_id: input_select.bedroom_curtain_motion
+          data:
+            option: idle
+
+  automation:
+    - id: "Остановка шторы в спальне при запуске Home Assistant"
+      alias: bedroom_curtain_stop_on_start
+      triggers:
+        - trigger: homeassistant
+          event: start
+      actions:
+        - action: script.bedroom_curtain_timed_move
+          data:
+            command: stop

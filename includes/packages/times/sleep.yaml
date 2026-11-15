@@ -287,7 +287,7 @@ sleep_time:
 
         - action: cover.close_cover
           target:
-            entity_id: cover.bedroom_curtain
+            entity_id: cover.bedroom_curtain_timed
 
         - action: input_boolean.turn_on
           target:

@@ -240,16 +240,15 @@ bedroom_lights:
         - sequence:
             - delay:
                 minutes: 2
-            - action: cover.set_cover_position
-              target:
-                entity_id: cover.bedroom_curtain
+            - action: script.bedroom_curtain_timed_move
               data:
-                position: 50
+                command: open
+                duration: 2
             - delay:
                 minutes: 3
             - action: cover.open_cover
               target:
-                entity_id: cover.bedroom_curtain
+                entity_id: cover.bedroom_curtain_timed
 
     - id: "Выключение утреннего режима лампы Aqara торшера в спальне"
       alias: bedroom_floor_aqara_led_bulb_wakeup_light_turn_off

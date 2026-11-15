@@ -308,11 +308,11 @@ cards:
             icon: mdi:alarm-light
 
       - type: custom:mushroom-cover-card
-        entity: cover.bedroom_curtain
+        entity: cover.bedroom_curtain_timed
         name: 'Штора'
         layout: horizontal
         show_buttons_control: true
-        show_position_control: true
+        show_position_control: false
 
   - type: vertical-stack
     title: 'Климат'

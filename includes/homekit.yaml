@@ -46,6 +46,7 @@
       - light.kidsroom_aqara_led_bulb_left
       - light.kidsroom_aqara_led_bulb_right
       - light.0x70c59cfffe36fe9a
+      - cover.bedroom_curtain
   entity_config:
     vacuum.roborock_s5_max:
       name: 'Пылесос'
@@ -95,7 +96,7 @@
       name: 'Подогрев'
     switch.kidsroom_airpurifier_ptc:
       name: 'Подогрев'
-    cover.bedroom_curtain:
+    cover.bedroom_curtain_timed:
       name: 'Штора'
     cover.kidsroom_curtain:
       name: 'Штора'
