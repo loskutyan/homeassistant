@@ -279,23 +279,24 @@ cards:
               {% endif %}
             layout: horizontal
 
-      - type: entities
-        entities:
-          - type: custom:multiple-entity-row
-            entity: sensor.cubeserver_parity_status
-            name: "Parity-Check"
-            entities:
-              - entity: sensor.cubeserver_parity_finish_timestamp
-                name: "Завершение"
-                format: relative
-                hide_unavailable: true
-              - entity: sensor.cubeserver_parity_speed
-                name: "Скорость"
-                hide_if: 0
-              - entity: sensor.cubeserver_parity_progress
-                name: "Завершено"
-                format: precision2
-                hide_if: 100
+      # Образец строки parity для будущей интеграции Unraid; заменить entity_id.
+      # - type: entities
+      #   entities:
+      #     - type: custom:multiple-entity-row
+      #       entity: sensor.cubeserver_parity_status
+      #       name: "Parity-Check"
+      #       entities:
+      #         - entity: sensor.cubeserver_parity_finish_timestamp
+      #           name: "Завершение"
+      #           format: relative
+      #           hide_unavailable: true
+      #         - entity: sensor.cubeserver_parity_speed
+      #           name: "Скорость"
+      #           hide_if: 0
+      #         - entity: sensor.cubeserver_parity_progress
+      #           name: "Завершено"
+      #           format: precision2
+      #           hide_if: 100
 
       - type: custom:mini-graph-card
         entities:
@@ -322,99 +323,6 @@ cards:
         group_by: interval
         lower_bound: 50
         upper_bound: 600
-
-      # - type: horizontal-stack
-      #   cards:
-      #     - type: custom:mini-graph-card
-      #       entities:
-      #         - entity: sensor.cubeserver_parity_disk_temperature
-      #           name: 'Parity Disk'
-      #           show_legend: false
-      #       hour24: true
-      #       show:
-      #         graph: false
-      #         icon: true
-      #         extrema: true
-      #         fill: false
-      #       align_state: center
-
-      #     - type: custom:mini-graph-card
-      #       entities:
-      #         - entity: sensor.cubeserver_disk_1_temperature
-      #           name: 'Disk 1'
-      #           show_legend: false
-      #       hour24: true
-      #       show:
-      #         graph: false
-      #         icon: true
-      #         extrema: true
-      #         fill: false
-      #       align_state: center
-
-      #     - type: custom:mini-graph-card
-      #       entities:
-      #         - entity: sensor.cubeserver_disk_2_temperature
-      #           name: 'Disk 2'
-      #           show_legend: false
-      #       hour24: true
-      #       show:
-      #         graph: false
-      #         icon: true
-      #         extrema: true
-      #         fill: false
-      #       align_state: center
-
-      # - type: horizontal-stack
-      #   cards:
-      #     - type: custom:mini-graph-card
-      #       entities:
-      #         - entity: sensor.cubeserver_cache_1_temperature
-      #           name: 'Cache 1'
-      #       hour24: true
-      #       show:
-      #         graph: false
-      #         icon: true
-      #         extrema: true
-      #         fill: false
-      #       align_state: center
-
-      #     - type: custom:mini-graph-card
-      #       entities:
-      #         - entity: sensor.cubeserver_cache_2_temperature
-      #           name: 'Cache 2'
-      #       hour24: true
-      #       show:
-      #         graph: false
-      #         icon: true
-      #         extrema: true
-      #         fill: false
-      #       align_state: center
-
-      # - type: horizontal-stack
-      #   cards:
-      #     - type: custom:mini-graph-card
-      #       entities:
-      #         - entity: sensor.cubeserver_vm_disk_temperature
-      #           name: 'VM Disk'
-      #       hour24: true
-      #       show:
-      #         graph: false
-      #         icon: true
-      #         extrema: true
-      #         fill: false
-      #       align_state: center
-
-      #     - type: custom:mini-graph-card
-      #       entities:
-      #         - entity: sensor.cubeserver_games_disk_temperature
-      #           name: 'Games Disk'
-      #       hour24: true
-      #       show:
-      #         graph: false
-      #         icon: true
-      #         extrema: true
-      #         fill: false
-      #       align_state: center
 
   - type: vertical-stack
     title: "Климат"
