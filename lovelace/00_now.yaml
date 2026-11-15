@@ -178,7 +178,7 @@ cards:
                     option: 'bedroom'
                 icon: mdi:bed-king
                 icon_color: >-
-                  {% set bedroom_in_selected_rooms = 'bedroom' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
+                  {% set bedroom_in_selected_rooms = 'bedroom' in (state_attr('sensor.roborock_s5_max_selected_rooms', 'rooms') or []) %}
                   {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
                   {% if bedroom_in_selected_rooms and cleaning_mode_on %}
                     accent
@@ -198,7 +198,7 @@ cards:
                     option: 'kidsroom'
                 icon: mdi:bed
                 icon_color: >-
-                  {% set kidsroom_in_selected_rooms = 'kidsroom' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
+                  {% set kidsroom_in_selected_rooms = 'kidsroom' in (state_attr('sensor.roborock_s5_max_selected_rooms', 'rooms') or []) %}
                   {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
                   {% if kidsroom_in_selected_rooms and cleaning_mode_on %}
                     accent
@@ -218,7 +218,7 @@ cards:
                     option: 'kitchen'
                 icon: mdi:food-fork-drink
                 icon_color: >-
-                  {% set kitchen_in_selected_rooms = 'kitchen' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
+                  {% set kitchen_in_selected_rooms = 'kitchen' in (state_attr('sensor.roborock_s5_max_selected_rooms', 'rooms') or []) %}
                   {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
                   {% if kitchen_in_selected_rooms and cleaning_mode_on %}
                     accent
@@ -238,7 +238,7 @@ cards:
                     option: 'hallway'
                 icon: mdi:door-open
                 icon_color: >-
-                  {% set hallway_in_selected_rooms = 'hallway' in (states('sensor.roborock_s5_max_selected_rooms') | from_json) %}
+                  {% set hallway_in_selected_rooms = 'hallway' in (state_attr('sensor.roborock_s5_max_selected_rooms', 'rooms') or []) %}
                   {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
                   {% if hallway_in_selected_rooms and cleaning_mode_on %}
                     accent

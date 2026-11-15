@@ -146,23 +146,26 @@ vacuum:
             - kitchen
             - hallway
             - none
+      variables:
+        selected_rooms: >-
+          {% set new_room = trigger.to_state.state %}
+          {% set current_rooms = state_attr('sensor.roborock_s5_max_selected_rooms', 'rooms') %}
+          {% if current_rooms is none %}
+            {# Переход со старого JSON-состояния при первом обновлении. #}
+            {% set current_rooms = states('sensor.roborock_s5_max_selected_rooms') | from_json([]) %}
+          {% endif %}
+          {% if current_rooms is sequence and current_rooms is not string and current_rooms is not mapping %}
+            {% set current_rooms = current_rooms | list %}
+          {% else %}
+            {% set current_rooms = [] %}
+          {% endif %}
+          {{ [] if new_room == 'none' else current_rooms
+             if new_room in current_rooms else current_rooms + [new_room] }}
       sensor:
         - name: "Roborock S5 Max Selected Rooms"
-          state: >-
-            {% set new_room = trigger.to_state.state %}
-            {% set current_rooms = states('sensor.roborock_s5_max_selected_rooms') %}
-            {% if new_room == 'none' %}
-              []
-            {% else %}
-              {% if current_rooms is not defined or current_rooms in ['unknown', 'unavailable'] %}
-                {% set current_rooms = '[]' %}
-              {% endif %}
-              {% set current_rooms = current_rooms | from_json %}
-              {% if new_room not in current_rooms %}
-                {% set current_rooms = current_rooms + [new_room] %}
-              {% endif %}
-              {{ current_rooms | to_json }}
-            {% endif %}
+          state: "{{ selected_rooms | count }}"
+          attributes:
+            rooms: "{{ selected_rooms }}"
 
     - sensor:
         - name: "Roborock S5 Max Часов уборки до замены основной щетки"
@@ -245,14 +248,25 @@ vacuum:
       triggers:
         - trigger: state
           entity_id: sensor.roborock_s5_max_selected_rooms
+          attribute: rooms
       conditions:
         - condition: template
-          value_template: "{{ trigger.to_state.state | length > 2 }}"
+          value_template: >-
+            {% set current_rooms = trigger.to_state.attributes.get('rooms', [])
+               if trigger.to_state is not none else [] %}
+            {% set previous_rooms = trigger.from_state.attributes.get('rooms')
+               if trigger.from_state is not none else [] %}
+            {% if previous_rooms is none %}
+              {% set previous_rooms = trigger.from_state.state | from_json([]) %}
+            {% endif %}
+            {{ current_rooms is sequence and current_rooms is not string
+               and current_rooms is not mapping and current_rooms | length > 0
+               and current_rooms != previous_rooms }}
       actions:
         - action: script.roborock_s5_max_vacuum_clean_room
           data:
             room: >
-              {{ trigger.to_state.state | from_json | last }}
+              {{ trigger.to_state.attributes.rooms | last }}
 
     - id: "Сброс списка комнат для уборки пылесоса"
       alias: roborock_s5_max_vacuum_clear_rooms_list

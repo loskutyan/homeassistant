@@ -40,56 +40,74 @@ away:
         - name: "Список включенных выключателей света"
           unique_id: lights_switches_list_turned_on
           default_entity_id: sensor.lights_switches_list_turned_on
-          state: >
-            {% set lights_switches_entities_ids = [
-              'switch.kidsroom_lights_common_switch_left',
-              'switch.kitchen_lights_switch_left',
-              'switch.kitchen_lights_switch_right',
-              'switch.kitchen_led_strip_switch',
-              'switch.bedroom_lights_switch_right',
-              'switch.bathroom_lights_switch',
-              'switch.kidsroom_nightlight_plug'
-            ] %}
+          variables:
+            monitored_entities:
+              - "switch.kidsroom_lights_common_switch_left"
+              - "switch.kitchen_lights_switch_left"
+              - "switch.kitchen_lights_switch_right"
+              - "switch.kitchen_led_strip_switch"
+              - "switch.bedroom_lights_switch_right"
+              - "switch.bathroom_lights_switch"
+              - "switch.kidsroom_nightlight_plug"
+          state: >-
             {{ states.switch
-              | selectattr('entity_id', 'in', lights_switches_entities_ids)
+              | selectattr('entity_id', 'in', monitored_entities)
               | selectattr('state', '==', 'on')
-              | map(attribute='entity_id')
               | list
-              | to_json(ensure_ascii=False) }}
+              | count }}
+          attributes:
+            entity_ids: >-
+              {{ states.switch
+                | selectattr('entity_id', 'in', monitored_entities)
+                | selectattr('state', '==', 'on')
+                | map(attribute='entity_id')
+                | list }}
 
         - name: "Список включенных светильников"
           unique_id: lights_list_turned_on
           default_entity_id: sensor.lights_list_turned_on
-          state: >
-            {% set lights_entities_ids = [
-              'light.bedroom_floor_aqara_led_bulb',
-              'light.bedroom_nightstand_aqara_led_bulb_left',
-              'light.bedroom_nightstand_aqara_led_bulb_right',
-              'light.kidsroom_wall_aqara_led_bulbs',
-              'light.hallway_lights_switch',
-              'light.hallway_duty_aqara_led_strip'
-            ] %}
+          variables:
+            monitored_entities:
+              - "light.bedroom_floor_aqara_led_bulb"
+              - "light.bedroom_nightstand_aqara_led_bulb_left"
+              - "light.bedroom_nightstand_aqara_led_bulb_right"
+              - "light.kidsroom_wall_aqara_led_bulbs"
+              - "light.hallway_lights_switch"
+              - "light.hallway_duty_aqara_led_strip"
+          state: >-
             {{ states.light
-              | selectattr('entity_id', 'in', lights_entities_ids)
+              | selectattr('entity_id', 'in', monitored_entities)
               | selectattr('state', '==', 'on')
-              | map(attribute='entity_id')
               | list
-              | to_json(ensure_ascii=False) }}
+              | count }}
+          attributes:
+            entity_ids: >-
+              {{ states.light
+                | selectattr('entity_id', 'in', monitored_entities)
+                | selectattr('state', '==', 'on')
+                | map(attribute='entity_id')
+                | list }}
 
         - name: "Список включенных нагревателей"
           unique_id: heaters_list_turned_on
           default_entity_id: sensor.heaters_list_turned_on
-          state: >
-            {% set heaters_switches_entities_ids = [
-              'switch.bedroom_airpurifier_ptc',
-              'switch.kidsroom_airpurifier_ptc',
-            ] %}
+          variables:
+            monitored_entities:
+              - "switch.bedroom_airpurifier_ptc"
+              - "switch.kidsroom_airpurifier_ptc"
+          state: >-
             {{ states.switch
-              | selectattr('entity_id', 'in', heaters_switches_entities_ids)
+              | selectattr('entity_id', 'in', monitored_entities)
               | selectattr('state', '==', 'on')
-              | map(attribute='entity_id')
               | list
-              | to_json(ensure_ascii=False) }}
+              | count }}
+          attributes:
+            entity_ids: >-
+              {{ states.switch
+                | selectattr('entity_id', 'in', monitored_entities)
+                | selectattr('state', '==', 'on')
+                | map(attribute='entity_id')
+                | list }}
 
         - name: "'Александр ушел, часов назад'"
           unique_id: aleksandr_since_last_time_at_home_hours
@@ -134,14 +152,15 @@ away:
           default_entity_id: binary_sensor.any_light_is_on
           device_class: light
           state: >
-            {{ (states('sensor.lights_switches_list_turned_on') | from_json | length + states('sensor.lights_list_turned_on') | from_json | length) > 0 }}
+            {{ (state_attr('sensor.lights_switches_list_turned_on', 'entity_ids') | length
+                + state_attr('sensor.lights_list_turned_on', 'entity_ids') | length) > 0 }}
 
         - name: "Дома включен подогрев воздуха"
           unique_id: any_heater_is_on
           default_entity_id: binary_sensor.any_heater_is_on
           device_class: heat
           state: >
-            {{ states('sensor.heaters_list_turned_on') | from_json | length > 0 }}
+            {{ state_attr('sensor.heaters_list_turned_on', 'entity_ids') | length > 0 }}
 
     - switch:
         - name: "Дома"
@@ -168,14 +187,24 @@ away:
     turn_off_all_lights:
       alias: "Выключение всех светильников"
       sequence:
+        - variables:
+            light_target: "{{ {'entity_ids': state_attr('sensor.lights_list_turned_on', 'entity_ids')} }}"
+        - condition: template
+          value_template: >-
+            {{ light_target.entity_ids is sequence
+               and light_target.entity_ids is not string and light_target.entity_ids is not mapping }}
         - action: light.turn_off
           target:
-            entity_id: >-
-              {{ states('sensor.lights_list_turned_on') | from_json }}
+            entity_id: "{{ light_target.entity_ids }}"
+        - variables:
+            light_switch_target: "{{ {'entity_ids': state_attr('sensor.lights_switches_list_turned_on', 'entity_ids')} }}"
+        - condition: template
+          value_template: >-
+            {{ light_switch_target.entity_ids is sequence
+               and light_switch_target.entity_ids is not string and light_switch_target.entity_ids is not mapping }}
         - action: switch.turn_off
           target:
-            entity_id: >-
-              {{ states('sensor.lights_switches_list_turned_on') | from_json }}
+            entity_id: "{{ light_switch_target.entity_ids }}"
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot
@@ -191,10 +220,15 @@ away:
     turn_off_all_heaters:
       alias: "Выключение всех обогревателей"
       sequence:
+        - variables:
+            heater_target: "{{ {'entity_ids': state_attr('sensor.heaters_list_turned_on', 'entity_ids')} }}"
+        - condition: template
+          value_template: >-
+            {{ heater_target.entity_ids is sequence
+               and heater_target.entity_ids is not string and heater_target.entity_ids is not mapping }}
         - action: switch.turn_off
           target:
-            entity_id: >-
-              {{ states('sensor.heaters_list_turned_on') | from_json }}
+            entity_id: "{{ heater_target.entity_ids }}"
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot

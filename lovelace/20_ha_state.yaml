@@ -164,7 +164,7 @@ cards:
               type: entities
               show_header_toggle: false
             filter:
-              template: "{{ states('sensor.lights_switches_list_turned_on') | from_json }}"
+              template: "{{ state_attr('sensor.lights_switches_list_turned_on', 'entity_ids') or [] }}"
 
           - type: custom:auto-entities
             show_empty: false
@@ -172,7 +172,7 @@ cards:
               type: entities
               show_header_toggle: false
             filter:
-              template: "{{ states('sensor.lights_list_turned_on') | from_json }}"
+              template: "{{ state_attr('sensor.lights_list_turned_on', 'entity_ids') or [] }}"
               options:
                 type: custom:multiple-entity-row
                 toggle: true
