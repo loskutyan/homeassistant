@@ -228,8 +228,8 @@ tg_weather:
     - id: "Прогноз погоды на день"
       alias: telegram_morning_weather_forecast
       initial_state: true
-      trigger:
-        - platform: time
+      triggers:
+        - trigger: time
           at: "08:00:00"
-      action:
-        - service: script.sending_yandex_weather_forecast
+      actions:
+        - action: script.sending_yandex_weather_forecast

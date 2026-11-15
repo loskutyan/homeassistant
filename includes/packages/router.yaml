@@ -15,19 +15,19 @@ router:
   automation:
     - id: "Xray на роутере упал - попытка рестарта"
       alias: router_xray_is_down_restart
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.router_xray_status
           from: "on"
           for:
             minutes: 4
-      action:
+      actions:
         - delay:
             seconds: 10
         - condition: state
           entity_id: binary_sensor.router_xray_status
           state: "off"
-        - service: shell_command.router_xray_restart
+        - action: shell_command.router_xray_restart
         - action: notify.send_message
           target:
             entity_id: notify.tg_urgent
@@ -37,13 +37,13 @@ router:
 
     - id: "Xray на роутере упал - уведомление"
       alias: router_xray_is_down_notify
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.router_xray_status
           from: "on"
           for:
             minutes: 2
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_urgent
@@ -53,12 +53,12 @@ router:
 
     - id: "Xray на роутере поднялся - уведомление"
       alias: router_xray_is_up_notify
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.router_xray_status
           from: "off"
           to: "on"
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_urgent
@@ -68,11 +68,11 @@ router:
 
     - id: "Смена внешнего ip-адреса на моб. связь - уведомление"
       alias: wan_ip_changed_to_modem3g_notify
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: sensor.keenetic_gateway_external_ip
           to: "192.168.8.100"
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_urgent
@@ -83,11 +83,11 @@ router:
 
     - id: "Смена внешнего ip-адреса обратно на Ethernet - уведомление"
       alias: wan_ip_changed_to_ethernet_notify
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: sensor.keenetic_gateway_external_ip
           not_to: "192.168.8.100"
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_urgent
@@ -99,10 +99,10 @@ router:
 
     - id: "Смена shortId в KVAS Xray на роутере - уведомление"
       alias: kvas_xray_shortid_changed
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: sensor.keenetic_kvas_xray_shortid
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot

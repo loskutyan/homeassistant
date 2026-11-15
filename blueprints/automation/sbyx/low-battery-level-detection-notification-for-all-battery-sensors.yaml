@@ -63,12 +63,12 @@ variables:
     '==', 'on') %}\n  {% if not state.entity_id in exclude.entity_id %}\n    {% set
     result.sensors = result.sensors + [state.name] %}\n  {% endif %}\n{% endfor %}
     {{result.sensors|join(', ')}}"
-trigger:
-- platform: time
-  at: !input time
-condition:
-- '{{ sensors != '''' and (day | int == 0 or day | int == now().isoweekday()) }}'
-action:
-- choose: []
-  default: !input actions
+triggers:
+  - trigger: time
+    at: !input time
+conditions:
+  - '{{ sensors != '''' and (day | int == 0 or day | int == now().isoweekday()) }}'
+actions:
+  - choose: []
+    default: !input actions
 mode: single

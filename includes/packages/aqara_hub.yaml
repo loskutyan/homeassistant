@@ -30,27 +30,29 @@ aqara_hub:
   automation:
     - id: "Выбор громкости хаба Aqara"
       alias: select_aqara_hub_volume
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: input_number.aqara_hub_volume
-      action:
-        - service: media_player.volume_set
-          entity_id: media_player.miio_gateway
-          data_template:
+      actions:
+        - action: media_player.volume_set
+          target:
+            entity_id: media_player.miio_gateway
+          data:
             volume_level: "{{ min(max(trigger.to_state.state | float / 100, 0), 1) }}"
 
     - id: "Отслеживание громкости хаба Aqara"
       alias: tracking_aqara_hub_volume
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: sensor.aqara_hub_volume
-      condition:
+      conditions:
         - condition: template
           value_template: >
             {{ state_attr('media_player.miio_gateway', 'volume_level') | float(-1) >= 0 }}
-      action:
-        - service: input_number.set_value
-          entity_id: input_number.aqara_hub_volume
-          data_template:
+      actions:
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.aqara_hub_volume
+          data:
             value: >
               {{ (state_attr('media_player.miio_gateway', 'volume_level') | float * 100) | int }}

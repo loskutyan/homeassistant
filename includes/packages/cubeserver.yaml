@@ -284,9 +284,9 @@ cubeserver:
           state: >
             {{ states('binary_sensor.cubeserver_vm_windows10_ping') }}
           turn_on:
-            service: script.cubeserver_vm_windows10_run
+            action: script.cubeserver_vm_windows10_run
           turn_off:
-            service: script.cubeserver_vm_windows10_shutdown
+            action: script.cubeserver_vm_windows10_shutdown
           icon: mdi:microsoft-windows
 
         - name: "VM Ubuntu YaDisk"
@@ -295,9 +295,9 @@ cubeserver:
           state: >
             {{ states('binary_sensor.cubeserver_vm_ubuntuyadisk_ping') }}
           turn_on:
-            service: shell_command.cubeserver_vm_ubuntuyadisk_run
+            action: shell_command.cubeserver_vm_ubuntuyadisk_run
           turn_off:
-            service: shell_command.cubeserver_vm_ubuntuyadisk_shutdown
+            action: shell_command.cubeserver_vm_ubuntuyadisk_shutdown
           icon: mdi:ubuntu
 
   command_line:
@@ -340,8 +340,9 @@ cubeserver:
     cubeserver_vm_windows10_run:
       alias: "cubeserver: включение VM Windows 10"
       sequence:
-        - service: homeassistant.update_entity
-          entity_id: binary_sensor.cubeserver_container_llama_swap_status
+        - action: homeassistant.update_entity
+          target:
+            entity_id: binary_sensor.cubeserver_container_llama_swap_status
         - if:
             - condition: state
               entity_id: binary_sensor.cubeserver_container_llama_swap_status
@@ -353,14 +354,15 @@ cubeserver:
               data:
                 message: >
                   {{ '\U0001F433' }} Запуск VM Windows: останавливаем llama-swap...
-            - service: script.cubeserver_llama_swap_docker_stop
+            - action: script.cubeserver_llama_swap_docker_stop
         - delay:
             seconds: 2
-        - service: shell_command.cubeserver_vm_windows10_run
+        - action: shell_command.cubeserver_vm_windows10_run
         - delay:
             minutes: 2
-        - service: homeassistant.update_entity
-          entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
+        - action: homeassistant.update_entity
+          target:
+            entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
         - if:
             - or:
                 - not:
@@ -382,11 +384,12 @@ cubeserver:
     cubeserver_vm_windows10_shutdown:
       alias: "cubeserver: выключение VM Windows 10"
       sequence:
-        - service: shell_command.cubeserver_vm_windows10_shutdown
+        - action: shell_command.cubeserver_vm_windows10_shutdown
         - delay:
             minutes: 2
-        - service: homeassistant.update_entity
-          entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
+        - action: homeassistant.update_entity
+          target:
+            entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
         - if:
             - or:
                 - not:
@@ -411,32 +414,34 @@ cubeserver:
               data:
                 message: >
                   {{ '\U0001F433' }} Выключение VM Windows: запускаем llama-swap...
-            - service: script.cubeserver_llama_swap_docker_start
+            - action: script.cubeserver_llama_swap_docker_start
 
     cubeserver_llama_swap_docker_stop:
       alias: "cubeserver: остановка контейнера llama-swap"
       sequence:
-        - service: shell_command.cubeserver_docker_llama_swap_stop
+        - action: shell_command.cubeserver_docker_llama_swap_stop
         - delay:
             seconds: 5
-        - service: homeassistant.update_entity
-          entity_id: binary_sensor.cubeserver_container_llama_swap_status
+        - action: homeassistant.update_entity
+          target:
+            entity_id: binary_sensor.cubeserver_container_llama_swap_status
 
     cubeserver_llama_swap_docker_start:
       alias: "cubeserver: запуск контейнера llama-swap"
       sequence:
-        - service: shell_command.cubeserver_docker_llama_swap_start
+        - action: shell_command.cubeserver_docker_llama_swap_start
         - delay:
             seconds: 20
-        - service: homeassistant.update_entity
-          entity_id: binary_sensor.cubeserver_container_llama_swap_status
+        - action: homeassistant.update_entity
+          target:
+            entity_id: binary_sensor.cubeserver_container_llama_swap_status
 
   automation:
     - id: "Перегрев дисков - уведомление"
       alias: cubeserver_disks_overheat_notify
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.cubeserver_disks_overheat
           from:
             - "off"
@@ -446,7 +451,7 @@ cubeserver:
             - "on"
           for:
             minutes: 1
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot
@@ -479,8 +484,8 @@ cubeserver:
     - id: "Начало/окончание Parity-Check - уведомление"
       alias: cubeserver_parity_check_start_finish_notify
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.cubeserver_parity_check_in_progress
           from:
             - "off"
@@ -490,7 +495,7 @@ cubeserver:
             - "on"
           for:
             seconds: 10
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot
@@ -507,8 +512,8 @@ cubeserver:
     - id: "Пауза Parity-Check - уведомление"
       alias: cubeserver_parity_check_pause_notify
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.cubeserver_parity_check_paused
           from:
             - "off"
@@ -518,7 +523,7 @@ cubeserver:
             - "on"
           for:
             seconds: 10
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot
@@ -536,10 +541,10 @@ cubeserver:
     - id: "Началась загрузка торрента - уведомление"
       alias: torrent_downloading_started_notify
       initial_state: true
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: transmission_started_torrent
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_media
@@ -550,10 +555,10 @@ cubeserver:
     - id: "Загрузка торрента завершена - уведомление"
       alias: torrent_downloading_completed_notify
       initial_state: true
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: transmission_downloaded_torrent
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_media

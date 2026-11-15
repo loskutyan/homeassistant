@@ -160,15 +160,18 @@ conditioning_kidsroom:
     kidsroom_ac_self_dry:
       alias: "Просушка кондиционера в детской"
       sequence:
-        - service: switch.turn_off
-          entity_id: switch.kidsroom_auto_conditioning
-        - service: climate.set_temperature
-          entity_id: climate.kidsroom_ac
+        - action: switch.turn_off
+          target:
+            entity_id: switch.kidsroom_auto_conditioning
+        - action: climate.set_temperature
+          target:
+            entity_id: climate.kidsroom_ac
           data:
             temperature: 31
             hvac_mode: "cool"
-        - service: climate.set_fan_mode
-          entity_id: climate.kidsroom_ac
+        - action: climate.set_fan_mode
+          target:
+            entity_id: climate.kidsroom_ac
           data:
             fan_mode: "high"
         - action: notify.send_message
@@ -179,14 +182,17 @@ conditioning_kidsroom:
               {{'\U0001F4A6'}} Запущено осушение кондиционера в детской!
         - delay:
             hours: 4
-        - service: climate.set_fan_mode
-          entity_id: climate.kidsroom_ac
+        - action: climate.set_fan_mode
+          target:
+            entity_id: climate.kidsroom_ac
           data:
             fan_mode: "auto"
-        - service: switch.turn_on
-          entity_id: switch.kidsroom_auto_conditioning
-        - service: switch.turn_off
-          entity_id: switch.kidsroom_ac
+        - action: switch.turn_on
+          target:
+            entity_id: switch.kidsroom_auto_conditioning
+        - action: switch.turn_off
+          target:
+            entity_id: switch.kidsroom_ac
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot
@@ -197,28 +203,29 @@ conditioning_kidsroom:
   automation:
     - id: "Выбор режима работы кондиционера в детской"
       alias: select_kidsroom_ac_mode
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id:
             - input_select.kidsroom_ac_mode
-      condition:
+      conditions:
         - condition: state
           entity_id: switch.kidsroom_ac
           state: "on"
-      action:
-        - service: climate.set_temperature
-          entity_id: climate.kidsroom_ac
-          data_template:
+      actions:
+        - action: climate.set_temperature
+          target:
+            entity_id: climate.kidsroom_ac
+          data:
             temperature: "{{ states('input_number.kidsroom_ac_temperature') | int }}"
             hvac_mode: "{{ states('input_select.kidsroom_ac_mode') }}"
 
     - id: "Выбор температуры для кондиционера в детской"
       alias: select_kidsroom_ac_temperature
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id:
             - input_number.kidsroom_ac_temperature
-      condition:
+      conditions:
         - condition: state
           entity_id: switch.kidsroom_ac
           state: "on"
@@ -226,107 +233,114 @@ conditioning_kidsroom:
           entity_id: climate.kidsroom_ac
           attribute: last_on_operation
           state: "cool"
-      action:
-        - service: climate.set_temperature
-          entity_id: climate.kidsroom_ac
-          data_template:
+      actions:
+        - action: climate.set_temperature
+          target:
+            entity_id: climate.kidsroom_ac
+          data:
             temperature: "{{ states('input_number.kidsroom_ac_temperature') | int }}"
             hvac_mode: "{{ states('input_select.kidsroom_ac_mode') }}"
 
     - id: "Выбор скорости обдува кондиционера в детской"
       alias: select_kidsroom_ac_fan_mode
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: input_select.kidsroom_ac_fan_mode
-      action:
-        - service: climate.set_fan_mode
-          entity_id: climate.kidsroom_ac
-          data_template:
+      actions:
+        - action: climate.set_fan_mode
+          target:
+            entity_id: climate.kidsroom_ac
+          data:
             fan_mode: "{{ trigger.to_state.state }}"
 
     - id: "Выбор режима качания халюзи кондиционера в детской"
       alias: select_kidsroom_ac_swing_mode
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: input_boolean.kidsroom_ac_swing_mode
-      action:
-        - service: climate.set_swing_mode
-          entity_id: climate.kidsroom_ac
-          data_template:
+      actions:
+        - action: climate.set_swing_mode
+          target:
+            entity_id: climate.kidsroom_ac
+          data:
             swing_mode: "{{ trigger.to_state.state }}"
 
     - id: "Отслеживание режима работы кондиционера в детской"
       alias: tracking_kidsroom_ac_mode
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: climate.kidsroom_ac
           attribute: last_on_operation
-      condition:
+      conditions:
         - condition: template
           value_template: "{{ trigger.to_state.state is defined and trigger.to_state.state not in ['unknown', 'unavailable'] }}"
-      action:
-        - service: input_select.select_option
-          entity_id: input_select.kidsroom_ac_mode
-          data_template:
+      actions:
+        - action: input_select.select_option
+          target:
+            entity_id: input_select.kidsroom_ac_mode
+          data:
             option: "{{ trigger.to_state.state }}"
 
     - id: "Отслеживание температуры кондиционера в детской"
       alias: tracking_kidsroom_ac_temperature
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: climate.kidsroom_ac
           attribute: temperature
-      condition:
+      conditions:
         - condition: template
           value_template: "{{ trigger.to_state.attributes.temperature | int(0) > 0 }}"
-      action:
-        - service: input_number.set_value
-          entity_id: input_number.kidsroom_ac_temperature
-          data_template:
+      actions:
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.kidsroom_ac_temperature
+          data:
             value: "{{ trigger.to_state.attributes.temperature | int }}"
 
     - id: "Отслеживание скорости обдува кондиционера в детской"
       alias: tracking_kidsroom_ac_fan_mode
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: climate.kidsroom_ac
           attribute: fan_mode
-      condition:
+      conditions:
         - condition: template
           value_template: "{{ trigger.to_state.attributes.fan_mode is defined and trigger.to_state.attributes.fan_mode not in ['unknown', 'unavailable'] }}"
-      action:
-        - service: input_select.select_option
-          entity_id: input_select.kidsroom_ac_fan_mode
-          data_template:
+      actions:
+        - action: input_select.select_option
+          target:
+            entity_id: input_select.kidsroom_ac_fan_mode
+          data:
             option: "{{ trigger.to_state.attributes.fan_mode }}"
 
     - id: "Отслеживание режима качания халюзи кондиционера в детской"
       alias: tracking_kidsroom_ac_swing_mode
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: climate.kidsroom_ac
           attribute: swing_mode
-      condition:
+      conditions:
         - condition: template
           value_template: "{{ trigger.to_state.attributes.swing_mode is defined and trigger.to_state.attributes.swing_mode not in ['unknown', 'unavailable'] }}"
-      action:
-        - service: input_boolean.turn_{{ trigger.to_state.attributes.swing_mode }}
-          entity_id: input_boolean.kidsroom_ac_swing_mode
+      actions:
+        - action: input_boolean.turn_{{ trigger.to_state.attributes.swing_mode }}
+          target:
+            entity_id: input_boolean.kidsroom_ac_swing_mode
 
     - id: "Умный контроль кондиционера для охлаждения детской"
       alias: kidsroom_ac_cooling_smart_control
       initial_state: true
-      trigger:
-        - platform: time_pattern
+      triggers:
+        - trigger: time_pattern
           minutes: "/15"
-        - platform: state
+        - trigger: state
           entity_id: input_number.kidsroom_target_cooling_temperature
-        - platform: state
+        - trigger: state
           entity_id:
             - switch.kidsroom_ac
             - switch.kidsroom_auto_conditioning
           to: "on"
-      condition:
+      conditions:
         - condition: state
           entity_id: input_select.kidsroom_ac_mode
           state: "cool"
@@ -344,10 +358,11 @@ conditioning_kidsroom:
             {% set ac_temp = state_attr('climate.kidsroom_ac', 'temperature') | float %}
             {% set delta = target_temp - cur_temp %}
             {{ (delta > 0.5 and ac_temp < 31) or (delta < -0.5 and  ac_temp > cur_temp) }}
-      action:
-        - service: climate.set_temperature
-          entity_id: climate.kidsroom_ac
-          data_template:
+      actions:
+        - action: climate.set_temperature
+          target:
+            entity_id: climate.kidsroom_ac
+          data:
             temperature: >
               {% set target_temp = states('input_number.kidsroom_target_cooling_temperature') | float %}
               {% set cur_temp = states('sensor.kidsroom_average_temperature') | float %}
@@ -362,25 +377,25 @@ conditioning_kidsroom:
     - id: "Умный контроль кондиционера для осушения детской"
       alias: kidsroom_ac_drying_smart_control
       initial_state: true
-      trigger:
-        - platform: time_pattern
+      triggers:
+        - trigger: time_pattern
           minutes: "/15"
-        - platform: state
+        - trigger: state
           entity_id:
             - switch.kidsroom_ac
             - switch.kidsroom_auto_conditioning
           to: "on"
-        - platform: numeric_state
+        - trigger: numeric_state
           entity_id: sensor.kidsroom_average_humidity
           above: 50
           for:
             minutes: 1
-        - platform: numeric_state
+        - trigger: numeric_state
           entity_id: sensor.kidsroom_average_humidity
           below: 40
           for:
             minutes: 1
-      condition:
+      conditions:
         - or:
             - condition: state
               entity_id: input_select.kidsroom_ac_mode
@@ -393,7 +408,7 @@ conditioning_kidsroom:
             - switch.kidsroom_ac
             - switch.kidsroom_auto_conditioning
           state: "on"
-      action:
+      actions:
         - if:
             - condition: state
               entity_id: input_select.kidsroom_ac_mode
@@ -402,9 +417,10 @@ conditioning_kidsroom:
               entity_id: sensor.kidsroom_average_humidity
               above: 50
           then:
-            - service: input_select.select_option
-              entity_id: input_select.kidsroom_ac_mode
-              data_template:
+            - action: input_select.select_option
+              target:
+                entity_id: input_select.kidsroom_ac_mode
+              data:
                 option: "dry"
             - action: notify.send_message
               target:
@@ -422,9 +438,10 @@ conditioning_kidsroom:
               entity_id: sensor.kidsroom_average_humidity
               below: 40
           then:
-            - service: input_select.select_option
-              entity_id: input_select.kidsroom_ac_mode
-              data_template:
+            - action: input_select.select_option
+              target:
+                entity_id: input_select.kidsroom_ac_mode
+              data:
                 option: "cool"
             - action: notify.send_message
               target:

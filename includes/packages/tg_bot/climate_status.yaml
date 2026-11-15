@@ -67,10 +67,10 @@ tg_climate_status:
     - id: "Отчет о состоянии воздуха в боте"
       alias: telegram_climate_report
       initial_state: true
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: telegram_text
           event_data:
             text: "Отчет по климату"
-      action:
-        - service: script.telegram_climate_report
+      actions:
+        - action: script.telegram_climate_report

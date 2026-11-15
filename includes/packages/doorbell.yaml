@@ -1,7 +1,7 @@
 doorbell:
   template:
-    - trigger:
-        - platform: state
+    - triggers:
+        - trigger: state
           from: 'off'
           to: 'on'
           entity_id: binary_sensor.elevator_hall_button_press_sensor_contact
@@ -15,19 +15,20 @@ doorbell:
     - id: 'Звонок в дверь'
       alias: elevator_hall_doorbell_rings
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.doorbell_rings
           from: 'off'
           to: 'on'
-      action:
+      actions:
         - if:
             - condition: time
               after: '09:00:00'
               before: '23:00:00'
           then:
-            - service: media_player.play_media
-              entity_id: media_player.miio_gateway
+            - action: media_player.play_media
+              target:
+                entity_id: media_player.miio_gateway
               data:
                 media_content_type: 'music'
                 media_content_id: 10

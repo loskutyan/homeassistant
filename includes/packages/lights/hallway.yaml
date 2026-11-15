@@ -29,29 +29,30 @@ hallway_lights:
     hallway_welcome_led_light_turn_on:
       alias: 'Приветственное мерцание LED-ленты в прихожей'
       sequence:
-        - service: mqtt.publish
+        - action: mqtt.publish
           data:
             topic: 'zigbee2mqtt/Hallway Duty Aqara LED Strip/set'
             payload: '{"preset": {{range(1, 7) | random}}, "brightness": 64}'
-        - service: timer.start
-          entity_id: timer.hallway_welcome_led_light_turn_off
+        - action: timer.start
+          target:
+            entity_id: timer.hallway_welcome_led_light_turn_off
 
   automation:
     - id: 'Свет при движении в прихожей'
       alias: hallway_motion_lights_turn_on
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.hallway_motion_sensor_occupancy
           to: 'on'
-      condition:
+      conditions:
         - condition: numeric_state
           entity_id: sensor.hallway_motion_sensor_illuminance
           below: 100
         - condition: state
           entity_id: switch.hallway_lights_switch
           state: 'off'
-      action:
+      actions:
         - if:
             - condition: state
               entity_id:
@@ -60,44 +61,47 @@ hallway_lights:
               state: 'on'
               match: any
           then:
-            - service: light.turn_on
-              entity_id: light.hallway_duty_aqara_led_strip
+            - action: light.turn_on
+              target:
+                entity_id: light.hallway_duty_aqara_led_strip
               data:
                 color_temp_kelvin: 2750
                 brightness_pct: 30
           else:
-            - service: switch.turn_on
-              entity_id: switch.hallway_lights_switch
+            - action: switch.turn_on
+              target:
+                entity_id: switch.hallway_lights_switch
 
     - id: 'Свет при открытии двери в прихожей'
       alias: hallway_door_opened_lights_turn_on
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.hallway_door_sensor_contact
           from: 'off'
           to: 'on'
-      action:
-        - service: switch.turn_on
-          entity_id: switch.hallway_lights_switch
+      actions:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.hallway_lights_switch
 
     - id: 'Включение таймера выключения света в прихожей'
       alias: hallway_lights_on_timer_start
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id:
             - switch.hallway_lights_switch
             - light.hallway_duty_aqara_led_strip
           to: 'on'
-      condition:
+      conditions:
         - condition: state
           entity_id:
             - script.signal_light_flashes_notify
             - script.intercom_light_flashes_notify
           state: 'off'
-      action:
-        - service: timer.start
+      actions:
+        - action: timer.start
           target:
             entity_id: >
               {% set at_night = '_at_night' if is_state('switch.bedroom_asleep', 'on') %}
@@ -106,65 +110,68 @@ hallway_lights:
     - id: 'Выключение таймера выключения света в прихожей'
       alias: hallway_lights_on_timer_finish
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id:
             - switch.hallway_lights_switch
             - light.hallway_duty_aqara_led_strip
           from: 'on'
           to: 'off'
-      condition:
+      conditions:
         - condition: state
           entity_id:
             - switch.hallway_lights_switch
             - light.hallway_duty_aqara_led_strip
           state: 'off'
-      action:
-        - service: timer.finish
-          entity_id:
-            - timer.hallway_lights_turn_off_without_motion
-            - timer.hallway_lights_turn_off_without_motion_at_night
+      actions:
+        - action: timer.finish
+          target:
+            entity_id:
+              - timer.hallway_lights_turn_off_without_motion
+              - timer.hallway_lights_turn_off_without_motion_at_night
 
     - id: 'Сброс таймера выключения света при движении в прихожей'
       alias: hallway_motion_lights_timer_reset
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id:
             - binary_sensor.hallway_motion_sensor_occupancy
             - binary_sensor.hallway_door_sensor_contact
           to: 'on'
-      condition:
+      conditions:
         - condition: state
           entity_id: timer.hallway_lights_turn_off_without_motion
           state: 'active'
-      action:
+      actions:
         - if:
             - condition: state
               entity_id: timer.hallway_lights_turn_off_without_motion
               state: 'active'
           then:
-            - service: timer.start
-              entity_id: timer.hallway_lights_turn_off_without_motion
+            - action: timer.start
+              target:
+                entity_id: timer.hallway_lights_turn_off_without_motion
         - if:
             - condition: state
               entity_id: timer.hallway_lights_turn_off_without_motion_at_night
               state: 'active'
           then:
-            - service: timer.start
-              entity_id: timer.hallway_lights_turn_off_without_motion_at_night
+            - action: timer.start
+              target:
+                entity_id: timer.hallway_lights_turn_off_without_motion_at_night
 
     - id: 'Сброс таймера выключения света после окончания при движении в прихожей'
       alias: hallway_motion_timer_finished_lights_timer_reset
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id:
             - timer.hallway_lights_turn_off_without_motion
             - timer.hallway_lights_turn_off_without_motion_at_night
           from: 'active'
           to: 'idle'
-      condition:
+      conditions:
         - condition: state
           entity_id:
             - binary_sensor.hallway_motion_sensor_occupancy
@@ -177,8 +184,8 @@ hallway_lights:
             - light.hallway_duty_aqara_led_strip
           state: 'on'
           match: any
-      action:
-        - service: timer.start
+      actions:
+        - action: timer.start
           target:
             entity_id: >
               {% set at_night = '_at_night' if is_state('switch.bedroom_asleep', 'on') %}
@@ -187,14 +194,14 @@ hallway_lights:
     - id: 'Выключение света в прихожей, если нет движения'
       alias: hallway_no_motion_lights_turn_off
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id:
             - timer.hallway_lights_turn_off_without_motion
             - timer.hallway_lights_turn_off_without_motion_at_night
           from: 'active'
           to: 'idle'
-      condition:
+      conditions:
         - condition: state
           entity_id:
             - switch.hallway_lights_switch
@@ -206,25 +213,28 @@ hallway_lights:
             - binary_sensor.hallway_motion_sensor_occupancy
             - binary_sensor.hallway_door_sensor_contact
           state: 'off'
-      action:
-        - service: switch.turn_off
-          entity_id: switch.hallway_lights_switch
+      actions:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.hallway_lights_switch
           continue_on_error: true
-        - service: light.turn_off
-          entity_id: light.hallway_duty_aqara_led_strip
+        - action: light.turn_off
+          target:
+            entity_id: light.hallway_duty_aqara_led_strip
 
     - id: 'Выключение приветственного мерцания LED-ленты в прихожей'
       alias: hallway_welcome_led_light_turn_on
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: timer.hallway_welcome_led_light_turn_off
           from: 'active'
           to: 'idle'
-      condition:
+      conditions:
         - condition: state
           entity_id: light.hallway_duty_aqara_led_strip
           state: 'on'
-      action:
-        - service: light.turn_off
-          entity_id: light.hallway_duty_aqara_led_strip
+      actions:
+        - action: light.turn_off
+          target:
+            entity_id: light.hallway_duty_aqara_led_strip

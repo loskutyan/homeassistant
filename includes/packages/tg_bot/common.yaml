@@ -3,12 +3,12 @@ tg_common:
     - id: 'Клавиатура бота'
       alias: telegram_keyboard
       initial_state: true
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: telegram_command
           event_data:
             command: '/start'
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot
@@ -31,12 +31,12 @@ tg_common:
     - id: 'Панель управления бота'
       alias: telegram_control_panel
       initial_state: true
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: telegram_text
           event_data:
             text: 'Управление'
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot
@@ -53,14 +53,14 @@ tg_common:
     - id: 'Управление кранами в боте'
       alias: telegram_valves_control
       initial_state: true
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: telegram_callback
           event_data:
             data: '/valves'
-      action:
-        - service: telegram_bot.answer_callback_query
-          data_template:
+      actions:
+        - action: telegram_bot.answer_callback_query
+          data:
             callback_query_id: '{{ trigger.event.data.id }}'
             message: 'Что нужно сделать с кранами?'
         - action: notify.send_message
@@ -75,25 +75,25 @@ tg_common:
     - id: 'Перекрытие кранов через бот'
       alias: telegram_valves_close
       initial_state: true
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: telegram_callback
         event_data:
           data: '/close_valves'
-      action:
-        - service: telegram_bot.answer_callback_query
-          data_template:
+      actions:
+        - action: telegram_bot.answer_callback_query
+          data:
             callback_query_id: '{{ trigger.event.data.id }}'
             message: 'Перекрываем краны'
-        - service: script.close_bathroom_valves
+        - action: script.close_bathroom_valves
 
     - id: 'Прогноз погоды в боте'
       alias: telegram_weather_forecast
       initial_state: true
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: telegram_text
           event_data:
             text: 'Прогноз погоды'
-      action:
-        - service: script.sending_yandex_weather_forecast
+      actions:
+        - action: script.sending_yandex_weather_forecast

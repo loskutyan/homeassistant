@@ -42,11 +42,13 @@ sleep_time:
           state: >
             {{ states('input_boolean.kidsroom_asleep') }}
           turn_on:
-            service: input_boolean.turn_on
-            entity_id: input_boolean.kidsroom_asleep
+            action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.kidsroom_asleep
           turn_off:
-            service: input_boolean.turn_off
-            entity_id: input_boolean.kidsroom_asleep
+            action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.kidsroom_asleep
           icon: >
             {% if is_state('input_boolean.kidsroom_asleep', 'on') %}
               mdi:bed
@@ -60,11 +62,13 @@ sleep_time:
           state: >
             {{ states('input_boolean.bedroom_asleep') }}
           turn_on:
-            service: input_boolean.turn_on
-            entity_id: input_boolean.bedroom_asleep
+            action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.bedroom_asleep
           turn_off:
-            service: input_boolean.turn_off
-            entity_id: input_boolean.bedroom_asleep
+            action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.bedroom_asleep
           icon: >
             {% if is_state('input_boolean.bedroom_asleep', 'on') %}
               mdi:bed-king
@@ -76,61 +80,71 @@ sleep_time:
     - id: "Отход ко сну в детской"
       alias: kidsroom_going_to_sleep
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: sensor.kidsroom_lights_common_switch_action
           to: "double_right"
-        - platform: state
+        - trigger: state
           entity_id: sensor.kidsroom_aqara_button_action
           to: "hold"
-      condition:
+      conditions:
         - condition: state
           entity_id: input_boolean.kidsroom_asleep
           state: "off"
-      action:
-        - service: switch.turn_off
-          entity_id: switch.kidsroom_lights_common_switch_left
+      actions:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.kidsroom_lights_common_switch_left
           continue_on_error: true
-        - service: light.turn_off
-          entity_id: light.kidsroom_wall_aqara_led_bulbs
+        - action: light.turn_off
+          target:
+            entity_id: light.kidsroom_wall_aqara_led_bulbs
           continue_on_error: true
 
-        - service: input_select.select_option
-          entity_id: input_select.kidsroom_airpurifier_mode
+        - action: input_select.select_option
+          target:
+            entity_id: input_select.kidsroom_airpurifier_mode
           data:
             option: "Favorite"
           continue_on_error: true
-        - service: timer.start
-          entity_id: timer.kidsroom_airpurifier_fixed_speed
-        - service: input_number.set_value
-          entity_id: input_number.kidsroom_airpurifier_favorite_speed
+        - action: timer.start
+          target:
+            entity_id: timer.kidsroom_airpurifier_fixed_speed
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.kidsroom_airpurifier_favorite_speed
           data:
             value: 60
           continue_on_error: true
 
-        - service: humidifier.set_mode
-          entity_id: humidifier.kidsroom_smartmi_humidifier
+        - action: humidifier.set_mode
+          target:
+            entity_id: humidifier.kidsroom_smartmi_humidifier
           data:
             mode: "Silent"
           continue_on_error: true
-        - service: timer.start
-          entity_id: timer.kidsroom_humidifier_fixed_mode
+        - action: timer.start
+          target:
+            entity_id: timer.kidsroom_humidifier_fixed_mode
           continue_on_error: true
 
         # - service: switch.turn_on
         #   entity_id: switch.kidsroom_nightlight_plug
         #   continue_on_error: true
 
-        - service: switch.turn_on
-          entity_id: switch.smartintercom_otkliuchit_trubku_domofona
+        - action: switch.turn_on
+          target:
+            entity_id: switch.smartintercom_otkliuchit_trubku_domofona
           continue_on_error: true
 
-        - service: switch.turn_off
-          entity_id: switch.kidsroom_airpurifier_ptc
+        - action: switch.turn_off
+          target:
+            entity_id: switch.kidsroom_airpurifier_ptc
           continue_on_error: true
 
-        - service: switch.turn_on
-          entity_id: switch.kidsroom_lights_smart_control
+        - action: switch.turn_on
+          target:
+            entity_id: switch.kidsroom_lights_smart_control
           continue_on_error: true
 
         - if:
@@ -142,102 +156,118 @@ sleep_time:
               attribute: swing_mode
               state: "on"
           then:
-            - service: climate.set_swing_mode
-              entity_id: climate.kidsroom_ac
+            - action: climate.set_swing_mode
+              target:
+                entity_id: climate.kidsroom_ac
               data:
                 swing_mode: "off"
 
-        - service: input_boolean.turn_on
-          entity_id: input_boolean.kidsroom_asleep
+        - action: input_boolean.turn_on
+          target:
+            entity_id: input_boolean.kidsroom_asleep
 
     - id: "В детской уже не спят"
       alias: kidsroom_supposed_to_wake_up
       initial_state: true
-      trigger:
-        - platform: time
+      triggers:
+        - trigger: time
           at: sensor.kidsroom_wakeup_time
-        - platform: state
+        - trigger: state
           entity_id: sensor.kidsroom_lights_common_switch_action
           to: "double_right"
-        - platform: state
+        - trigger: state
           entity_id: sensor.kidsroom_aqara_button_action
           to: "hold"
-      condition:
+      conditions:
         - condition: state
           entity_id: input_boolean.kidsroom_asleep
           state: "on"
-      action:
-        - service: input_boolean.turn_off
-          entity_id: input_boolean.kidsroom_asleep
-        - service: switch.turn_off
-          entity_id: switch.kidsroom_nightlight_plug
+      actions:
+        - action: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.kidsroom_asleep
+        - action: switch.turn_off
+          target:
+            entity_id: switch.kidsroom_nightlight_plug
           continue_on_error: true
-        - service: cover.stop_cover
-          entity_id: cover.kidsroom_curtain
+        - action: cover.stop_cover
+          target:
+            entity_id: cover.kidsroom_curtain
         - delay:
             seconds: 5
-        - service: cover.open_cover
-          entity_id: cover.kidsroom_curtain
+        - action: cover.open_cover
+          target:
+            entity_id: cover.kidsroom_curtain
         - if:
             - condition: state
               entity_id: switch.smartintercom_otkliuchit_trubku_domofona
               state: "on"
           then:
-            - service: switch.turn_off
-              entity_id: switch.smartintercom_otkliuchit_trubku_domofona
+            - action: switch.turn_off
+              target:
+                entity_id: switch.smartintercom_otkliuchit_trubku_domofona
 
     - id: "Отход ко сну в спальне"
       alias: bedroom_going_to_sleep
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: sensor.bedroom_aqara_cube_action
           to: "flip180"
-      condition:
+      conditions:
         - condition: state
           entity_id: input_boolean.bedroom_asleep
           state: "off"
-      action:
-        - service: light.turn_off
-          entity_id:
-            - light.bedroom_floor_aqara_led_bulb
-            - light.bedroom_nightstand_aqara_led_bulb_left
-            - light.bedroom_nightstand_aqara_led_bulb_right
-            - light.hallway_duty_aqara_led_strip
+      actions:
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.bedroom_floor_aqara_led_bulb
+              - light.bedroom_nightstand_aqara_led_bulb_left
+              - light.bedroom_nightstand_aqara_led_bulb_right
+              - light.hallway_duty_aqara_led_strip
           data:
             transition: 1
           continue_on_error: true
-        - service: switch.turn_off
-          entity_id:
-            - switch.bedroom_lights_switch_right
-            - switch.hallway_lights_switch
+        - action: switch.turn_off
+          target:
+            entity_id:
+              - switch.bedroom_lights_switch_right
+              - switch.hallway_lights_switch
           continue_on_error: true
-        - service: media_player.turn_off
-          entity_id: media_player.sony_xr_65a80j
+        - action: media_player.turn_off
+          target:
+            entity_id: media_player.sony_xr_65a80j
 
-        - service: input_select.select_option
-          entity_id: input_select.bedroom_airpurifier_mode
+        - action: input_select.select_option
+          target:
+            entity_id: input_select.bedroom_airpurifier_mode
           data:
             option: "Favorite"
           continue_on_error: true
-        - service: timer.start
-          entity_id: timer.bedroom_airpurifier_fixed_speed
+        - action: timer.start
+          target:
+            entity_id: timer.bedroom_airpurifier_fixed_speed
           continue_on_error: true
-        - service: input_number.set_value
-          entity_id: input_number.bedroom_airpurifier_favorite_speed
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.bedroom_airpurifier_favorite_speed
           data:
             value: 60
           continue_on_error: true
 
-        - service: humidifier.turn_off
-          entity_id: humidifier.bedroom_smartmi_humidifier
+        - action: humidifier.turn_off
+          target:
+            entity_id: humidifier.bedroom_smartmi_humidifier
           continue_on_error: true
-        - service: timer.start
-          entity_id: timer.bedroom_humidifier_fixed_mode
+        - action: timer.start
+          target:
+            entity_id: timer.bedroom_humidifier_fixed_mode
           continue_on_error: true
 
-        - service: switch.turn_off
-          entity_id: switch.bedroom_airpurifier_ptc
+        - action: switch.turn_off
+          target:
+            entity_id: switch.bedroom_airpurifier_ptc
           continue_on_error: true
 
         - if:
@@ -249,43 +279,47 @@ sleep_time:
               attribute: swing_mode
               state: "off"
           then:
-            - service: climate.set_swing_mode
-              entity_id: climate.bedroom_ac
+            - action: climate.set_swing_mode
+              target:
+                entity_id: climate.bedroom_ac
               data:
                 swing_mode: "on"
 
-        - service: cover.close_cover
-          entity_id: cover.bedroom_curtain
+        - action: cover.close_cover
+          target:
+            entity_id: cover.bedroom_curtain
 
-        - service: input_boolean.turn_on
-          entity_id: input_boolean.bedroom_asleep
+        - action: input_boolean.turn_on
+          target:
+            entity_id: input_boolean.bedroom_asleep
 
     - id: "В спальне уже не спят"
       alias: bedroom_supposed_to_wake_up
       initial_state: true
-      trigger:
-        - platform: time
+      triggers:
+        - trigger: time
           at: sensor.bedroom_wakeup_time
-        - platform: state
+        - trigger: state
           entity_id: sensor.bedroom_aqara_cube_action
           to: "flip180"
-      condition:
+      conditions:
         - condition: state
           entity_id: input_boolean.bedroom_asleep
           state: "on"
-      action:
-        - service: input_boolean.turn_off
-          entity_id: input_boolean.bedroom_asleep
+      actions:
+        - action: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.bedroom_asleep
 
     - id: "Закрытие шторы в детской"
       alias: kidsroom_closing_curtain
       initial_state: true
-      trigger:
-        - platform: time
+      triggers:
+        - trigger: time
           at: "03:00"
-        - platform: homeassistant
+        - trigger: homeassistant
           event: start
-      condition:
+      conditions:
         - condition: numeric_state
           entity_id: cover.kidsroom_curtain
           attribute: current_position
@@ -297,7 +331,8 @@ sleep_time:
           value_template: >
             {% set sun_next_rising = states('sensor.sun_next_rising') %}
             {{ as_datetime(sun_next_rising).astimezone().time().hour < 8 }}
-      action:
-        - service: cover.close_cover
-          entity_id: cover.kidsroom_curtain
+      actions:
+        - action: cover.close_cover
+          target:
+            entity_id: cover.kidsroom_curtain
           continue_on_error: true

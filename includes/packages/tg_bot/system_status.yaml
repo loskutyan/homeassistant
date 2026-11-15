@@ -20,10 +20,10 @@ tg_system_status:
     - id: 'Отчет при запуске системы в боте'
       alias: home_assistant_started_notify
       initial_state: true
-      trigger:
-        - platform: homeassistant
+      triggers:
+        - trigger: homeassistant
           event: start
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot
@@ -34,15 +34,15 @@ tg_system_status:
         - delay:
             minutes: 1
             seconds: 10
-        - service: script.telegram_system_report
+        - action: script.telegram_system_report
 
     - id: 'Отчет о состоянии системы в боте'
       alias: home_assistant_report_notify
       initial_state: true
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: telegram_text
           event_data:
             text: 'Отчет по системе'
-      action:
-        - service: script.telegram_system_report
+      actions:
+        - action: script.telegram_system_report

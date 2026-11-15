@@ -3,38 +3,40 @@ bathroom_lights:
     - id: 'Свет при движении в ванной'
       alias: bathroom_motion_lights_turn_on
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.bathroom_presence_sensor_occupancy
           to: 'on'
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.bathroom_door_sensor_contact
           from: 'off'
           to: 'on'
-      condition:
+      conditions:
         - condition: state
           entity_id:
             - input_boolean.kidsroom_asleep
             - input_boolean.bedroom_asleep
             - switch.bathroom_lights_switch
           state: 'off'
-      action:
-        - service: switch.turn_on
-          entity_id: switch.bathroom_lights_switch
+      actions:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.bathroom_lights_switch
 
     - id: 'Выключение света в ванной, если нет движения'
       alias: bathroom_no_motion_lights_turn_off
       initial_state: true
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.bathroom_presence_sensor_occupancy
           to: 'off'
           for:
             minutes: 5
-      condition:
+      conditions:
         - condition: state
           entity_id: switch.bathroom_lights_switch
           state: 'on'
-      action:
-        - service: switch.turn_off
-          entity_id: switch.bathroom_lights_switch
+      actions:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.bathroom_lights_switch

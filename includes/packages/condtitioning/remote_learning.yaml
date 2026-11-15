@@ -3,7 +3,7 @@ remotes_learning:
     bedroom_air_conditioner_remote_leaning_cooling_fan:
       alias: 'Обучение пульта кондиционера: вентиляция'
       sequence:
-        - service: remote.learn_command
+        - action: remote.learn_command
           target:
             entity_id: remote.bedroom_broadlink_rm4mini_remote
           data:
@@ -25,7 +25,7 @@ remotes_learning:
     bedroom_air_conditioner_remote_leaning_cool_auto_swing:
       alias: 'Обучение пульта кондиционера: охлаждение auto swing'
       sequence:
-        - service: remote.learn_command
+        - action: remote.learn_command
           target:
             entity_id: remote.bedroom_broadlink_rm4mini_remote
           data:
@@ -51,7 +51,7 @@ remotes_learning:
     bedroom_air_conditioner_remote_leaning_cool_low_swing:
       alias: 'Обучение пульта кондиционера: охлаждение low swing'
       sequence:
-        - service: remote.learn_command
+        - action: remote.learn_command
           target:
             entity_id: remote.bedroom_broadlink_rm4mini_remote
           data:
@@ -77,7 +77,7 @@ remotes_learning:
     bedroom_air_conditioner_remote_leaning_cool_medium_swing:
       alias: 'Обучение пульта кондиционера: охлаждение medium swing'
       sequence:
-        - service: remote.learn_command
+        - action: remote.learn_command
           target:
             entity_id: remote.bedroom_broadlink_rm4mini_remote
           data:
@@ -103,7 +103,7 @@ remotes_learning:
     bedroom_air_conditioner_remote_leaning_cool_high_swing:
       alias: 'Обучение пульта кондиционера: охлаждение high swing'
       sequence:
-        - service: remote.learn_command
+        - action: remote.learn_command
           target:
             entity_id: remote.bedroom_broadlink_rm4mini_remote
           data:

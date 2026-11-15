@@ -137,8 +137,8 @@ vacuum:
         - none
 
   template:
-    - trigger:
-        - platform: state
+    - triggers:
+        - trigger: state
           entity_id: input_select.roborock_s5_max_room
           to:
             - bedroom
@@ -215,10 +215,10 @@ vacuum:
                 - hallway
                 - kitchen
       sequence:
-        - service: xiaomi_miio.vacuum_clean_segment
+        - action: xiaomi_miio.vacuum_clean_segment
           target:
             entity_id: vacuum.roborock_s5_max
-          data_template:
+          data:
             segments: >
               {% set room_id = states('input_number.roborock_s5_max_room_enum_' + room) | int %}
               {{ room_id }}
@@ -226,14 +226,15 @@ vacuum:
     roborock_s5_max_vacuum_map_to_telegram:
       alias: "Отправка снимка карты пылесоса"
       sequence:
-        - service: camera.snapshot
-          data:
+        - action: camera.snapshot
+          target:
             entity_id: camera.roborock_s5_max_vacuum_map
+          data:
             filename: "/config/www/cam_captures/roborock_s5_max_vacuum_map.jpg"
         - delay:
             seconds: 3
-        - service: telegram_bot.send_photo
-          data_template:
+        - action: telegram_bot.send_photo
+          data:
             chat_id:
               - !secret tg_chat_id_loskutyan
             file: "/config/www/cam_captures/roborock_s5_max_vacuum_map.jpg"
@@ -241,24 +242,24 @@ vacuum:
   automation:
     - id: "Запустить пылесос в комнате"
       alias: roborock_s5_max_vacuum_start_room_cleaning
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: sensor.roborock_s5_max_selected_rooms
-      condition:
+      conditions:
         - condition: template
           value_template: "{{ trigger.to_state.state | length > 2 }}"
-      action:
-        - service: script.roborock_s5_max_vacuum_clean_room
-          data_template:
+      actions:
+        - action: script.roborock_s5_max_vacuum_clean_room
+          data:
             room: >
               {{ trigger.to_state.state | from_json | last }}
 
     - id: "Сброс списка комнат для уборки пылесоса"
       alias: roborock_s5_max_vacuum_clear_rooms_list
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: vacuum.roborock_s5_max
-      condition:
+      conditions:
         - not:
             - condition: state
               entity_id: vacuum.roborock_s5_max
@@ -267,22 +268,23 @@ vacuum:
             - condition: state
               entity_id: vacuum.roborock_s5_max
               state: "paused"
-      action:
-        - service: input_select.select_option
-          entity_id: input_select.roborock_s5_max_room
+      actions:
+        - action: input_select.select_option
+          target:
+            entity_id: input_select.roborock_s5_max_room
           data:
             option: "none"
 
     - id: "Пылесос начал уборку - уведомление"
       alias: vacuum_started_cleaning_notify
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: vacuum.roborock_s5_max
           from:
             - "docked"
             - "idle"
           to: "cleaning"
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot
@@ -292,8 +294,8 @@ vacuum:
 
     - id: "Пылесос закончил уборку - уведомление"
       alias: vacuum_finished_cleaning_notify
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: vacuum.roborock_s5_max
           from:
             - "cleaning"
@@ -301,8 +303,8 @@ vacuum:
           to:
             - "returning"
             - "idle"
-      action:
-        - service: script.roborock_s5_max_vacuum_map_to_telegram
+      actions:
+        - action: script.roborock_s5_max_vacuum_map_to_telegram
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot
@@ -314,12 +316,12 @@ vacuum:
 
     - id: "Пылесос вернулся на док-станцию - уведомление"
       alias: vacuum_docked_notify
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: vacuum.roborock_s5_max
           from: "returning"
           to: "docked"
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot

@@ -1,7 +1,7 @@
 intercom:
   template:
-    - trigger:
-        - platform: state
+    - triggers:
+        - trigger: state
           from: "off"
           to: "on"
           entity_id: binary_sensor.smartintercom_vkhodiashchii_zvonok
@@ -11,8 +11,8 @@ intercom:
           auto_off:
             seconds: 45
 
-    - trigger:
-        - platform: state
+    - triggers:
+        - trigger: state
           from: "Ответ"
           to: "Открытие двери"
           entity_id: sensor.smartintercom_sostoianie_linii
@@ -32,9 +32,9 @@ intercom:
             {% set not_door_is_being_opened = is_state('binary_sensor.intercom_lock_opened', 'off') %}
             {{ not auto_open and not_door_is_being_opened }}
           turn_on:
-            service: script.intercom_lock_close
+            action: script.intercom_lock_close
           turn_off:
-            service: script.intercom_lock_open
+            action: script.intercom_lock_open
           icon: mdi:phone-lock
 
     - lock:
@@ -56,13 +56,14 @@ intercom:
     intercom_rings_aqara_hub_quiet_sound_notify:
       alias: "Звонок в домофон - тихое звуковое уведомление (Aqara Hub)"
       sequence:
-        - service: scene.create
+        - action: scene.create
           data:
             scene_id: aqara_hub_state_revert
             snapshot_entities: "media_player.miio_gateway"
-        - service: media_player.volume_set
-          entity_id: media_player.miio_gateway
-          data_template:
+        - action: media_player.volume_set
+          target:
+            entity_id: media_player.miio_gateway
+          data:
             volume_level: 0.05
           continue_on_error: true
         - delay:
@@ -70,47 +71,51 @@ intercom:
         - repeat:
             count: 2
             sequence:
-              - service: media_player.play_media
-                entity_id: media_player.miio_gateway
+              - action: media_player.play_media
+                target:
+                  entity_id: media_player.miio_gateway
                 data:
                   media_content_type: "music"
                   media_content_id: 13
                 continue_on_error: true
               - delay:
                   seconds: 5
-        - service: scene.turn_on
-          data:
+        - action: scene.turn_on
+          target:
             entity_id: scene.aqara_hub_state_revert
 
     intercom_lock_opened_aqara_hub_quiet_sound_notify:
       alias: "Открытия замка домофона - тихое звуковое уведомление (Aqara Hub)"
       sequence:
-        - service: script.turn_off
-          entity_id: script.intercom_rings_aqara_hub_quiet_sound_notify
-        - service: scene.turn_on
-          data:
+        - action: script.turn_off
+          target:
+            entity_id: script.intercom_rings_aqara_hub_quiet_sound_notify
+        - action: scene.turn_on
+          target:
             entity_id: scene.aqara_hub_state_revert
-        - service: scene.create
+        - action: scene.create
           data:
             scene_id: aqara_hub_state_revert
             snapshot_entities: "media_player.miio_gateway"
-        - service: media_player.volume_set
-          entity_id: media_player.miio_gateway
-          data_template:
+        - action: media_player.volume_set
+          target:
+            entity_id: media_player.miio_gateway
+          data:
             volume_level: 0.05
           continue_on_error: true
         - delay:
             seconds: 1
-        - service: media_player.play_media
-          entity_id: media_player.miio_gateway
+        - action: media_player.play_media
+          target:
+            entity_id: media_player.miio_gateway
           data:
             media_content_type: "music"
             media_content_id: 14
           continue_on_error: true
         - delay:
             seconds: 8
-        - service: scene.turn_on
-          data:
+        - action: scene.turn_on
+          target:
             entity_id: scene.aqara_hub_state_revert
 
     intercom_light_flashes_notify:
@@ -126,26 +131,29 @@ intercom:
                     - "yellow"
                   sequence:
                     - parallel:
-                        - service: light.turn_on
-                          entity_id:
-                            - light.miio_gateway
+                        - action: light.turn_on
+                          target:
+                            entity_id:
+                              - light.miio_gateway
                           data:
                             color_name: "{{ repeat.item }}"
                             brightness_pct: 100
                           continue_on_error: true
-                        - service: light.turn_on
-                          entity_id:
-                            - light.hallway_duty_aqara_led_strip
+                        - action: light.turn_on
+                          target:
+                            entity_id:
+                              - light.hallway_duty_aqara_led_strip
                           data:
                             color_name: "{{ repeat.item }}"
                             brightness_pct: 40
                           continue_on_error: true
                     - delay:
                         seconds: 2
-              - service: light.turn_off
-                entity_id:
-                  - light.miio_gateway
-                  - light.hallway_duty_aqara_led_strip
+              - action: light.turn_off
+                target:
+                  entity_id:
+                    - light.miio_gateway
+                    - light.hallway_duty_aqara_led_strip
 
     intercom_lock_open:
       alias: "Открыть замок домофона"
@@ -155,11 +163,11 @@ intercom:
               entity_id: binary_sensor.intercom_rings
               state: "on"
           then:
-            - service: button.press
+            - action: button.press
               target:
                 entity_id: button.smartintercom_propustit
           else:
-            - service: switch.turn_on
+            - action: switch.turn_on
               target:
                 entity_id: switch.smartintercom_otkryvat_na_sleduiushchii_zvonok
 
@@ -171,22 +179,22 @@ intercom:
               entity_id: binary_sensor.intercom_rings
               state: "on"
           then:
-            - service: button.press
+            - action: button.press
               target:
                 entity_id: button.smartintercom_otkazat
-        - service: switch.turn_off
+        - action: switch.turn_off
           target:
             entity_id: switch.smartintercom_otkryvat_na_sleduiushchii_zvonok
 
   automation:
     - id: "Звонок в домофон - уведомление"
       alias: intercom_rings_notify
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.intercom_rings
           from: "off"
           to: "on"
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_urgent
@@ -199,22 +207,22 @@ intercom:
               ] %}
               {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}
           continue_on_error: true
-        - service: script.intercom_light_flashes_notify
+        - action: script.intercom_light_flashes_notify
         - if:
             - condition: state
               entity_id: switch.smartintercom_otkliuchit_trubku_domofona
               state: "on"
           then:
-            service: script.intercom_rings_aqara_hub_quiet_sound_notify
+            action: script.intercom_rings_aqara_hub_quiet_sound_notify
 
     - id: "Замок домофона открыт - уведомление"
       alias: intercom_lock_was_opened_notify
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.intercom_lock_opened
           from: "off"
           to: "on"
-      action:
+      actions:
         - action: notify.send_message
           target:
             entity_id: notify.tg_urgent
@@ -232,4 +240,4 @@ intercom:
               entity_id: switch.smartintercom_otkliuchit_trubku_domofona
               state: "on"
           then:
-            service: script.intercom_lock_opened_aqara_hub_quiet_sound_notify
+            action: script.intercom_lock_opened_aqara_hub_quiet_sound_notify
