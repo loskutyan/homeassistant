@@ -1,0 +1,10 @@
+notifications:
+  # The alert integration calls legacy notify actions. Route them through the
+  # entity-based Telegram action while preserving ACK, repeat and recovery.
+  notify:
+    - platform: group
+      name: alerts_urgent
+      services:
+        - action: send_message
+          data:
+            entity_id: notify.tg_urgent

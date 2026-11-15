@@ -1,0 +1,118 @@
+infrastructure_monitoring:
+  # Reset only the request marker on HA restart. The first probe starts a fresh
+  # grace period; later probes must never keep extending that period.
+  input_text:
+    zigbee2mqtt_health_request:
+      name: "Zigbee2MQTT: текущая проверка"
+      initial: "not-started"
+      max: 64
+
+  input_datetime:
+    zigbee2mqtt_health_started:
+      name: "Zigbee2MQTT: начало мониторинга"
+      has_date: true
+      has_time: true
+    zigbee2mqtt_health_last_success:
+      name: "Zigbee2MQTT: последний ответ"
+      has_date: true
+      has_time: true
+
+  template:
+    - binary_sensor:
+        - name: "Zigbee2MQTT не отвечает"
+          unique_id: zigbee2mqtt_health_problem
+          default_entity_id: binary_sensor.zigbee2mqtt_health_problem
+          device_class: problem
+          state: >-
+            {% set request = states('input_text.zigbee2mqtt_health_request') %}
+            {% set started = state_attr('input_datetime.zigbee2mqtt_health_started', 'timestamp') | float(0) %}
+            {% set last = state_attr('input_datetime.zigbee2mqtt_health_last_success', 'timestamp') | float(0) %}
+            {% set current = as_timestamp(now()) %}
+            {% if request in ['not-started', 'unknown', 'unavailable'] %}
+              {% set marker = states.input_text.zigbee2mqtt_health_request %}
+              {{ marker is none or not (0 <= current - as_timestamp(marker.last_changed, 0) < 150) }}
+            {% elif started > 0 and 0 <= current - started < 150 %}
+              false
+            {% else %}
+              {{ not is_state('binary_sensor.zigbee2mqtt_bridge_connection_state', 'on')
+                 or started <= 0
+                 or not (last >= started and 0 <= current - last <= 150) }}
+            {% endif %}
+
+  automation:
+    - id: infrastructure_zigbee2mqtt_health_probe
+      alias: "Инфраструктура: проверка Zigbee2MQTT"
+      # The MQTT subscription exists before a probe is sent. A fast response is
+      # queued behind the publisher, rather than lost in publish-then-wait.
+      mode: queued
+      max: 10
+      triggers:
+        - trigger: homeassistant
+          event: start
+          id: start
+        - trigger: time_pattern
+          minutes: "/1"
+          id: probe
+        - trigger: mqtt
+          topic: zigbee2mqtt/bridge/response/health_check
+          id: response
+      actions:
+        - choose:
+            - conditions: "{{ trigger.id in ['start', 'probe'] }}"
+              sequence:
+                - if:
+                    - condition: template
+                      value_template: >-
+                        {{ trigger.id == 'start'
+                           or states('input_text.zigbee2mqtt_health_request') in ['not-started', 'unknown', 'unavailable'] }}
+                  then:
+                    - action: input_datetime.set_datetime
+                      target:
+                        entity_id: input_datetime.zigbee2mqtt_health_started
+                      data:
+                        timestamp: "{{ as_timestamp(now()) }}"
+                - variables:
+                    request_id: "{{ now().isoformat() }}"
+                - action: input_text.set_value
+                  target:
+                    entity_id: input_text.zigbee2mqtt_health_request
+                  data:
+                    value: "{{ request_id }}"
+                - action: mqtt.publish
+                  data:
+                    topic: zigbee2mqtt/bridge/request/health_check
+                    payload: "{{ {'transaction': request_id} | to_json }}"
+                    qos: 0
+                    retain: false
+            - conditions: "{{ trigger.id == 'response' }}"
+              sequence:
+                - condition: template
+                  value_template: >-
+                    {% set response = trigger.payload_json | default({}) %}
+                    {% set request = states('input_text.zigbee2mqtt_health_request') %}
+                    {{ response is mapping
+                       and request not in ['not-started', 'unknown', 'unavailable']
+                       and response.get('transaction') == request
+                       and response.get('status') == 'ok'
+                       and response.get('data') is mapping
+                       and response.get('data').get('healthy') is sameas true }}
+                - action: input_datetime.set_datetime
+                  target:
+                    entity_id: input_datetime.zigbee2mqtt_health_last_success
+                  data:
+                    timestamp: "{{ as_timestamp(now()) }}"
+
+  alert:
+    zigbee2mqtt_health_problem:
+      name: "Zigbee2MQTT не отвечает"
+      entity_id: binary_sensor.zigbee2mqtt_health_problem
+      state: "on"
+      repeat: 60
+      can_acknowledge: true
+      message: >-
+        ⚠️ Zigbee2MQTT: нет свежего ответа проверки процесса/MQTT.
+        Состояние bridge: {{ states('binary_sensor.zigbee2mqtt_bridge_connection_state') }}.
+        Последний ответ: {{ states('input_datetime.zigbee2mqtt_health_last_success') }}.
+      done_message: "✅ Zigbee2MQTT снова отвечает на проверку процесса/MQTT."
+      notifiers:
+        - alerts_urgent

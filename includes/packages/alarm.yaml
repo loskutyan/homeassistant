@@ -160,7 +160,7 @@ alarm:
       repeat: 5
       can_acknowledge: true
       notifiers:
-        - tg_urgent
+        - alerts_urgent
 
     smoke_detected:
       name: "Задымление"
@@ -173,7 +173,7 @@ alarm:
       repeat: 5
       can_acknowledge: true
       notifiers:
-        - tg_urgent
+        - alerts_urgent
 
     fridge_door_left_opened:
       name: "Дверь холодильника не закрыта"
@@ -184,7 +184,7 @@ alarm:
       message: >
         {{ '\U00002744' }} Дверь холодильника не закрыта!
       notifiers:
-        - tg_urgent
+        - alerts_urgent
 
     ups_power_went_down:
       name: "ИБП работает от аккумулятора"
@@ -194,7 +194,7 @@ alarm:
       message: >
         {{ '\U0001F50B' }} ИБП работает от аккумулятора! {{ states('sensor.time_date') }}
       notifiers:
-        - tg_urgent
+        - alerts_urgent
 
     ups_is_not_fine:
       name: "Проблема с ИБП"
@@ -206,7 +206,7 @@ alarm:
       done_message: >
         {{ '\U0001F50B' }} Проблема с ИБП устранена, статус {{ states('sensor.ups_status') }}
       notifiers:
-        - tg_urgent
+        - alerts_urgent
 
     bedroom_ac_plug_overload:
       name: "Перегрузка розетки кондиционера в спальне"
@@ -216,7 +216,7 @@ alarm:
       message: >
         {{ '\U000026A0' }} Перегрузка розетки в спальне, потребление {{ states('sensor.bedroom_ac_plug_power') }}Вт, температура {{ states('sensor.bedroom_ac_plug_device_temperature') }}
       notifiers:
-        - tg_urgent
+        - alerts_urgent
 
     kidsroom_ac_plug_overload:
       name: "Перегрузка розетки кондиционера в детской"
@@ -226,7 +226,7 @@ alarm:
       message: >
         {{ '\U000026A0' }} Перегрузка розетки в детской, потребление {{ states('sensor.kidsroom_ac_plug_power') }}Вт, температура {{ states('sensor.kidsroom_ac_plug_device_temperature') }}
       notifiers:
-        - tg_urgent
+        - alerts_urgent
 
   script:
     close_bathroom_valves:
