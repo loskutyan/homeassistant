@@ -166,85 +166,178 @@ cards:
           - type: horizontal-stack
             cards:
               - type: custom:mushroom-template-card
-                entity: input_select.roborock_s5_max_room
+                entity: switch.roborock_s5_max_clean_bedroom
                 primary: 'Спальня'
+                secondary: >-
+                  {% if is_state('input_select.roborock_s5_max_active_room', 'bedroom') %}
+                    {% if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') %}
+                      Требует внимания
+                    {% elif is_state('vacuum.roborock_s5_max', 'cleaning')
+                       and is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
+                      Убирает
+                    {% elif is_state('vacuum.roborock_s5_max', 'paused') %}
+                      Пауза
+                    {% else %}
+                      Ожидает пылесос
+                    {% endif %}
+                  {% elif is_state(entity, 'on') %}
+                    В очереди
+                  {% elif is_state(entity, 'off') %}
+                    Добавить
+                  {% else %}
+                    Недоступно
+                  {% endif %}
                 layout: vertical
                 tap_action:
-                  action: call-service
-                  service: input_select.select_option
-                  target:
-                    entity_id: input_select.roborock_s5_max_room
-                  data:
-                    option: 'bedroom'
+                  action: toggle
                 icon: mdi:bed-king
                 icon_color: >-
-                  {% set bedroom_in_selected_rooms = 'bedroom' in (state_attr('sensor.roborock_s5_max_selected_rooms', 'rooms') or []) %}
-                  {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
-                  {% if bedroom_in_selected_rooms and cleaning_mode_on %}
-                    accent
-                  {% else %}
+                  {% if is_state(entity, 'on') %}
+                    {% if is_state('input_select.roborock_s5_max_active_room', 'bedroom') %}
+                      {{ 'red' if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') else 'orange' }}
+                    {% else %}
+                      blue
+                    {% endif %}
+                  {% elif is_state(entity, 'off') %}
                     grey
+                  {% else %}
+                    red
                   {% endif %}
               - type: custom:mushroom-template-card
-                entity: input_select.roborock_s5_max_room
+                entity: switch.roborock_s5_max_clean_kidsroom
                 primary: 'Детская'
+                secondary: >-
+                  {% if is_state('input_select.roborock_s5_max_active_room', 'kidsroom') %}
+                    {% if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') %}
+                      Требует внимания
+                    {% elif is_state('vacuum.roborock_s5_max', 'cleaning')
+                       and is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
+                      Убирает
+                    {% elif is_state('vacuum.roborock_s5_max', 'paused') %}
+                      Пауза
+                    {% else %}
+                      Ожидает пылесос
+                    {% endif %}
+                  {% elif is_state(entity, 'on') %}
+                    В очереди
+                  {% elif is_state(entity, 'off') %}
+                    Добавить
+                  {% else %}
+                    Недоступно
+                  {% endif %}
                 layout: vertical
                 tap_action:
-                  action: call-service
-                  service: input_select.select_option
-                  target:
-                    entity_id: input_select.roborock_s5_max_room
-                  data:
-                    option: 'kidsroom'
+                  action: toggle
                 icon: mdi:bed
                 icon_color: >-
-                  {% set kidsroom_in_selected_rooms = 'kidsroom' in (state_attr('sensor.roborock_s5_max_selected_rooms', 'rooms') or []) %}
-                  {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
-                  {% if kidsroom_in_selected_rooms and cleaning_mode_on %}
-                    accent
-                  {% else %}
+                  {% if is_state(entity, 'on') %}
+                    {% if is_state('input_select.roborock_s5_max_active_room', 'kidsroom') %}
+                      {{ 'red' if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') else 'orange' }}
+                    {% else %}
+                      blue
+                    {% endif %}
+                  {% elif is_state(entity, 'off') %}
                     grey
+                  {% else %}
+                    red
                   {% endif %}
               - type: custom:mushroom-template-card
-                entity: input_select.roborock_s5_max_room
+                entity: switch.roborock_s5_max_clean_kitchen
                 primary: 'Кухня'
+                secondary: >-
+                  {% if is_state('input_select.roborock_s5_max_active_room', 'kitchen') %}
+                    {% if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') %}
+                      Требует внимания
+                    {% elif is_state('vacuum.roborock_s5_max', 'cleaning')
+                       and is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
+                      Убирает
+                    {% elif is_state('vacuum.roborock_s5_max', 'paused') %}
+                      Пауза
+                    {% else %}
+                      Ожидает пылесос
+                    {% endif %}
+                  {% elif is_state(entity, 'on') %}
+                    В очереди
+                  {% elif is_state(entity, 'off') %}
+                    Добавить
+                  {% else %}
+                    Недоступно
+                  {% endif %}
                 layout: vertical
                 tap_action:
-                  action: call-service
-                  service: input_select.select_option
-                  target:
-                    entity_id: input_select.roborock_s5_max_room
-                  data:
-                    option: 'kitchen'
+                  action: toggle
                 icon: mdi:food-fork-drink
                 icon_color: >-
-                  {% set kitchen_in_selected_rooms = 'kitchen' in (state_attr('sensor.roborock_s5_max_selected_rooms', 'rooms') or []) %}
-                  {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
-                  {% if kitchen_in_selected_rooms and cleaning_mode_on %}
-                    accent
-                  {% else %}
+                  {% if is_state(entity, 'on') %}
+                    {% if is_state('input_select.roborock_s5_max_active_room', 'kitchen') %}
+                      {{ 'red' if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') else 'orange' }}
+                    {% else %}
+                      blue
+                    {% endif %}
+                  {% elif is_state(entity, 'off') %}
                     grey
+                  {% else %}
+                    red
                   {% endif %}
               - type: custom:mushroom-template-card
-                entity: input_select.roborock_s5_max_room
+                entity: switch.roborock_s5_max_clean_hallway
                 primary: 'Прихожая'
+                secondary: >-
+                  {% if is_state('input_select.roborock_s5_max_active_room', 'hallway') %}
+                    {% if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') %}
+                      Требует внимания
+                    {% elif is_state('vacuum.roborock_s5_max', 'cleaning')
+                       and is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
+                      Убирает
+                    {% elif is_state('vacuum.roborock_s5_max', 'paused') %}
+                      Пауза
+                    {% else %}
+                      Ожидает пылесос
+                    {% endif %}
+                  {% elif is_state(entity, 'on') %}
+                    В очереди
+                  {% elif is_state(entity, 'off') %}
+                    Добавить
+                  {% else %}
+                    Недоступно
+                  {% endif %}
                 layout: vertical
                 tap_action:
-                  action: call-service
-                  service: input_select.select_option
-                  target:
-                    entity_id: input_select.roborock_s5_max_room
-                  data:
-                    option: 'hallway'
+                  action: toggle
                 icon: mdi:door-open
                 icon_color: >-
-                  {% set hallway_in_selected_rooms = 'hallway' in (state_attr('sensor.roborock_s5_max_selected_rooms', 'rooms') or []) %}
-                  {% set cleaning_mode_on = is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
-                  {% if hallway_in_selected_rooms and cleaning_mode_on %}
-                    accent
-                  {% else %}
+                  {% if is_state(entity, 'on') %}
+                    {% if is_state('input_select.roborock_s5_max_active_room', 'hallway') %}
+                      {{ 'red' if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') else 'orange' }}
+                    {% else %}
+                      blue
+                    {% endif %}
+                  {% elif is_state(entity, 'off') %}
                     grey
+                  {% else %}
+                    red
                   {% endif %}
+
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-template-card
+                primary: "Очистить ожидающие"
+                icon: mdi:playlist-remove
+                tap_action:
+                  action: call-service
+                  service: script.roborock_s5_max_vacuum_clear_queue
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.roborock_s5_max_queue_blocked
+                    state: "on"
+                card:
+                  type: custom:mushroom-template-card
+                  primary: "Снять блокировку"
+                  icon: mdi:alert-circle-outline
+                  icon_color: red
+                  tap_action:
+                    action: call-service
+                    service: script.roborock_s5_max_vacuum_release_queue
 
           - type: conditional
             conditions:

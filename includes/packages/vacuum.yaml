@@ -127,45 +127,177 @@ vacuum:
       max: 25
       step: 1
 
+  # Внутренние заявки. Включение/отмену комнаты отправляем через switch ниже.
+  input_boolean:
+    roborock_s5_max_clean_bedroom:
+      name: "Очередь пылесоса: спальня"
+      icon: mdi:bed-king
+      initial: false
+    roborock_s5_max_clean_kidsroom:
+      name: "Очередь пылесоса: детская"
+      icon: mdi:bed
+      initial: false
+    roborock_s5_max_clean_kitchen:
+      name: "Очередь пылесоса: кухня"
+      icon: mdi:food-fork-drink
+      initial: false
+    roborock_s5_max_clean_hallway:
+      name: "Очередь пылесоса: прихожая"
+      icon: mdi:door
+      initial: false
+    roborock_s5_max_queue_blocked:
+      name: "Очередь пылесоса заблокирована"
+      initial: false
+
   input_select:
-    roborock_s5_max_room:
+    roborock_s5_max_active_room:
+      name: "Текущая комната пылесоса"
       options:
+        - none
         - bedroom
         - kidsroom
         - kitchen
         - hallway
-        - none
+      initial: none
 
   template:
-    - triggers:
-        - trigger: state
-          entity_id: input_select.roborock_s5_max_room
-          to:
-            - bedroom
-            - kidsroom
-            - kitchen
-            - hallway
-            - none
-      variables:
-        selected_rooms: >-
-          {% set new_room = trigger.to_state.state %}
-          {% set current_rooms = state_attr('sensor.roborock_s5_max_selected_rooms', 'rooms') %}
-          {% if current_rooms is none %}
-            {# Переход со старого JSON-состояния при первом обновлении. #}
-            {% set current_rooms = states('sensor.roborock_s5_max_selected_rooms') | from_json([]) %}
-          {% endif %}
-          {% if current_rooms is sequence and current_rooms is not string and current_rooms is not mapping %}
-            {% set current_rooms = current_rooms | list %}
-          {% else %}
-            {% set current_rooms = [] %}
-          {% endif %}
-          {{ [] if new_room == 'none' else current_rooms
-             if new_room in current_rooms else current_rooms + [new_room] }}
-      sensor:
-        - name: "Roborock S5 Max Selected Rooms"
-          state: "{{ selected_rooms | count }}"
+    # Внутренние input_boolean хранят только ожидающие заявки.
+    - switch:
+        - name: "Уборка пылесосом в спальне"
+          unique_id: roborock_s5_max_clean_bedroom
+          default_entity_id: switch.roborock_s5_max_clean_bedroom
+          icon: mdi:bed-king
+          availability: >-
+            {{ states('script.roborock_s5_max_room_queue_control') in ['on', 'off'] }}
+          state: >-
+            {{ is_state('input_boolean.roborock_s5_max_clean_bedroom', 'on')
+               or is_state('input_select.roborock_s5_max_active_room', 'bedroom') }}
           attributes:
-            rooms: "{{ selected_rooms }}"
+            # Обновляет HomeKit и при OFF текущей комнаты, который мы игнорируем.
+            last_request: "{{ state_attr('script.roborock_s5_max_room_queue_control', 'last_triggered') | string }}"
+          turn_on:
+            - action: script.turn_on
+              target:
+                entity_id: script.roborock_s5_max_room_queue_control
+              data:
+                variables:
+                  operation: enqueue
+                  room: bedroom
+          turn_off:
+            - action: script.turn_on
+              target:
+                entity_id: script.roborock_s5_max_room_queue_control
+              data:
+                variables:
+                  operation: cancel
+                  room: bedroom
+        - name: "Уборка пылесосом в детской"
+          unique_id: roborock_s5_max_clean_kidsroom
+          default_entity_id: switch.roborock_s5_max_clean_kidsroom
+          icon: mdi:bed
+          availability: >-
+            {{ states('script.roborock_s5_max_room_queue_control') in ['on', 'off'] }}
+          state: >-
+            {{ is_state('input_boolean.roborock_s5_max_clean_kidsroom', 'on')
+               or is_state('input_select.roborock_s5_max_active_room', 'kidsroom') }}
+          attributes:
+            # Обновляет HomeKit и при OFF текущей комнаты, который мы игнорируем.
+            last_request: "{{ state_attr('script.roborock_s5_max_room_queue_control', 'last_triggered') | string }}"
+          turn_on:
+            - action: script.turn_on
+              target:
+                entity_id: script.roborock_s5_max_room_queue_control
+              data:
+                variables:
+                  operation: enqueue
+                  room: kidsroom
+          turn_off:
+            - action: script.turn_on
+              target:
+                entity_id: script.roborock_s5_max_room_queue_control
+              data:
+                variables:
+                  operation: cancel
+                  room: kidsroom
+        - name: "Уборка пылесосом на кухне"
+          unique_id: roborock_s5_max_clean_kitchen
+          default_entity_id: switch.roborock_s5_max_clean_kitchen
+          icon: mdi:food-fork-drink
+          availability: >-
+            {{ states('script.roborock_s5_max_room_queue_control') in ['on', 'off'] }}
+          state: >-
+            {{ is_state('input_boolean.roborock_s5_max_clean_kitchen', 'on')
+               or is_state('input_select.roborock_s5_max_active_room', 'kitchen') }}
+          attributes:
+            # Обновляет HomeKit и при OFF текущей комнаты, который мы игнорируем.
+            last_request: "{{ state_attr('script.roborock_s5_max_room_queue_control', 'last_triggered') | string }}"
+          turn_on:
+            - action: script.turn_on
+              target:
+                entity_id: script.roborock_s5_max_room_queue_control
+              data:
+                variables:
+                  operation: enqueue
+                  room: kitchen
+          turn_off:
+            - action: script.turn_on
+              target:
+                entity_id: script.roborock_s5_max_room_queue_control
+              data:
+                variables:
+                  operation: cancel
+                  room: kitchen
+        - name: "Уборка пылесосом в прихожей"
+          unique_id: roborock_s5_max_clean_hallway
+          default_entity_id: switch.roborock_s5_max_clean_hallway
+          icon: mdi:door
+          availability: >-
+            {{ states('script.roborock_s5_max_room_queue_control') in ['on', 'off'] }}
+          state: >-
+            {{ is_state('input_boolean.roborock_s5_max_clean_hallway', 'on')
+               or is_state('input_select.roborock_s5_max_active_room', 'hallway') }}
+          attributes:
+            # Обновляет HomeKit и при OFF текущей комнаты, который мы игнорируем.
+            last_request: "{{ state_attr('script.roborock_s5_max_room_queue_control', 'last_triggered') | string }}"
+          turn_on:
+            - action: script.turn_on
+              target:
+                entity_id: script.roborock_s5_max_room_queue_control
+              data:
+                variables:
+                  operation: enqueue
+                  room: hallway
+          turn_off:
+            - action: script.turn_on
+              target:
+                entity_id: script.roborock_s5_max_room_queue_control
+              data:
+                variables:
+                  operation: cancel
+                  room: hallway
+
+    - sensor:
+        - name: "Roborock S5 Max Selected Rooms"
+          default_entity_id: sensor.roborock_s5_max_selected_rooms
+          variables:
+            requests:
+              - input_boolean.roborock_s5_max_clean_bedroom
+              - input_boolean.roborock_s5_max_clean_kidsroom
+              - input_boolean.roborock_s5_max_clean_kitchen
+              - input_boolean.roborock_s5_max_clean_hallway
+          state: >-
+            {{ states.input_boolean | selectattr('entity_id', 'in', requests)
+               | selectattr('state', 'eq', 'on') | list | count
+               + (1 if states('input_select.roborock_s5_max_active_room') in ['bedroom', 'kidsroom', 'kitchen', 'hallway'] else 0) }}
+          attributes:
+            rooms: >-
+              {% set active = 'input_boolean.roborock_s5_max_clean_' ~ states('input_select.roborock_s5_max_active_room') %}
+              {{ states.input_boolean | selectattr('entity_id', 'in', requests)
+                 | selectattr('state', 'eq', 'on') | rejectattr('entity_id', 'eq', active)
+                 | sort(attribute='last_changed') | map(attribute='entity_id')
+                 | map('replace', 'input_boolean.roborock_s5_max_clean_', '') | list }}
+            current_room: "{{ states('input_select.roborock_s5_max_active_room') }}"
+            blocked: "{{ is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') }}"
 
     - sensor:
         - name: "Roborock S5 Max Часов уборки до замены основной щетки"
@@ -202,29 +334,282 @@ vacuum:
           icon: mdi:air-filter
 
   script:
-    roborock_s5_max_vacuum_clean_room:
-      alias: "Пылесос - уборка комнаты"
+    # Все изменения заявок проходят через один короткий сериализованный обработчик.
+    # Долгое ожидание робота вынесено в worker; сам контроллер его не ожидает.
+    roborock_s5_max_room_queue_control:
+      alias: "Пылесос - обработать заявку очереди"
       mode: queued
-      fields:
-        room:
-          name: "Room"
-          required: true
-          example: "bedroom"
-          selector:
-            select:
-              options:
-                - kidsroom
-                - bedroom
-                - hallway
-                - kitchen
+      max: 1000
       sequence:
+        - variables:
+            active: "{{ states('input_select.roborock_s5_max_active_room') }}"
+            request: "{{ 'input_boolean.roborock_s5_max_clean_' ~ room | default('') }}"
+            requests:
+              - input_boolean.roborock_s5_max_clean_bedroom
+              - input_boolean.roborock_s5_max_clean_kidsroom
+              - input_boolean.roborock_s5_max_clean_kitchen
+              - input_boolean.roborock_s5_max_clean_hallway
+        - choose:
+            - conditions: "{{ operation == 'enqueue' }}"
+              sequence:
+                - condition: template
+                  value_template: >-
+                    {{ request in requests and room != active and not is_state(request, 'on') }}
+                - if: >-
+                    {% set count = state_attr('script.roborock_s5_max_vacuum_room_worker', 'current') %}
+                    {{ states('script.roborock_s5_max_vacuum_room_worker') in ['on', 'off']
+                       and count is integer and count is not boolean and 0 <= count < 100 }}
+                  then:
+                    - action: input_boolean.turn_on
+                      target:
+                        entity_id: "{{ request }}"
+                    # turn_on ждёт регистрации run, но не завершения уборки.
+                    - action: script.turn_on
+                      target:
+                        entity_id: script.roborock_s5_max_vacuum_room_worker
+                      data:
+                        variables:
+                          room: "{{ room }}"
+                          generation: "{{ states[request].last_changed.isoformat() }}"
+                  else:
+                    - action: persistent_notification.create
+                      data:
+                        notification_id: roborock_s5_max_room_queue
+                        title: "Комната не добавлена в очередь"
+                        message: "Обработчик очереди недоступен или очередь переполнена. Попробуй добавить комнату позже."
+            - conditions: "{{ operation == 'cancel' }}"
+              sequence:
+                - condition: template
+                  value_template: "{{ request in requests and room != active }}"
+                - action: input_boolean.turn_off
+                  target:
+                    entity_id: "{{ request }}"
+            - conditions: "{{ operation == 'claim' }}"
+              sequence:
+                - variables:
+                    result:
+                      accepted: >-
+                        {{ request in requests and is_state(request, 'on')
+                           and states[request].last_changed.isoformat() == generation
+                           and active == 'none'
+                           and not is_state('input_boolean.roborock_s5_max_queue_blocked', 'on')
+                           and ((is_state('vacuum.roborock_s5_max', 'idle')
+                                 and is_state_attr('vacuum.roborock_s5_max', 'status', 'Idle'))
+                                or (is_state('vacuum.roborock_s5_max', 'docked')
+                                    and state_attr('vacuum.roborock_s5_max', 'status') in ['Charging', 'Charging complete'])) }}
+                - if: "{{ result.accepted }}"
+                  then:
+                    - action: input_select.select_option
+                      target:
+                        entity_id: input_select.roborock_s5_max_active_room
+                      data:
+                        option: "{{ room }}"
+                    # Заявку расходуем при захвате; поздний complete не затрёт новый ON.
+                    - action: input_boolean.turn_off
+                      target:
+                        entity_id: "{{ request }}"
+                - stop: "Результат захвата комнаты."
+                  response_variable: result
+            - conditions: "{{ operation == 'complete' }}"
+              sequence:
+                - condition: template
+                  value_template: "{{ room == active }}"
+                - action: input_select.select_option
+                  target:
+                    entity_id: input_select.roborock_s5_max_active_room
+                  data:
+                    option: none
+            - conditions: "{{ operation == 'block' }}"
+              sequence:
+                - action: input_boolean.turn_on
+                  target:
+                    entity_id: input_boolean.roborock_s5_max_queue_blocked
+            - conditions: "{{ operation == 'clear' }}"
+              sequence:
+                - action: input_boolean.turn_off
+                  target:
+                    entity_id: "{{ requests }}"
+            - conditions: "{{ operation == 'release' }}"
+              sequence:
+                - condition: state
+                  entity_id: input_boolean.roborock_s5_max_queue_blocked
+                  state: "on"
+                - action: input_select.select_option
+                  target:
+                    entity_id: input_select.roborock_s5_max_active_room
+                  data:
+                    option: none
+                - action: input_boolean.turn_off
+                  target:
+                    entity_id: input_boolean.roborock_s5_max_queue_blocked
+                - action: persistent_notification.dismiss
+                  data:
+                    notification_id: roborock_s5_max_room_queue
+            - conditions: "{{ operation == 'reset' }}"
+              sequence:
+                - action: script.turn_off
+                  continue_on_error: true
+                  target:
+                    entity_id: script.roborock_s5_max_vacuum_room_worker
+                - action: input_select.select_option
+                  target:
+                    entity_id: input_select.roborock_s5_max_active_room
+                  data:
+                    option: none
+                - action: input_boolean.turn_off
+                  target:
+                    entity_id: "{{ requests + ['input_boolean.roborock_s5_max_queue_blocked'] }}"
+                - action: persistent_notification.dismiss
+                  data:
+                    notification_id: roborock_s5_max_room_queue
+            - conditions: >-
+                {{ operation == 'audit' and is_state('script.roborock_s5_max_vacuum_room_worker', 'off')
+                   and (active != 'none' or expand(requests) | selectattr('state', 'eq', 'on') | list | count > 0) }}
+              sequence:
+                - action: input_boolean.turn_on
+                  target:
+                    entity_id: input_boolean.roborock_s5_max_queue_blocked
+                - action: input_boolean.turn_off
+                  target:
+                    entity_id: "{{ requests }}"
+                - action: persistent_notification.create
+                  data:
+                    notification_id: roborock_s5_max_room_queue
+                    title: "Очередь уборки прервалась"
+                    message: "Ожидающие заявки очищены. Проверь пылесос, сними блокировку и добавь нужные комнаты заново."
+
+    # Публичный вход сохраняет совместимость старых кнопок и вызовов.
+    roborock_s5_max_vacuum_clean_room:
+      alias: "Пылесос - добавить комнату в очередь"
+      mode: parallel
+      sequence:
+        - action: script.roborock_s5_max_room_queue_control
+          data:
+            operation: enqueue
+            room: "{{ room }}"
+
+    # HA хранит FIFO вызовов вместе с generation только в RAM.
+    roborock_s5_max_vacuum_room_worker:
+      alias: "Пылесос - выполнить очередь комнат"
+      mode: queued
+      max: 100
+      sequence:
+        - condition: template
+          value_template: >-
+            {{ room | default('') in ['bedroom', 'kidsroom', 'kitchen', 'hallway']
+               and generation | default('') != '' }}
+        - variables:
+            request: "{{ 'input_boolean.roborock_s5_max_clean_' ~ room }}"
+        - if: >-
+            {{ states('input_select.roborock_s5_max_active_room') != 'none'
+               and not is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') }}
+          then:
+            - action: script.roborock_s5_max_room_queue_control
+              data:
+                operation: block
+            - action: persistent_notification.create
+              data:
+                notification_id: roborock_s5_max_room_queue
+                title: "Очередь уборки остановлена"
+                message: "Предыдущая задача прервалась. Проверь пылесос и нажми «Снять блокировку»."
+        - repeat:
+            sequence:
+              # Отмена/повторное добавление инвалидирует старый ticket.
+              - wait_template: >-
+                  {{ not is_state(request, 'on')
+                     or states[request].last_changed.isoformat() != generation
+                     or (((is_state('vacuum.roborock_s5_max', 'idle')
+                           and is_state_attr('vacuum.roborock_s5_max', 'status', 'Idle'))
+                          or (is_state('vacuum.roborock_s5_max', 'docked')
+                              and state_attr('vacuum.roborock_s5_max', 'status') in ['Charging', 'Charging complete']))
+                         and is_state('input_select.roborock_s5_max_active_room', 'none')
+                         and not is_state('input_boolean.roborock_s5_max_queue_blocked', 'on')) }}
+              - if: >-
+                  {{ not is_state(request, 'on') or states[request].last_changed.isoformat() != generation }}
+                then:
+                  - stop: "Заявка отменена или заменена новой."
+              - action: script.roborock_s5_max_room_queue_control
+                data:
+                  operation: claim
+                  room: "{{ room }}"
+                  generation: "{{ generation }}"
+                response_variable: claim
+            until: "{{ claim is mapping and claim.get('accepted') is sameas true }}"
+        - condition: template
+          value_template: "{{ claim is defined and claim is mapping and claim.get('accepted') is sameas true }}"
+        - variables:
+            room_id: "{{ states('input_number.roborock_s5_max_room_enum_' ~ room) | float(-1) }}"
+        - if: "{{ not (1 <= room_id <= 25 and room_id == room_id | int(-1)) }}"
+          then:
+            - action: script.roborock_s5_max_room_queue_control
+              data:
+                operation: block
+            - action: persistent_notification.create
+              data:
+                notification_id: roborock_s5_max_room_queue
+                title: "Очередь уборки остановлена"
+                message: "Не задан целый номер сегмента от 1 до 25. Проверь настройки комнаты и нажми «Снять блокировку»."
+            - stop: "Некорректный номер сегмента комнаты."
+              error: true
         - action: xiaomi_miio.vacuum_clean_segment
+          continue_on_error: true
           target:
             entity_id: vacuum.roborock_s5_max
           data:
-            segments: >
-              {% set room_id = states('input_number.roborock_s5_max_room_enum_' + room) | int %}
-              {{ room_id }}
+            segments: "{{ room_id | int }}"
+        - wait_template: >-
+            {{ is_state('vacuum.roborock_s5_max', 'cleaning')
+               and is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') }}
+          timeout:
+            seconds: 60
+        - if: "{{ not wait.completed }}"
+          then:
+            - action: script.roborock_s5_max_room_queue_control
+              data:
+                operation: block
+            - action: persistent_notification.create
+              data:
+                notification_id: roborock_s5_max_room_queue
+                title: "Очередь уборки остановлена"
+                message: >-
+                  Пылесос не подтвердил начало уборки за минуту. Остальные комнаты ждут.
+                  Проверь пылесос. «Снять блокировку» отменит неподтверждённую заявку;
+                  для повтора добавь комнату в очередь заново.
+            - stop: "Пылесос не подтвердил запуск уборки комнаты."
+              error: true
+        # Пауза, возврат, ошибка и недоступность не завершают заявку.
+        - wait_template: >-
+            {{ (is_state('vacuum.roborock_s5_max', 'idle')
+                and is_state_attr('vacuum.roborock_s5_max', 'status', 'Idle'))
+               or (is_state('vacuum.roborock_s5_max', 'docked')
+                   and state_attr('vacuum.roborock_s5_max', 'status') in ['Charging', 'Charging complete']) }}
+        - action: script.roborock_s5_max_room_queue_control
+          data:
+            operation: complete
+            room: "{{ room }}"
+
+    roborock_s5_max_vacuum_clear_queue:
+      alias: "Пылесос - очистить ожидающие комнаты"
+      sequence:
+        - action: script.roborock_s5_max_room_queue_control
+          data:
+            operation: clear
+
+    roborock_s5_max_vacuum_release_queue:
+      alias: "Пылесос - снять блокировку очереди"
+      sequence:
+        - action: script.roborock_s5_max_room_queue_control
+          data:
+            operation: release
+
+    # Только внешние команды вызывают reset: worker не должен останавливать себя.
+    roborock_s5_max_vacuum_reset_queue:
+      alias: "Пылесос - сбросить очередь"
+      mode: queued
+      sequence:
+        - action: script.roborock_s5_max_room_queue_control
+          data:
+            operation: reset
 
     roborock_s5_max_vacuum_map_to_telegram:
       alias: "Отправка снимка карты пылесоса"
@@ -243,51 +628,84 @@ vacuum:
             file: "/config/www/cam_captures/roborock_s5_max_vacuum_map.jpg"
 
   automation:
-    - id: "Запустить пылесос в комнате"
-      alias: roborock_s5_max_vacuum_start_room_cleaning
+    - id: "Сброс очереди пылесоса при запуске Home Assistant"
+      alias: roborock_s5_max_room_queue_reset_on_start
       triggers:
-        - trigger: state
-          entity_id: sensor.roborock_s5_max_selected_rooms
-          attribute: rooms
+        - trigger: homeassistant
+          event: start
+      actions:
+        - action: script.roborock_s5_max_vacuum_reset_queue
+
+    - id: "Отмена очереди при общей остановке пылесоса"
+      alias: roborock_s5_max_room_queue_cancel_on_stop
+      triggers:
+        - trigger: event
+          event_type: call_service
+          event_data:
+            domain: vacuum
+            service: stop
+        - trigger: event
+          event_type: call_service
+          event_data:
+            domain: vacuum
+            service: return_to_base
       conditions:
         - condition: template
           value_template: >-
-            {% set current_rooms = trigger.to_state.attributes.get('rooms', [])
-               if trigger.to_state is not none else [] %}
-            {% set previous_rooms = trigger.from_state.attributes.get('rooms')
-               if trigger.from_state is not none else [] %}
-            {% if previous_rooms is none %}
-              {% set previous_rooms = trigger.from_state.state | from_json([]) %}
-            {% endif %}
-            {{ current_rooms is sequence and current_rooms is not string
-               and current_rooms is not mapping and current_rooms | length > 0
-               and current_rooms != previous_rooms }}
+            {% set targets = trigger.event.data.service_data.get('entity_id', []) %}
+            {% set targets = targets.split(',') if targets is string else targets %}
+            {% set targets = targets | map('trim') | map('lower') | list %}
+            {{ 'vacuum.roborock_s5_max' in targets or 'all' in targets }}
       actions:
-        - action: script.roborock_s5_max_vacuum_clean_room
-          data:
-            room: >
-              {{ trigger.to_state.attributes.rooms | last }}
+        # Иначе Stop завершит комнату и worker тут же запустит следующую.
+        - action: script.roborock_s5_max_vacuum_reset_queue
 
-    - id: "Сброс списка комнат для уборки пылесоса"
-      alias: roborock_s5_max_vacuum_clear_rooms_list
+    - id: "Контроль остановки обработчика очереди пылесоса"
+      alias: roborock_s5_max_room_worker_stopped
+      mode: queued
       triggers:
-        - trigger: state
-          entity_id: vacuum.roborock_s5_max
+        - trigger: event
+          event_type: state_changed
+          event_data:
+            entity_id: script.roborock_s5_max_vacuum_room_worker
+        - trigger: event
+          event_type: state_changed
+          event_data:
+            entity_id: script.roborock_s5_max_room_queue_control
       conditions:
-        - not:
-            - condition: state
-              entity_id: vacuum.roborock_s5_max
-              attribute: status
-              state: "Segment cleaning"
-            - condition: state
-              entity_id: vacuum.roborock_s5_max
-              state: "paused"
+        - condition: template
+          value_template: >-
+            {% set old = trigger.event.data.old_state %}
+            {% set new = trigger.event.data.new_state %}
+            {{ not is_state('script.roborock_s5_max_vacuum_reset_queue', 'on')
+               and ((old is not none and old.state in ['on', 'off']
+                     and (new is none or new.state in ['unavailable', 'unknown']))
+                    or ((old is none or old.state in ['unavailable', 'unknown'])
+                        and new is not none and new.state in ['on', 'off'])
+                    or (trigger.event.data.entity_id == 'script.roborock_s5_max_vacuum_room_worker'
+                        and old is not none and old.state == 'on'
+                        and new is not none and new.state == 'off')) }}
       actions:
-        - action: input_select.select_option
-          target:
-            entity_id: input_select.roborock_s5_max_room
-          data:
-            option: "none"
+        - if: >-
+            {{ trigger.event.data.old_state is none
+               or trigger.event.data.old_state.state in ['unavailable', 'unknown']
+               or trigger.event.data.new_state is none
+               or trigger.event.data.new_state.state in ['unavailable', 'unknown'] }}
+          then:
+            # При reload изменённые scripts теряют свои RAM-вызовы.
+            - wait_template: >-
+                {{ states('script.roborock_s5_max_room_queue_control') in ['on', 'off']
+                   and states('script.roborock_s5_max_vacuum_reset_queue') in ['on', 'off'] }}
+              timeout:
+                seconds: 30
+              continue_on_timeout: false
+            - action: script.roborock_s5_max_vacuum_reset_queue
+          else:
+            - condition: template
+              value_template: "{{ trigger.entity_id | default(trigger.event.data.entity_id) == 'script.roborock_s5_max_vacuum_room_worker' }}"
+            - action: script.roborock_s5_max_room_queue_control
+              data:
+                operation: audit
 
     - id: "Пылесос начал уборку - уведомление"
       alias: vacuum_started_cleaning_notify

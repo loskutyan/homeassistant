@@ -35,6 +35,10 @@
       - switch.bathroom_valves
       - switch.bedroom_cooling
       - switch.kidsroom_cooling
+      - switch.roborock_s5_max_clean_bedroom
+      - switch.roborock_s5_max_clean_kidsroom
+      - switch.roborock_s5_max_clean_kitchen
+      - switch.roborock_s5_max_clean_hallway
       - media_player.kdl_50w808c_2
     include_entity_globs:
       - binary_sensor.*_water_leak
@@ -50,6 +54,14 @@
   entity_config:
     vacuum.roborock_s5_max:
       name: 'Пылесос'
+    switch.roborock_s5_max_clean_bedroom:
+      name: "Уборка пылесосом"
+    switch.roborock_s5_max_clean_kidsroom:
+      name: "Уборка пылесосом"
+    switch.roborock_s5_max_clean_kitchen:
+      name: "Уборка пылесосом"
+    switch.roborock_s5_max_clean_hallway:
+      name: "Уборка пылесосом"
     humidifier.bedroom_smartmi_humidifier:
       name: 'Увлажнитель'
     humidifier.kidsroom_smartmi_humidifier:
