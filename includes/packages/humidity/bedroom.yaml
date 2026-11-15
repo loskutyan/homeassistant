@@ -28,7 +28,6 @@ bedroom_humidity:
           unique_id: bedroom_humidifier_mode_needs_changes
           default_entity_id: sensor.bedroom_humidifier_mode_needs_changes
           state: >
-            {% set current_state = states('humidifier.bedroom_smartmi_humidifier') %}
             {% set current_mode = state_attr('humidifier.bedroom_smartmi_humidifier', 'mode') %}
             {% set current_humidity = states('sensor.bedroom_average_humidity') | float(0) %}
             {% set breezer_state = states('fan.mijia_airpurifier_bedroom') %}

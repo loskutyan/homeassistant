@@ -52,11 +52,7 @@ alarm:
           device_class: moisture
           state: >
             {% set found_water_leaks = states('sensor.found_water_leaks') %}
-            {% if found_water_leaks != 'unknown' %}
-              {{ found_water_leaks | length > 0 }}
-            {% else %}
-              false
-            {% endif %}
+            {{ found_water_leaks != 'unknown' and found_water_leaks | length > 0 }}
 
         - name: "Обнаружено задымление"
           unique_id: smoke_detected
@@ -64,11 +60,7 @@ alarm:
           device_class: smoke
           state: >
             {% set found_smokes = states('sensor.found_smokes') %}
-            {% if found_smokes != 'unknown' %}
-              {{ found_smokes | length > 0 }}
-            {% else %}
-              false
-            {% endif %}
+            {{ found_smokes != 'unknown' and found_smokes | length > 0 }}
 
         - name: "Проблема с ИБП"
           unique_id: ups_not_fine
@@ -93,14 +85,9 @@ alarm:
           unique_id: bedroom_ac_plug_overload
           default_entity_id: binary_sensor.bedroom_ac_plug_overload
           availability: >
-            {% set status =  states('switch.bedroom_ac_plug') %}
-            {% if status == 'off' %}
-              True
-            {% elif status == 'on' %}
-              {{ states('sensor.bedroom_ac_plug_power') | float(-1) >= 0 }}
-            {% else %}
-              False
-            {% endif %}
+            {% set status = states('switch.bedroom_ac_plug') %}
+            {{ status == 'off'
+               or (status == 'on' and states('sensor.bedroom_ac_plug_power') | float(-1) >= 0) }}
           state: >
             {{ states('sensor.bedroom_ac_plug_power') | float > 1000 }}
           icon: >
@@ -114,14 +101,9 @@ alarm:
           unique_id: kidsroom_ac_plug_overload
           default_entity_id: binary_sensor.kidsroom_ac_plug_overload
           availability: >
-            {% set status =  states('switch.kidsroom_ac_plug') %}
-            {% if status == 'off' %}
-              True
-            {% elif status == 'on' %}
-              {{ states('sensor.kidsroom_ac_plug_power') | float(-1) >= 0 }}
-            {% else %}
-              False
-            {% endif %}
+            {% set status = states('switch.kidsroom_ac_plug') %}
+            {{ status == 'off'
+               or (status == 'on' and states('sensor.kidsroom_ac_plug_power') | float(-1) >= 0) }}
           state: >
             {{ states('sensor.kidsroom_ac_plug_power') | float > 1000 }}
           icon: >

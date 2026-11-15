@@ -194,11 +194,11 @@ bedroom_lights:
         - action: light.turn_on
           target:
             entity_id: >
-              {% set bulbs = [
-                states.light.bedroom_floor_aqara_led_bulb,
-                states.light.bedroom_nightstand_aqara_led_bulb_left,
-                states.light.bedroom_nightstand_aqara_led_bulb_right
-              ] %}
+              {% set bulbs = expand([
+                'light.bedroom_floor_aqara_led_bulb',
+                'light.bedroom_nightstand_aqara_led_bulb_left',
+                'light.bedroom_nightstand_aqara_led_bulb_right'
+              ]) | sort(attribute='entity_id') %}
               {{ bulbs | selectattr('state', '==', 'off') | map(attribute='entity_id') | join(', ') }}
           data:
             brightness: >
@@ -311,11 +311,11 @@ bedroom_lights:
         - action: light.turn_on
           target:
             entity_id: >
-              {% set bulbs = [
-                states.light.bedroom_floor_aqara_led_bulb,
-                states.light.bedroom_nightstand_aqara_led_bulb_left,
-                states.light.bedroom_nightstand_aqara_led_bulb_right
-              ] %}
+              {% set bulbs = expand([
+                'light.bedroom_floor_aqara_led_bulb',
+                'light.bedroom_nightstand_aqara_led_bulb_left',
+                'light.bedroom_nightstand_aqara_led_bulb_right'
+              ]) | sort(attribute='entity_id') %}
               {{ bulbs | selectattr('state', '==', 'on') | map(attribute='entity_id') | join(', ') }}
           data:
             brightness: >

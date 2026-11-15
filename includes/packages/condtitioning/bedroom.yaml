@@ -67,14 +67,9 @@ conditioning_bedroom:
           default_entity_id: binary_sensor.bedroom_ac_power
           device_class: power
           availability: >
-            {% set status =  states('switch.bedroom_ac_plug') %}
-            {% if status == 'off' %}
-              True
-            {% elif status == 'on' %}
-              {{ states('sensor.bedroom_ac_plug_power') | float(-1) >= 0 }}
-            {% else %}
-              False
-            {% endif %}
+            {% set status = states('switch.bedroom_ac_plug') %}
+            {{ status == 'off'
+               or (status == 'on' and states('sensor.bedroom_ac_plug_power') | float(-1) >= 0) }}
           state: >
             {% set power = states('sensor.bedroom_ac_plug_power') | float(0) %}
             {{ power > 1 }}
@@ -83,14 +78,9 @@ conditioning_bedroom:
           unique_id: bedroom_ac_is_cooling
           default_entity_id: binary_sensor.bedroom_ac_is_cooling
           availability: >
-            {% set status =  states('switch.bedroom_ac_plug') %}
-            {% if status == 'off' %}
-              True
-            {% elif status == 'on' %}
-              {{ states('sensor.bedroom_ac_plug_power') | float(-1) >= 0 }}
-            {% else %}
-              False
-            {% endif %}
+            {% set status = states('switch.bedroom_ac_plug') %}
+            {{ status == 'off'
+               or (status == 'on' and states('sensor.bedroom_ac_plug_power') | float(-1) >= 0) }}
           state: "{{ states('sensor.bedroom_ac_plug_power') | float > 100 }}"
 
     - switch:

@@ -33,7 +33,7 @@ kidsroom_air:
           unit_of_measurement: "ppm"
           availability: >
             {% set value = states('sensor.cgllc_s1_04e8_co2_density') | float(0) %}
-            {{ value > 0 and value < 10000 }}
+            {{ 0 < value < 10000 }}
           state: "{{ states('sensor.cgllc_s1_04e8_co2_density') }}"
           icon: mdi:molecule-co2
 
@@ -44,7 +44,7 @@ kidsroom_air:
           unit_of_measurement: "ppb"
           availability: >
             {% set value = states('sensor.cgllc_s1_04e8_tvoc_density') | float(0) %}
-            {{ value > 0 and value < 10000 }}
+            {{ 0 < value < 10000 }}
           state: "{{ states('sensor.cgllc_s1_04e8_tvoc_density') }}"
           icon: mdi:atom
 
@@ -55,7 +55,7 @@ kidsroom_air:
           unit_of_measurement: "µg/m³"
           availability: >
             {% set value = states('sensor.cgllc_s1_04e8_pm25_density') | float(-1) %}
-            {{ value >= 0 and value < 1000 }}
+            {{ 0 <= value < 1000 }}
           state: "{{ states('sensor.cgllc_s1_04e8_pm25_density') }}"
           icon: mdi:molecule
 
@@ -66,7 +66,7 @@ kidsroom_air:
           unit_of_measurement: "°C"
           availability: >
             {% set value = states('sensor.cgllc_s1_04e8_temperature') | float(0) %}
-            {{ value > 0 and value < 100 }}
+            {{ 0 < value < 100 }}
           state: "{{ states('sensor.cgllc_s1_04e8_temperature') }}"
 
         - name: "Cleargrass air Влажность"
@@ -76,7 +76,7 @@ kidsroom_air:
           unit_of_measurement: "%"
           availability: >
             {% set value = states('sensor.cgllc_s1_04e8_relative_humidity') | float(0) %}
-            {{ value > 0 and value < 100 }}
+            {{ 0 < value < 100 }}
           state: "{{ states('sensor.cgllc_s1_04e8_relative_humidity') }}"
 
         - name: "Kidsroom Aqara Температура"

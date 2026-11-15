@@ -28,7 +28,6 @@ kidsroom_humidity:
           unique_id: kidsroom_humidifier_mode_needs_changes
           default_entity_id: sensor.kidsroom_humidifier_mode_needs_changes
           state: >
-            {% set current_state = states('humidifier.kidsroom_smartmi_humidifier') %}
             {% set current_mode = state_attr('humidifier.kidsroom_smartmi_humidifier', 'mode') %}
             {% set current_humidity = states('sensor.kidsroom_average_humidity') | float(0) %}
             {% set breezer_state = states('fan.mijia_airpurifier_kidsroom') %}

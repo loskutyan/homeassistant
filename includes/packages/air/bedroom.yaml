@@ -33,7 +33,7 @@ bedroom_air:
           unit_of_measurement: "ppm"
           availability: >
             {% set value = states('sensor.cgllc_cgs2_84ac_co2_density') | float(0) %}
-            {{ value > 0 and value < 10000 }}
+            {{ 0 < value < 10000 }}
           state: "{{ states('sensor.cgllc_cgs2_84ac_co2_density') }}"
           icon: mdi:molecule-co2
 
@@ -44,7 +44,7 @@ bedroom_air:
           unit_of_measurement: "ppb"
           availability: >
             {% set value = states('sensor.cgllc_cgs2_84ac_tvoc_density') | float(-1) %}
-            {{ value >= 0 and value < 1000 }}
+            {{ 0 <= value < 1000 }}
           state: >
             {% set index = states('sensor.cgllc_cgs2_84ac_tvoc_density') | float %}
             {% if index < 37 %}
@@ -63,7 +63,7 @@ bedroom_air:
           unit_of_measurement: "µg/m³"
           availability: >
             {% set value = states('sensor.cgllc_cgs2_84ac_pm25_density') | float(-1) %}
-            {{ value >= 0 and value < 1000 }}
+            {{ 0 <= value < 1000 }}
           state: "{{ states('sensor.cgllc_cgs2_84ac_pm25_density') }}"
           icon: mdi:molecule
 
@@ -74,7 +74,7 @@ bedroom_air:
           unit_of_measurement: "µg/m³"
           availability: >
             {% set value = states('sensor.cgllc_cgs2_84ac_pm10_density') | float(-1) %}
-            {{ value >= 0 and value < 1000 }}
+            {{ 0 <= value < 1000 }}
           state: "{{ states('sensor.cgllc_cgs2_84ac_pm10_density') }}"
           icon: mdi:grain
 
@@ -85,7 +85,7 @@ bedroom_air:
           unit_of_measurement: "°C"
           availability: >
             {% set value = states('sensor.cgllc_cgs2_84ac_temperature') | float(0) %}
-            {{ value > 0 and value < 100 }}
+            {{ 0 < value < 100 }}
           state: "{{ states('sensor.cgllc_cgs2_84ac_temperature') }}"
 
         - name: "Bedroom aqara Температура"
@@ -95,7 +95,7 @@ bedroom_air:
           unit_of_measurement: "°C"
           availability: >
             {% set value = states('sensor.bedroom_aqara_air_sensor_temperature') | float(0) %}
-            {{ value > 10 and value < 100 }}
+            {{ 10 < value < 100 }}
           state: "{{ states('sensor.bedroom_aqara_air_sensor_temperature') }}"
 
         - name: "Температура"
@@ -125,7 +125,7 @@ bedroom_air:
           unit_of_measurement: "%"
           availability: >
             {% set value = states('sensor.cgllc_cgs2_84ac_relative_humidity') | float(0) %}
-            {{ value > 0 and value < 100 }}
+            {{ 0 < value < 100 }}
           state: "{{ states('sensor.cgllc_cgs2_84ac_relative_humidity') }}"
 
         - name: "Bedroom aqara Влажность"
@@ -135,7 +135,7 @@ bedroom_air:
           unit_of_measurement: "%"
           availability: >
             {% set value = states('sensor.bedroom_aqara_air_sensor_humidity') | float(0) %}
-            {{ value > 5 and value < 100 }}
+            {{ 5 < value < 100 }}
           state: "{{ states('sensor.bedroom_aqara_air_sensor_humidity') }}"
 
         - name: "Влажность"

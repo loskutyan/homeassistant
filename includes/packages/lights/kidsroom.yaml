@@ -19,19 +19,19 @@ kidsroom_lights:
             {% set now = now() %}
             {% set is_friday = is_state('sensor.weekday', 'Friday') | int(0) %}
             {% set total_minutes = (now.hour - is_friday) * 60 + now.minute %}
-            {% if total_minutes > 360 and total_minutes < 1260 %}
+            {% if 360 < total_minutes < 1260 %}
               230
-            {% elif total_minutes >= 1260 and total_minutes < 1290 %}
+            {% elif 1260 <= total_minutes < 1290 %}
               204
-            {% elif total_minutes >= 1290 and total_minutes < 1305 %}
+            {% elif 1290 <= total_minutes < 1305 %}
               178
-            {% elif total_minutes >= 1305 and total_minutes < 1320 %}
+            {% elif 1305 <= total_minutes < 1320 %}
               153
-            {% elif total_minutes >= 1320 and total_minutes < 1335 %}
+            {% elif 1320 <= total_minutes < 1335 %}
               127
-            {% elif total_minutes >= 1335 and total_minutes < 1350 %}
+            {% elif 1335 <= total_minutes < 1350 %}
               102
-            {% elif total_minutes >= 1350 and total_minutes < 1360 %}
+            {% elif 1350 <= total_minutes < 1360 %}
               76
             {% else %}
               51
@@ -46,11 +46,11 @@ kidsroom_lights:
             {% set total_minutes = (now.hour - is_friday) * 60 + now.minute %}
             {% set min_temp = state_attr('light.kidsroom_wall_aqara_led_bulbs', 'min_color_temp_kelvin') %}
             {% set max_temp = state_attr('light.kidsroom_wall_aqara_led_bulbs', 'max_color_temp_kelvin') %}
-            {% if total_minutes > 360 and total_minutes < 1290 %}
+            {% if 360 < total_minutes < 1290 %}
               {{ 0.3 * (max_temp  - min_temp) + min_temp }}
-            {% elif total_minutes >= 1290 and total_minutes < 1305 %}
+            {% elif 1290 <= total_minutes < 1305 %}
               {{ 0.15 * (max_temp  - min_temp) + min_temp }}
-            {% elif total_minutes >= 1305 and total_minutes < 1320 %}
+            {% elif 1305 <= total_minutes < 1320 %}
               {{ 0.05 * (max_temp  - min_temp) + min_temp }}
             {% else %}
               {{ min_temp }}

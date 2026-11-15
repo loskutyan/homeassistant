@@ -59,14 +59,9 @@ conditioning_kidsroom:
           default_entity_id: binary_sensor.kidsroom_ac_power
           device_class: power
           availability: >
-            {% set status =  states('switch.kidsroom_ac_plug') %}
-            {% if status == 'off' %}
-              True
-            {% elif status == 'on' %}
-              {{ states('sensor.kidsroom_ac_plug_power') | float(-1) >= 0 }}
-            {% else %}
-              False
-            {% endif %}
+            {% set status = states('switch.kidsroom_ac_plug') %}
+            {{ status == 'off'
+               or (status == 'on' and states('sensor.kidsroom_ac_plug_power') | float(-1) >= 0) }}
           state: >
             {% set power = states('sensor.kidsroom_ac_plug_power') | float(0) %}
             {{ power > 1 }}
@@ -75,14 +70,9 @@ conditioning_kidsroom:
           unique_id: kidsroom_ac_is_cooling
           default_entity_id: binary_sensor.kidsroom_ac_is_cooling
           availability: >
-            {% set status =  states('switch.kidsroom_ac_plug') %}
-            {% if status == 'off' %}
-              True
-            {% elif status == 'on' %}
-              {{ states('sensor.kidsroom_ac_plug_power') | float(-1) >= 0 }}
-            {% else %}
-              False
-            {% endif %}
+            {% set status = states('switch.kidsroom_ac_plug') %}
+            {{ status == 'off'
+               or (status == 'on' and states('sensor.kidsroom_ac_plug_power') | float(-1) >= 0) }}
           state: "{{ states('sensor.kidsroom_ac_plug_power') | float > 100 }}"
 
     - switch:
