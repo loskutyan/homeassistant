@@ -605,11 +605,11 @@ bedroom_air:
               target:
                 entity_id: notify.tg_bot
               data:
-                message: |
-                  {{ '\U0001F4A8' }} Бризер в спальне включен.
-                  {{ '\U0001F321' }} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
-                  {{ '\U0001F4A7' }} Влажность {{ states('sensor.bedroom_average_humidity') | round(1) }}%
-                  {{ '\U0000269B' }} CO2 {{ states('sensor.bedroom_co2') | int }}ppm
+                message: |-
+                  💨 Бризер в спальне включен.
+                  🌡 Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
+                  💧 Влажность {{ states('sensor.bedroom_average_humidity') | round(1) }}%
+                  ⚛ CO2 {{ states('sensor.bedroom_co2') | int }}ppm
 
     - id: "Выключение бризера в спальне"
       alias: bedroom_airpurifier_turn_off
@@ -665,18 +665,17 @@ bedroom_air:
               target:
                 entity_id: notify.tg_bot
               data:
-                message: |
-                  {{ '\U0001F4A8' }} Бризер в спальне выключен.
-                  {{ '\U0001F321' }} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
-                  {{ '\U0001F4A7' }} Влажность {{ states('sensor.bedroom_average_humidity') | round(1) }}%
-                  {{ '\U0000269B' }} CO2 {{ states('sensor.bedroom_co2') | int }}ppm
+                message: |-
+                  💨 Бризер в спальне выключен.
+                  🌡 Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
+                  💧 Влажность {{ states('sensor.bedroom_average_humidity') | round(1) }}%
+                  ⚛ CO2 {{ states('sensor.bedroom_co2') | int }}ppm
           else:
             - action: notify.send_message
               target:
                 entity_id: notify.tg_bot
               data:
-                message: |
-                  {{ '\U000026A0' }} Не получилось выключить бризер в спальне, статус {{ states('fan.mijia_airpurifier_bedroom') }}.
+                message: "⚠ Не получилось выключить бризер в спальне, статус {{ states('fan.mijia_airpurifier_bedroom') }}."
 
     - id: "Регулярное проветривание бризера в спальне"
       alias: bedroom_periodic_ventilation

@@ -199,13 +199,13 @@ intercom:
           target:
             entity_id: notify.tg_urgent
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'Кто-то позвонил в домофон!',
                 'Кажется, кто-то пришел и звонит в домофон.',
                 'Внизу люди! Звонят в домофон.'
               ] %}
-              {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}
+              🔔 {{ messages | random }} {{ states('sensor.time_date') }}
           continue_on_error: true
         - action: script.intercom_light_flashes_notify
         - if:
@@ -227,13 +227,13 @@ intercom:
           target:
             entity_id: notify.tg_urgent
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'Дверь домофона открыта!',
                 'Замок внизу открыт!',
                 'Люди впущены!'
               ] %}
-              {{ '\U0001F514' }} {{ messages | random }} {{ states('sensor.time_date') }}
+              🔔 {{ messages | random }} {{ states('sensor.time_date') }}
           continue_on_error: true
         - if:
             - condition: state

@@ -186,8 +186,7 @@ conditioning_bedroom:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
-              {{'\U0001F4A6'}} Запущено осушение кондиционера в спальне!
+            message: "💦 Запущено осушение кондиционера в спальне!"
         - delay:
             hours: 4
         - action: climate.set_fan_mode
@@ -205,8 +204,7 @@ conditioning_bedroom:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
-              {{'\U00002600'}} Осушение кондиционера в спальне закончено!
+            message: "☀ Осушение кондиционера в спальне закончено!"
 
   automation:
     - id: "Выбор режима работы кондиционера в спальне"
@@ -439,10 +437,10 @@ conditioning_bedroom:
               target:
                 entity_id: notify.tg_bot
               data:
-                message: |
-                  {{ '\U00002600' }} Кондиционер в спальне переключен в режим осушения.
-                  {{ '\U0001F321' }} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
-                  {{ '\U0001F4A7' }} Влажность {{ states('sensor.bedroom_average_humidity') | round(1) }}%
+                message: |-
+                  ☀ Кондиционер в спальне переключен в режим осушения.
+                  🌡 Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
+                  💧 Влажность {{ states('sensor.bedroom_average_humidity') | round(1) }}%
         - if:
             - condition: state
               entity_id: input_select.bedroom_ac_mode
@@ -460,10 +458,10 @@ conditioning_bedroom:
               target:
                 entity_id: notify.tg_bot
               data:
-                message: |
-                  {{ '\U00002744' }} Кондиционер в спальне переключен в режим охлаждения.
-                  {{ '\U0001F321' }} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
-                  {{ '\U0001F4A7' }} Влажность {{ states('sensor.bedroom_average_humidity') | round(1) }}%
+                message: |-
+                  ❄ Кондиционер в спальне переключен в режим охлаждения.
+                  🌡 Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
+                  💧 Влажность {{ states('sensor.bedroom_average_humidity') | round(1) }}%
 
     - id: "Изменение режима качания халюзи кондиционера в спальне при работе с монитором"
       alias: toggle_bedroom_ac_swing_mode_on_cubeserver_vm_windows10_monitor_using

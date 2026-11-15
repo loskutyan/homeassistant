@@ -12,12 +12,12 @@ tg_heaters_control:
         - action: telegram_bot.answer_callback_query
           data:
             callback_query_id: '{{ trigger.event.data.id }}'
-            message: 'Что нужно сделать с обогревателями?'
+            message: "Что нужно сделать с обогревателями?"
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot
           data:
-            message: 'Управляем обогревателями..'
+            message: "Управляем обогревателями.."
             data:
               inline_keyboard:
                 - 'Выключить все обогреватели:/all_heaters_off'
@@ -34,5 +34,5 @@ tg_heaters_control:
         - action: telegram_bot.answer_callback_query
           data:
             callback_query_id: '{{ trigger.event.data.id }}'
-            message: 'Выключаем все обогреватели'
+            message: "Выключаем все обогреватели"
         - action: script.turn_off_all_heaters

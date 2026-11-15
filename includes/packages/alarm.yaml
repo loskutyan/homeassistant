@@ -153,10 +153,8 @@ alarm:
       name: "Протечка воды"
       entity_id: binary_sensor.water_leak_detected
       state: "on"
-      message: >
-        {{ '\U0001F30A' }} Протечка воды: {{ states('sensor.found_water_leaks') }}
-      done_message: >
-        {{ '\U0001F3DC' }} Протечка воды устранена
+      message: "🌊 Протечка воды: {{ states('sensor.found_water_leaks') }}"
+      done_message: "🏜 Протечка воды устранена"
       repeat: 5
       can_acknowledge: true
       notifiers:
@@ -166,10 +164,8 @@ alarm:
       name: "Задымление"
       entity_id: binary_sensor.smoke_detected
       state: "on"
-      message: >
-        {{ '\U0001F525' }} Задымление: {{ states('sensor.found_smokes') }}
-      done_message: >
-        {{ '\U0001F9EF' }} Задымление устранено
+      message: "🔥 Задымление: {{ states('sensor.found_smokes') }}"
+      done_message: "🧯 Задымление устранено"
       repeat: 5
       can_acknowledge: true
       notifiers:
@@ -181,8 +177,7 @@ alarm:
       state: "on"
       repeat: 5
       skip_first: true
-      message: >
-        {{ '\U00002744' }} Дверь холодильника не закрыта!
+      message: "❄ Дверь холодильника не закрыта!"
       notifiers:
         - alerts_urgent
 
@@ -191,8 +186,7 @@ alarm:
       entity_id: binary_sensor.ups_powered_by_battery
       state: "on"
       repeat: 15
-      message: >
-        {{ '\U0001F50B' }} ИБП работает от аккумулятора! {{ states('sensor.time_date') }}
+      message: "🔋 ИБП работает от аккумулятора! {{ states('sensor.time_date') }}"
       notifiers:
         - alerts_urgent
 
@@ -201,10 +195,8 @@ alarm:
       entity_id: binary_sensor.ups_not_fine
       state: "on"
       repeat: 60
-      message: >
-        {{ '\U000026A0' }} Проблема с ИБП, статус {{ states('sensor.ups_status') }}. {{ states('sensor.time_date') }}
-      done_message: >
-        {{ '\U0001F50B' }} Проблема с ИБП устранена, статус {{ states('sensor.ups_status') }}
+      message: "⚠ Проблема с ИБП, статус {{ states('sensor.ups_status') }}. {{ states('sensor.time_date') }}"
+      done_message: "🔋 Проблема с ИБП устранена, статус {{ states('sensor.ups_status') }}"
       notifiers:
         - alerts_urgent
 
@@ -213,8 +205,9 @@ alarm:
       entity_id: binary_sensor.bedroom_ac_plug_overload
       state: "on"
       repeat: 5
-      message: >
-        {{ '\U000026A0' }} Перегрузка розетки в спальне, потребление {{ states('sensor.bedroom_ac_plug_power') }}Вт, температура {{ states('sensor.bedroom_ac_plug_device_temperature') }}
+      message: >-
+        ⚠ Перегрузка розетки в спальне, потребление {{ states('sensor.bedroom_ac_plug_power') }}Вт, температура
+        {{ states('sensor.bedroom_ac_plug_device_temperature') }}
       notifiers:
         - alerts_urgent
 
@@ -223,8 +216,9 @@ alarm:
       entity_id: binary_sensor.kidsroom_ac_plug_overload
       state: "on"
       repeat: 5
-      message: >
-        {{ '\U000026A0' }} Перегрузка розетки в детской, потребление {{ states('sensor.kidsroom_ac_plug_power') }}Вт, температура {{ states('sensor.kidsroom_ac_plug_device_temperature') }}
+      message: >-
+        ⚠ Перегрузка розетки в детской, потребление {{ states('sensor.kidsroom_ac_plug_power') }}Вт, температура
+        {{ states('sensor.kidsroom_ac_plug_device_temperature') }}
       notifiers:
         - alerts_urgent
 
@@ -246,8 +240,7 @@ alarm:
           target:
             entity_id: notify.tg_urgent
           data:
-            message: >
-              {{ '\U0001F6B1' }} Краны перекрыты! {{ states('sensor.time_date') }}
+            message: "🚱 Краны перекрыты! {{ states('sensor.time_date') }}"
           continue_on_error: true
         - action: input_boolean.turn_off
           target:
@@ -270,8 +263,7 @@ alarm:
           target:
             entity_id: notify.tg_urgent
           data:
-            message: >
-              {{ '\U0001F6B0' }} Краны открыты! {{ states('sensor.time_date') }}
+            message: "🚰 Краны открыты! {{ states('sensor.time_date') }}"
           continue_on_error: true
         - action: input_boolean.turn_on
           target:
@@ -284,14 +276,14 @@ alarm:
           target:
             entity_id: notify.tg_urgent
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'входная дверь все еще открыта!',
                 'не забыли закрыть входную дверь?',
                 'CLOSE THE DOOR!!!11',
                 'входную дверь может стоить закрыть?..'
               ] %}
-              {{ '\U0001F6AA' }} {{ states('sensor.time') }} - {{ messages | random }}
+              🚪 {{ states('sensor.time') }} - {{ messages | random }}
 
     hallway_door_lock_is_unlocked_notify:
       alias: "Замок входной двери не заперт - уведомление"
@@ -300,11 +292,11 @@ alarm:
           target:
             entity_id: notify.tg_urgent
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'замок входной двери не закрыт!'
               ] %}
-              {{ '\U0001F513' }} {{ states('sensor.time') }} - {{ messages | random }}
+              🔓 {{ states('sensor.time') }} - {{ messages | random }}
 
   automation:
     - id: "Протечка воды"
@@ -337,8 +329,7 @@ alarm:
           target:
             entity_id: notify.tg_urgent
           data:
-            message: >
-              {{ '\U0001F50C' }} ИБП снова работает от сети! {{ states('sensor.time_date') }}
+            message: "🔌 ИБП снова работает от сети! {{ states('sensor.time_date') }}"
 
     - id: "Перегрузка розетки кондиционера в спальне"
       alias: bedroom_ac_plug_overload
@@ -354,8 +345,7 @@ alarm:
           target:
             entity_id: notify.tg_urgent
           data:
-            message: >
-              {{ '\U0001F50C' }} Розетка в спальне выключена! {{ states('sensor.time_date') }}
+            message: "🔌 Розетка в спальне выключена! {{ states('sensor.time_date') }}"
 
     - id: "Перегрузка розетки кондиционера в детской"
       alias: kidsroom_ac_plug_overload
@@ -371,8 +361,7 @@ alarm:
           target:
             entity_id: notify.tg_urgent
           data:
-            message: >
-              {{ '\U0001F50C' }} Розетка в детской выключена! {{ states('sensor.time_date') }}
+            message: "🔌 Розетка в детской выключена! {{ states('sensor.time_date') }}"
 
     - id: "Дверь в прихожей открылась"
       alias: hallway_door_was_opened
@@ -390,13 +379,13 @@ alarm:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'Входная дверь открыта в',
                 'Распахнули входную дверь, а сейчас',
                 'Кто-то открыл входную дверь в'
               ] %}
-              {{ '\U0001F6AA' }} {{ messages | random }} {{ states('sensor.time_date') }}
+              🚪 {{ messages | random }} {{ states('sensor.time_date') }}
         - action: timer.start
           target:
             entity_id:

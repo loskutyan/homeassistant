@@ -7,7 +7,7 @@ tg_climate_status:
           target:
             entity_id: notify.tg_bot
           data:
-            message: |
+            message: |-
               {%- macro humidifier_status(room) -%}
                 {%- set hum = states('humidifier.' ~ room ~ '_smartmi_humidifier') -%}
                 {%- if hum == 'off' -%}
@@ -46,22 +46,22 @@ tg_climate_status:
                   {%- endif -%}
                   {%- set heater_msg = '' -%}
                   {%- if is_state('binary_sensor.' ~ room ~ '_airpurifier_ptc_status', 'on') -%}
-                    {%- set heater_msg = ', \U0001F525 подогрев включен' -%}
+                    {%- set heater_msg = ', 🔥 подогрев включен' -%}
                   {%- endif -%}
                   режим {{ mode_msg }}, скорость {{ states('sensor.' ~ room ~ '_airpurifier_current_speed') }}{{ heater_msg }}
                 {%- endif -%}
               {%- endmacro -%}
-              {{'\U0001F6CC'}} Спальня:
-              {{'\U0001F321'}} {{ states('sensor.bedroom_average_temperature') | round(1) }}°C  {{'\U0001F4A7'}} {{ states('sensor.bedroom_average_humidity') | round(1) }}%
-              {{'\U0001F332'}} {{ states('sensor.bedroom_co2') | int }}ppm {{'\U0000269B'}} {{ states('sensor.bedroom_pm25') }}ppm
-              {{'\U0001F6BF'}} Увлажнитель: {{ humidifier_status('bedroom') }}
-              {{'\U0001F4A8'}} Бризер: {{ breezer_status('bedroom') }}
+              🛌 Спальня:
+              🌡 {{ states('sensor.bedroom_average_temperature') | round(1) }}°C  💧 {{ states('sensor.bedroom_average_humidity') | round(1) }}%
+              🌲 {{ states('sensor.bedroom_co2') | int }}ppm ⚛ {{ states('sensor.bedroom_pm25') }}ppm
+              🚿 Увлажнитель: {{ humidifier_status('bedroom') }}
+              💨 Бризер: {{ breezer_status('bedroom') }}
 
-              {{'\U0001F9D2'}} Детская:
-              {{'\U0001F321'}} {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C  {{'\U0001F4A7'}} {{ states('sensor.kidsroom_average_humidity') | round(1) }}%
-              {{'\U0001F332'}} {{ states('sensor.kidsroom_co2') | int }}ppm {{'\U0000269B'}} {{ states('sensor.kidsroom_pm25') }}ppm
-              {{'\U0001F6BF'}} Увлажнитель: {{ humidifier_status('kidsroom') }}
-              {{'\U0001F4A8'}} Бризер: {{ breezer_status('kidsroom') }}
+              🧒 Детская:
+              🌡 {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C  💧 {{ states('sensor.kidsroom_average_humidity') | round(1) }}%
+              🌲 {{ states('sensor.kidsroom_co2') | int }}ppm ⚛ {{ states('sensor.kidsroom_pm25') }}ppm
+              🚿 Увлажнитель: {{ humidifier_status('kidsroom') }}
+              💨 Бризер: {{ breezer_status('kidsroom') }}
 
   automation:
     - id: "Отчет о состоянии воздуха в боте"

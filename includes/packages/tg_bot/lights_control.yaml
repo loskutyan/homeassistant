@@ -12,12 +12,12 @@ tg_lights_control:
         - action: telegram_bot.answer_callback_query
           data:
             callback_query_id: '{{ trigger.event.data.id }}'
-            message: 'Что нужно сделать со светом?'  
+            message: "Что нужно сделать со светом?"
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot
           data:
-            message: 'Управляем светом..'
+            message: "Управляем светом.."
             data:
               inline_keyboard:
                 - 'Выключить весь свет:/all_lights_off'
@@ -34,5 +34,5 @@ tg_lights_control:
         - action: telegram_bot.answer_callback_query
           data:
             callback_query_id: '{{ trigger.event.data.id }}'
-            message: 'Выключаем весь свет'
+            message: "Выключаем весь свет"
         - action: script.turn_off_all_lights

@@ -178,8 +178,7 @@ conditioning_kidsroom:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
-              {{'\U0001F4A6'}} Запущено осушение кондиционера в детской!
+            message: "💦 Запущено осушение кондиционера в детской!"
         - delay:
             hours: 4
         - action: climate.set_fan_mode
@@ -197,8 +196,7 @@ conditioning_kidsroom:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
-              {{'\U00002600'}} Осушение кондиционера в детской закончено!
+            message: "☀ Осушение кондиционера в детской закончено!"
 
   automation:
     - id: "Выбор режима работы кондиционера в детской"
@@ -426,10 +424,10 @@ conditioning_kidsroom:
               target:
                 entity_id: notify.tg_bot
               data:
-                message: |
-                  {{ '\U00002600' }} Кондиционер в детской переключен в режим осушения.
-                  {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
-                  {{ '\U0001F4A7' }} Влажность {{ states('sensor.kidsroom_average_humidity') | round(1) }}%
+                message: |-
+                  ☀ Кондиционер в детской переключен в режим осушения.
+                  🌡 Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
+                  💧 Влажность {{ states('sensor.kidsroom_average_humidity') | round(1) }}%
         - if:
             - condition: state
               entity_id: input_select.kidsroom_ac_mode
@@ -447,7 +445,7 @@ conditioning_kidsroom:
               target:
                 entity_id: notify.tg_bot
               data:
-                message: |
-                  {{ '\U00002744' }} Кондиционер в детской переключен в режим охлаждения.
-                  {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
-                  {{ '\U0001F4A7' }} Влажность {{ states('sensor.kidsroom_average_humidity') | round(1) }}%
+                message: |-
+                  ❄ Кондиционер в детской переключен в режим охлаждения.
+                  🌡 Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
+                  💧 Влажность {{ states('sensor.kidsroom_average_humidity') | round(1) }}%

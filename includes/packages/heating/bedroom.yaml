@@ -126,14 +126,14 @@ bedroom_heating:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'Нагреватель бризера в спальне включен!',
                 'Бризер в спальне начинает греть воздух..',
                 'Нагреватель бризера в спальне начал жарить!'
               ] %}
-              {{ '\U0001F525' }}  {{ messages | random }} {{ states('sensor.time_date') }}
-              {{ '\U0001F321' }} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
+              🔥  {{ messages | random }} {{ states('sensor.time_date') }}
+              🌡 Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
 
     - id: "Работает нагреватель бризера в спальне - уведомление"
       alias: bedroom_airpurifier_heater_on_reminder_notify
@@ -154,13 +154,13 @@ bedroom_heating:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'Нагреватель бризера в спальне все еще работает!',
                 'Бризер в спальне продолжает греть воздух..',
                 'Нагреватель бризера в спальне еще жарит!'
               ] %}
-              {{ '\U0001F525' }} {{ messages | random }} {{ states('sensor.time_date') }}
+              🔥 {{ messages | random }} {{ states('sensor.time_date') }}
         - action: timer.start
           target:
             entity_id: timer.bedroom_airpurifier_heater_remind
@@ -186,11 +186,11 @@ bedroom_heating:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'Нагреватель бризера в спальне выключен!',
                 'Бризер в спальне завершает греть воздух..',
                 'Нагреватель бризера в спальне покидает здание!'
               ] %}
-              {{ '\U0001F9EF' }} {{ messages | random }} {{ states('sensor.time_date') }}
-              {{ '\U0001F321' }} Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C
+              🧯 {{ messages | random }} {{ states('sensor.time_date') }}
+              🌡 Температура {{ states('sensor.bedroom_average_temperature') | round(1) }}°C

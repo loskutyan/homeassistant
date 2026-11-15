@@ -289,8 +289,9 @@ vacuum:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
-              {{ '\U0001F9F9' }} Пылесос начал уборку в {{ states('sensor.time') }}, режим {{ state_attr('vacuum.roborock_s5_max', 'fan_speed') }}
+            message: >-
+              🧹 Пылесос начал уборку в {{ states('sensor.time') }}, режим
+              {{ state_attr('vacuum.roborock_s5_max', 'fan_speed') }}
 
     - id: "Пылесос закончил уборку - уведомление"
       alias: vacuum_finished_cleaning_notify
@@ -309,10 +310,10 @@ vacuum:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set cleaned_area = states('sensor.roborock_s5_max_last_clean_area') %}
               {% set cleaning_duration = (states('sensor.roborock_s5_max_last_clean_duration') | float(-999) / 60) | round(2) %}
-              {{ '\U0001F9F9' }} Пылесос закончил уборку, убрано {{ cleaned_area }}м² за {{ cleaning_duration }}мин.
+              🧹 Пылесос закончил уборку, убрано {{ cleaned_area }}м² за {{ cleaning_duration }}мин.
 
     - id: "Пылесос вернулся на док-станцию - уведомление"
       alias: vacuum_docked_notify
@@ -326,5 +327,4 @@ vacuum:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
-              {{ '\U0001F9F9' }} Пылесос вернулся на док-станцию
+            message: "🧹 Пылесос вернулся на док-станцию"

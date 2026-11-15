@@ -13,7 +13,7 @@ tg_common:
           target:
             entity_id: notify.tg_bot
           data:
-            message: |
+            message: |-
               {% set messages = [
                 'Привет!',
                 'Доброго времени суток!',
@@ -41,7 +41,7 @@ tg_common:
           target:
             entity_id: notify.tg_bot
           data:
-            message: |
+            message: |-
               {% set messages = ['Панель управления', 'Контрольная панель'] %}
               {{ messages | random }}
             data:
@@ -62,12 +62,12 @@ tg_common:
         - action: telegram_bot.answer_callback_query
           data:
             callback_query_id: '{{ trigger.event.data.id }}'
-            message: 'Что нужно сделать с кранами?'
+            message: "Что нужно сделать с кранами?"
         - action: notify.send_message
           target:
             entity_id: notify.tg_bot
           data:
-            message: 'Управляем кранами..'
+            message: "Управляем кранами.."
             data:
               inline_keyboard:
                 - 'Перекрыть краны:/close_valves'
@@ -84,7 +84,7 @@ tg_common:
         - action: telegram_bot.answer_callback_query
           data:
             callback_query_id: '{{ trigger.event.data.id }}'
-            message: 'Перекрываем краны'
+            message: "Перекрываем краны"
         - action: script.close_bathroom_valves
 
     - id: 'Прогноз погоды в боте'

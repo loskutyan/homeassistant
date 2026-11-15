@@ -13,6 +13,6 @@ tg_service:
             target:
               entity_id: notify.tg_bot
             data:
-              message: |
-                {{'\U0001FAAB'}} Низкий заряд батарей:
+              message: |-
+                🪫 Низкий заряд батарей:
                 {{ sensors.split(', ')  | join('\n') }}

@@ -180,13 +180,13 @@ away:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'Весь свет выключен',
                 'Свет выключен - сэкономили кучу денег',
                 'Светильники обесточены... но это неточно'
               ] %}
-              {{ '\U0001F4A1' }} {{ messages | random }}
+              💡 {{ messages | random }}
 
     turn_off_all_heaters:
       alias: "Выключение всех обогревателей"
@@ -199,13 +199,13 @@ away:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'Все обогреватели выключены',
                 'Нагрев выключен - сэкономили кучу денег',
                 'Обогреватели обесточены... но это неточно'
               ] %}
-              {{ '\U0001F525' }} {{ messages | random }}
+              🔥 {{ messages | random }}
 
     hallway_door_lock_was_locked_notify:
       alias: "Замок входной двери закрыт - уведомление"
@@ -214,11 +214,11 @@ away:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'Замок входной двери закрыт!'
               ] %}
-              {{ '\U0001F510' }} {{ messages | random }}
+              🔐 {{ messages | random }}
 
     lock_the_door:
       alias: "Закрытие входной двери"
@@ -420,12 +420,12 @@ away:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'С возвращением!',
                 'Welcome back',
                 'И снова здравствуйте!'
               ] %}
-              {{ '\U0001F596' }} {{ messages | random }} {{ '\U0001F60A' }}
+              🖖 {{ messages | random }} 😊
           continue_on_error: true
         - action: script.hallway_welcome_led_light_turn_on

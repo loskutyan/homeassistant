@@ -51,13 +51,13 @@ tg_weather:
           default_entity_id: sensor.weather_rainfall_conditions_emojis
           state: >
             {% set emojis = {
-              'rainy': '\U0001F327',
-              'pouring': '\U0001F327\U0001F327',
-              'hail': '\U0001F327\U00002614',
-              'lightning': '\U0001F329',
-              'lightning-rainy': '\U000026C8',
-              'snowy': '\U0001F328',
-              'snowy-rainy': '\U0001F327\U00002744'
+              'rainy': '🌧',
+              'pouring': '🌧🌧',
+              'hail': '🌧☔',
+              'lightning': '🌩',
+              'lightning-rainy': '⛈',
+              'snowy': '🌨',
+              'snowy-rainy': '🌧❄'
             } %}
             {{ emojis | to_json(ensure_ascii=False) }}
 
@@ -66,14 +66,14 @@ tg_weather:
           default_entity_id: sensor.weather_dry_conditions_emojis
           state: >
             {% set emojis = {
-              'sunny': '\U00002600',
-              'clear-night': '\U0001F30C',
-              'cloudy': '\U00002601',
-              'partlycloudy': '\U000026C5',
-              'fog': '\U0001F32B',
-              'windy': '\U0001F4A8',
-              'windy-variant': '\U0001F32C',
-              'exceptional': '\U00002757'
+              'sunny': '☀',
+              'clear-night': '🌌',
+              'cloudy': '☁',
+              'partlycloudy': '⛅',
+              'fog': '🌫',
+              'windy': '💨',
+              'windy-variant': '🌬',
+              'exceptional': '❗'
             } %}
             {{ emojis | to_json(ensure_ascii=False) }}
 
@@ -102,7 +102,7 @@ tg_weather:
           target:
             entity_id: notify.tg_bot
           data:
-            message: |
+            message: |-
               {% set w_dt = states('sensor.yandex_weather_data_update_time') %}
               {% set w_time = as_datetime(w_dt).astimezone().strftime('%H:%M') %}
               {% set condition = states('weather.yandex_weather') %}
@@ -114,7 +114,7 @@ tg_weather:
               {% set conditions_emojis = conditions_emojis_json | from_json %}
               {% set friendly_wind_bearings = states('sensor.weather_friendly_wind_bearings') | from_json %}
               {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
-              {% set condition_emoji = conditions_emojis.get(condition, '\U0000274C') %}
+              {% set condition_emoji = conditions_emojis.get(condition, '❌') %}
               {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
               {% set temp_unit = state_attr('weather.yandex_weather', 'temperature_unit') %}
               {% set messages = [
@@ -141,7 +141,7 @@ tg_weather:
           target:
             entity_id: notify.tg_bot
           data:
-            message: |
+            message: |-
               {% set temp = state_attr('weather.yandex_weather', 'forecastHourly')[6]['native_temperature'] %}
               {% set temp_feels_like = state_attr('weather.yandex_weather', 'forecastHourly')[6]['native_apparent_temperature'] %}
               {% set condition = state_attr('weather.yandex_weather', 'forecastHourly')[6]['condition'] %}
@@ -155,7 +155,7 @@ tg_weather:
               {% set conditions_emojis = conditions_emojis_json | from_json %}
               {% set friendly_wind_bearings = states('sensor.weather_friendly_wind_bearings') | from_json %}
               {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
-              {% set condition_emoji = conditions_emojis.get(condition, '\U0000274C') %}
+              {% set condition_emoji = conditions_emojis.get(condition, '❌') %}
               {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
               {% set temp_unit = state_attr('weather.yandex_weather', 'temperature_unit') %}
               {% set messages = [
@@ -185,7 +185,7 @@ tg_weather:
           target:
             entity_id: notify.tg_bot
           data:
-            message: |
+            message: |-
               {% set temp = state_attr('weather.yandex_weather', 'forecastHourly')[12]['native_temperature'] %}
               {% set temp_feels_like = state_attr('weather.yandex_weather', 'forecastHourly')[12]['native_apparent_temperature'] %}
               {% set condition = state_attr('weather.yandex_weather', 'forecastHourly')[12]['condition'] %}
@@ -199,7 +199,7 @@ tg_weather:
               {% set conditions_emojis = conditions_emojis_json | from_json %}
               {% set friendly_wind_bearings = states('sensor.weather_friendly_wind_bearings') | from_json %}
               {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
-              {% set condition_emoji = conditions_emojis.get(condition, '\U0000274C') %}
+              {% set condition_emoji = conditions_emojis.get(condition, '❌') %}
               {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
               {% set temp_unit = state_attr('weather.yandex_weather', 'temperature_unit') %}
               {% set messages = [

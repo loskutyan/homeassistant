@@ -352,8 +352,7 @@ cubeserver:
               target:
                 entity_id: notify.tg_bot
               data:
-                message: >
-                  {{ '\U0001F433' }} Запуск VM Windows: останавливаем llama-swap...
+                message: "🐳 Запуск VM Windows: останавливаем llama-swap..."
             - action: script.cubeserver_llama_swap_docker_stop
         - delay:
             seconds: 2
@@ -378,8 +377,7 @@ cubeserver:
               target:
                 entity_id: notify.tg_bot
               data:
-                message: >
-                  {{ '\U000026A0' }} Запуск VM Windows прошел неуспешно
+                message: "⚠ Запуск VM Windows прошел неуспешно"
 
     cubeserver_vm_windows10_shutdown:
       alias: "cubeserver: выключение VM Windows 10"
@@ -405,15 +403,13 @@ cubeserver:
               target:
                 entity_id: notify.tg_bot
               data:
-                message: >
-                  {{ '\U000026A0' }} Выключение VM Windows прошло неуспешно
+                message: "⚠ Выключение VM Windows прошло неуспешно"
           else:
             - action: notify.send_message
               target:
                 entity_id: notify.tg_bot
               data:
-                message: >
-                  {{ '\U0001F433' }} Выключение VM Windows: запускаем llama-swap...
+                message: "🐳 Выключение VM Windows: запускаем llama-swap..."
             - action: script.cubeserver_llama_swap_docker_start
 
     cubeserver_llama_swap_docker_stop:
@@ -456,7 +452,7 @@ cubeserver:
           target:
             entity_id: notify.tg_bot
           data:
-            message: |
+            message: |-
               {% set overheat = trigger.to_state.state | bool %}
               {% set parity_temp = states('sensor.cubeserver_parity_disk_temperature') %}
               {% set disk1_temp = states('sensor.cubeserver_disk_1_temperature') %}
@@ -467,16 +463,16 @@ cubeserver:
                   'дискам жарко!',
                   'обнаружен перегрев дисков.'
                 ] %}
-                {% set emoji = '\U0001F525' %}
+                {% set emoji = '🔥' %}
               {% else %}
                 {% set messages = [
                   'диски остыли.',
                   'диски вернулись к нормальным температурам.'
                 ] %}
-                {% set emoji = '\U00002744' %}
+                {% set emoji = '❄' %}
               {% endif %}
               {{ emoji }} Cubeserver: {{ messages | random }} {{ states('sensor.time_date') }}
-              {{ '\U0001F321' }} Температуры дисков:
+              🌡 Температуры дисков:
               Parity: {{ parity_temp }}°C
               Disk 1: {{ disk1_temp }}°C
               Disk 2: {{ disk2_temp }}°C
@@ -500,14 +496,14 @@ cubeserver:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set in_progress = trigger.to_state.state | bool %}
               {% if in_progress %}
                 {% set message = 'Запущен Parity-Check.' %}
               {% else %}
                 {% set message = 'Parity-Check завершен.' %}
               {% endif %}
-              {{ '\U0001F4BF' }} Cubeserver: {{ message }} {{ states('sensor.time_date') }}
+              💿 Cubeserver: {{ message }} {{ states('sensor.time_date') }}
 
     - id: "Пауза Parity-Check - уведомление"
       alias: cubeserver_parity_check_pause_notify
@@ -528,7 +524,7 @@ cubeserver:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set paused = trigger.to_state.state | bool %}
               {% set progress = states('sensor.cubeserver_parity_progress') | round(2) | string %}
               {% if paused %}
@@ -536,7 +532,7 @@ cubeserver:
               {% else %}
                 {% set message = 'Parity-Check возобновлен.' %}
               {% endif %}
-              {{ '\U0001F4C0' }} Cubeserver: {{ message }} {{ states('sensor.time_date') }}
+              📀 Cubeserver: {{ message }} {{ states('sensor.time_date') }}
 
     - id: "Началась загрузка торрента - уведомление"
       alias: torrent_downloading_started_notify
@@ -549,8 +545,7 @@ cubeserver:
           target:
             entity_id: notify.tg_media
           data:
-            message: >
-              {{ '\U00002B07' }} Cubeserver: Началась загрузка торрента. {{ trigger.event.data.name }}
+            message: "⬇ Cubeserver: Началась загрузка торрента. {{ trigger.event.data.name }}"
 
     - id: "Загрузка торрента завершена - уведомление"
       alias: torrent_downloading_completed_notify
@@ -563,5 +558,4 @@ cubeserver:
           target:
             entity_id: notify.tg_media
           data:
-            message: >
-              {{ '\U00002705' }} Cubeserver: Завершена загрузка торрента. {{ trigger.event.data.name }}
+            message: "✅ Cubeserver: Завершена загрузка торрента. {{ trigger.event.data.name }}"

@@ -123,14 +123,14 @@ kidsroom_heating:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'Нагреватель бризера в детской включен!',
                 'Бризер в детской начинает греть воздух..',
                 'Нагреватель бризера в детской начал жарить!'
               ] %}
-              {{ '\U0001F525' }}  {{ messages | random }} {{ states('sensor.time_date') }}
-              {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
+              🔥  {{ messages | random }} {{ states('sensor.time_date') }}
+              🌡 Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
 
     - id: "Работает нагреватель бризера в детской - уведомление"
       alias: kidsroom_airpurifier_heater_on_reminder_notify
@@ -151,13 +151,13 @@ kidsroom_heating:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'Нагреватель бризера в детской все еще работает!',
                 'Бризер в детской продолжает греть воздух..',
                 'Нагреватель бризера в детской еще жарит!'
               ] %}
-              {{ '\U0001F525' }} {{ messages | random }} {{ states('sensor.time_date') }}
+              🔥 {{ messages | random }} {{ states('sensor.time_date') }}
         - action: timer.start
           target:
             entity_id: timer.kidsroom_airpurifier_heater_remind
@@ -183,11 +183,11 @@ kidsroom_heating:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set messages = [
                 'Нагреватель бризера в детской выключен!',
                 'Бризер в детской завершает греть воздух..',
                 'Нагреватель бризера в детской покидает здание!'
               ] %}
-              {{ '\U0001F9EF' }} {{ messages | random }} {{ states('sensor.time_date') }}
-              {{ '\U0001F321' }} Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C
+              🧯 {{ messages | random }} {{ states('sensor.time_date') }}
+              🌡 Температура {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C

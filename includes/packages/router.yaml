@@ -32,8 +32,7 @@ router:
           target:
             entity_id: notify.tg_urgent
           data:
-            message: >
-              {{ '\U0001F504' }} Xray на роутере недоступен, произведена попытка рестарта. {{ states('sensor.time_date') }}
+            message: "🔄 Xray на роутере недоступен, произведена попытка рестарта. {{ states('sensor.time_date') }}"
 
     - id: "Xray на роутере упал - уведомление"
       alias: router_xray_is_down_notify
@@ -48,8 +47,7 @@ router:
           target:
             entity_id: notify.tg_urgent
           data:
-            message: >
-              {{ '\U000026A0' }} Xray на роутере недоступен. {{ states('sensor.time_date') }}
+            message: "⚠ Xray на роутере недоступен. {{ states('sensor.time_date') }}"
 
     - id: "Xray на роутере поднялся - уведомление"
       alias: router_xray_is_up_notify
@@ -63,8 +61,7 @@ router:
           target:
             entity_id: notify.tg_urgent
           data:
-            message: >
-              {{ '\U00002705' }} Xray на роутере снова работает. {{ states('sensor.time_date') }}
+            message: "✅ Xray на роутере снова работает. {{ states('sensor.time_date') }}"
 
     - id: "Смена внешнего ip-адреса на моб. связь - уведомление"
       alias: wan_ip_changed_to_modem3g_notify
@@ -77,9 +74,9 @@ router:
           target:
             entity_id: notify.tg_urgent
           data:
-            message: >
+            message: >-
               {% set ip_from = trigger.from_state.state | string %}
-              {{ '\U0001F6DC' }} WAN IP изменен с {{ ip_from }} на 192.168.8.100
+              🛜 WAN IP изменен с {{ ip_from }} на 192.168.8.100
 
     - id: "Смена внешнего ip-адреса обратно на Ethernet - уведомление"
       alias: wan_ip_changed_to_ethernet_notify
@@ -92,10 +89,10 @@ router:
           target:
             entity_id: notify.tg_urgent
           data:
-            message: >
+            message: >-
               {% set ip_from = trigger.from_state.state | string %}
               {% set ip_to = trigger.to_state.state | string %}
-              {{ '\U0001F6DC' }} WAN IP изменен с {{ ip_from }} на {{ ip_to }}
+              🛜 WAN IP изменен с {{ ip_from }} на {{ ip_to }}
 
     - id: "Смена shortId в KVAS Xray на роутере - уведомление"
       alias: kvas_xray_shortid_changed
@@ -107,7 +104,7 @@ router:
           target:
             entity_id: notify.tg_bot
           data:
-            message: >
+            message: >-
               {% set sid_from = trigger.from_state.state | string %}
               {% set sid_to = trigger.to_state.state | string %}
-              {{ '\U0001F6DC' }}{{'\U0001F510'}}  Xray ShortID в KVAS на роутере изменен с {{ sid_from }} на {{ sid_to }}
+              🛜🔐  Xray ShortID в KVAS на роутере изменен с {{ sid_from }} на {{ sid_to }}
