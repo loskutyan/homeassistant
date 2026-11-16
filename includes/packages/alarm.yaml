@@ -358,6 +358,7 @@ alarm:
           state: "idle"
       actions:
         - action: notify.send_message
+          continue_on_error: true
           target:
             entity_id: notify.tg_bot
           data:
@@ -388,6 +389,7 @@ alarm:
           state: "on"
       actions:
         - action: script.hallway_door_is_opened_notify
+          continue_on_error: true
         - action: timer.start
           target:
             entity_id: timer.hallway_door_left_opened

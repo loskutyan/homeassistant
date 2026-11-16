@@ -173,6 +173,7 @@ conditioning_bedroom:
           data:
             fan_mode: "high"
         - action: notify.send_message
+          continue_on_error: true
           target:
             entity_id: notify.tg_bot
           data:

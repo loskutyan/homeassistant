@@ -151,6 +151,7 @@ bedroom_heating:
           state: "on"
       actions:
         - action: notify.send_message
+          continue_on_error: true
           target:
             entity_id: notify.tg_bot
           data:

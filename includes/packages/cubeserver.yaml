@@ -93,6 +93,7 @@ cubeserver:
               state: "on"
           then:
             - action: notify.send_message
+              continue_on_error: true
               target:
                 entity_id: notify.tg_bot
               data:
@@ -150,6 +151,7 @@ cubeserver:
                 message: "⚠ Выключение VM Windows прошло неуспешно"
           else:
             - action: notify.send_message
+              continue_on_error: true
               target:
                 entity_id: notify.tg_bot
               data:

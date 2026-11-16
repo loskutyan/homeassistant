@@ -82,6 +82,7 @@ tg_common:
           data: '/close_valves'
       actions:
         - action: telegram_bot.answer_callback_query
+          continue_on_error: true
           data:
             callback_query_id: '{{ trigger.event.data.id }}'
             message: "Перекрываем краны"
