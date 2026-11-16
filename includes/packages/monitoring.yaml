@@ -89,13 +89,14 @@ infrastructure_monitoring:
                 - condition: template
                   value_template: >-
                     {% set response = trigger.payload_json | default({}) %}
+                    {% set data = response.get('data') if response is mapping else none %}
                     {% set request = states('input_text.zigbee2mqtt_health_request') %}
                     {{ response is mapping
                        and request not in ['not-started', 'unknown', 'unavailable']
                        and response.get('transaction') == request
                        and response.get('status') == 'ok'
-                       and response.get('data') is mapping
-                       and response.get('data').get('healthy') is sameas true }}
+                       and data is mapping
+                       and data.get('healthy') is sameas true }}
                 - action: input_datetime.set_datetime
                   target:
                     entity_id: input_datetime.zigbee2mqtt_health_last_success

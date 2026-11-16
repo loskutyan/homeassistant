@@ -139,9 +139,10 @@ conditioning_bedroom:
           unique_id: bedroom_cooling
           default_entity_id: switch.bedroom_cooling
           state: >
+            {% set operation = state_attr('climate.bedroom_ac', 'last_on_operation') -%}
             {% set ac_on = is_state('switch.bedroom_ac', 'on') %}
-            {% set cooling_on = is_state_attr('climate.bedroom_ac', 'last_on_operation', 'cool') %}
-            {% set dry_on = is_state_attr('climate.bedroom_ac', 'last_on_operation', 'dry') %}
+            {% set cooling_on = (operation == 'cool') %}
+            {% set dry_on = (operation == 'dry') %}
             {% set auto_cooling_on = is_state('switch.bedroom_auto_conditioning', 'on') %}
             {% set is_cooling_temp_low = state_attr('climate.bedroom_ac', 'temperature') | int(31) <= 28 %}
             {{ ac_on and (dry_on or (cooling_on and (is_cooling_temp_low or auto_cooling_on))) }}
@@ -437,10 +438,14 @@ conditioning_bedroom:
             - switch.bedroom_auto_conditioning
           state: "on"
         - condition: template
-          value_template: "{{ states('sensor.bedroom_average_temperature') | float(0) > 0 }}"
+          value_template: >-
+            {{ has_value('climate.bedroom_ac')
+               and is_number(states('sensor.bedroom_average_temperature'))
+               and is_number(states('input_number.bedroom_target_cooling_temperature'))
+               and is_number(state_attr('climate.bedroom_ac', 'temperature')) }}
         - condition: template
           value_template: >
-            {% set target_temp = states('input_number.bedroom_target_cooling_temperature') | float(25) %}
+            {% set target_temp = states('input_number.bedroom_target_cooling_temperature') | float %}
             {% set cur_temp = states('sensor.bedroom_average_temperature') | float %}
             {% set ac_temp = state_attr('climate.bedroom_ac', 'temperature') | float %}
             {% set delta = target_temp - cur_temp %}
@@ -485,6 +490,11 @@ conditioning_bedroom:
           for:
             minutes: 1
       conditions:
+        - condition: template
+          value_template: >-
+            {{ has_value('climate.bedroom_ac')
+               and is_number(states('sensor.bedroom_average_humidity'))
+               and is_number(states('input_number.bedroom_ac_drying_upper_humidity_threshold')) }}
         - or:
             - condition: state
               entity_id: input_select.bedroom_ac_mode

@@ -14,7 +14,10 @@ heating_common:
           default_entity_id: sensor.outside_temperature
           device_class: temperature
           unit_of_measurement: "°C"
-          state: >
+          availability: >-
+            {{ has_value('weather.yandex_weather')
+               and is_number(state_attr('weather.yandex_weather', 'temperature')) }}
+          state: >-
             {{ state_attr('weather.yandex_weather', 'temperature') }}
 
         - name: "Разница уличной и желаемой температур"
@@ -22,5 +25,8 @@ heating_common:
           default_entity_id: sensor.outside_target_temperature_delta
           device_class: temperature
           unit_of_measurement: "°C"
-          state: >
+          availability: >-
+            {{ is_number(states('sensor.outside_temperature'))
+               and is_number(states('input_number.target_temperature')) }}
+          state: >-
             {{ states('sensor.outside_temperature') | float  - states('input_number.target_temperature') | float }}

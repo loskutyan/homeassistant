@@ -101,13 +101,14 @@ tg_weather:
             entity_id: notify.tg_bot
           data:
             message: |-
-              {% set temp = state_attr('weather.yandex_weather', 'forecastHourly')[6]['native_temperature'] %}
-              {% set temp_feels_like = state_attr('weather.yandex_weather', 'forecastHourly')[6]['native_apparent_temperature'] %}
-              {% set condition = state_attr('weather.yandex_weather', 'forecastHourly')[6]['condition'] %}
-              {% set wind_bearing_raw = state_attr('weather.yandex_weather', 'forecastHourly')[6]['wind_bearing'] %}
+              {% set forecast = state_attr('weather.yandex_weather', 'forecastHourly')[6] -%}
+              {% set temp = forecast['native_temperature'] %}
+              {% set temp_feels_like = forecast['native_apparent_temperature'] %}
+              {% set condition = forecast['condition'] %}
+              {% set wind_bearing_raw = forecast['wind_bearing'] %}
               {% set wind_bearing = (wind_bearing_raw / 45) | round(0) * 45 %}
-              {% set wind_speed = state_attr('weather.yandex_weather', 'forecastHourly')[6]['native_wind_speed'] | round(1) %}
-              {% set wind_gust_speed = state_attr('weather.yandex_weather', 'forecastHourly')[6]['native_wind_gust_speed'] | round(1) %}
+              {% set wind_speed = forecast['native_wind_speed'] | round(1) %}
+              {% set wind_gust_speed = forecast['native_wind_gust_speed'] | round(1) %}
               {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
               {% set condition_emoji = conditions_emojis.get(condition, '❌') %}
               {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}
@@ -140,13 +141,14 @@ tg_weather:
             entity_id: notify.tg_bot
           data:
             message: |-
-              {% set temp = state_attr('weather.yandex_weather', 'forecastHourly')[12]['native_temperature'] %}
-              {% set temp_feels_like = state_attr('weather.yandex_weather', 'forecastHourly')[12]['native_apparent_temperature'] %}
-              {% set condition = state_attr('weather.yandex_weather', 'forecastHourly')[12]['condition'] %}
-              {% set wind_bearing_raw = state_attr('weather.yandex_weather', 'forecastHourly')[12]['wind_bearing'] %}
+              {% set forecast = state_attr('weather.yandex_weather', 'forecastHourly')[12] -%}
+              {% set temp = forecast['native_temperature'] %}
+              {% set temp_feels_like = forecast['native_apparent_temperature'] %}
+              {% set condition = forecast['condition'] %}
+              {% set wind_bearing_raw = forecast['wind_bearing'] %}
               {% set wind_bearing = (wind_bearing_raw / 45) | round(0) * 45 %}
-              {% set wind_speed = state_attr('weather.yandex_weather', 'forecastHourly')[12]['native_wind_speed'] | round(1) %}
-              {% set wind_gust_speed = state_attr('weather.yandex_weather', 'forecastHourly')[12]['native_wind_gust_speed'] | round(1) %}
+              {% set wind_speed = forecast['native_wind_speed'] | round(1) %}
+              {% set wind_gust_speed = forecast['native_wind_gust_speed'] | round(1) %}
               {% set friendly_condition = friendly_conditions.get(condition, 'Неизвестная погода') %}
               {% set condition_emoji = conditions_emojis.get(condition, '❌') %}
               {% set friendly_wind_bearing = friendly_wind_bearings.get(wind_bearing | string, 'Неизвестный ветер').lower() %}

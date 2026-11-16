@@ -23,6 +23,12 @@ kidsroom_heating:
           device_class: heat
           state: "{{ is_state_attr('fan.mijia_airpurifier_kidsroom', 'ptc_status', True) }}"
 
+        # Один стабильный OFF сохраняет начало пропуска при смене invalid-значений.
+        - name: "Данные температуры детской доступны"
+          unique_id: kidsroom_heating_temperature_available
+          default_entity_id: binary_sensor.kidsroom_heating_temperature_available
+          state: "{{ is_number(states('sensor.kidsroom_average_temperature')) }}"
+
     - switch:
         - name: "Нагреватель бризера в детской"
           unique_id: kidsroom_airpurifier_ptc
@@ -70,6 +76,10 @@ kidsroom_heating:
           state: "off"
           for:
             minutes: 1
+        - condition: template
+          value_template: >-
+            {{ is_number(states('sensor.kidsroom_average_temperature'))
+               and is_number(states('input_number.target_temperature')) }}
         - condition: numeric_state
           entity_id: sensor.kidsroom_average_temperature
           below: input_number.target_temperature
@@ -92,7 +102,7 @@ kidsroom_heating:
           to: "idle"
         - trigger: numeric_state
           entity_id: sensor.kidsroom_average_temperature
-          value_template: "{{ state.state | float(0) - 0.5 }}"
+          value_template: "{{ state.state | float - 0.5 if is_number(state.state) else none }}"
           above: input_number.target_temperature
           for:
             minutes: 1
@@ -118,6 +128,11 @@ kidsroom_heating:
             - "unknown"
             - "unavailable"
           to: "on"
+        - trigger: state
+          entity_id: binary_sensor.kidsroom_heating_temperature_available
+          to: "off"
+          for:
+            minutes: 2
       conditions:
         - condition: state
           entity_id: switch.kidsroom_airpurifier_ptc
@@ -125,8 +140,16 @@ kidsroom_heating:
         # Даём штатному обработчику включения две секунды на запуск таймера.
         - condition: template
           value_template: >-
-            {{ not is_state('timer.kidsroom_airpurifier_heater_turn_off', 'active')
-               and (now() - states.switch.kidsroom_airpurifier_ptc.last_changed).total_seconds() >= 2 }}
+            {% set render_time = now() -%}
+            {% set heater_age = (render_time - states.switch.kidsroom_airpurifier_ptc.last_changed).total_seconds() %}
+            {% set validity = states['binary_sensor.kidsroom_heating_temperature_available'] %}
+            {% set missing_age = (render_time - validity.last_changed).total_seconds()
+               if validity is not none and validity.state == 'off' else heater_age %}
+            {% set temperature_missing = not is_number(states('sensor.kidsroom_average_temperature')) %}
+            {% set validity_missing = validity is none or validity.state in ['unknown', 'unavailable'] %}
+            {{ (not is_state('timer.kidsroom_airpurifier_heater_turn_off', 'active') and heater_age >= 2)
+               or (temperature_missing and (is_state('binary_sensor.kidsroom_heating_temperature_available', 'off')
+                                           or validity_missing) and missing_age >= 120) }}
       actions:
         - action: switch.turn_off
           target:

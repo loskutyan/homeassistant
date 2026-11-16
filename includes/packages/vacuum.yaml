@@ -385,14 +385,16 @@ vacuum:
                 - variables:
                     result:
                       accepted: >-
+                        {% set vacuum_state = states('vacuum.roborock_s5_max') -%}
+                        {% set vacuum_status = state_attr('vacuum.roborock_s5_max', 'status') -%}
                         {{ request in requests and is_state(request, 'on')
                            and states[request].last_changed.isoformat() == generation
                            and active == 'none'
                            and not is_state('input_boolean.roborock_s5_max_queue_blocked', 'on')
-                           and ((is_state('vacuum.roborock_s5_max', 'idle')
-                                 and is_state_attr('vacuum.roborock_s5_max', 'status', 'Idle'))
-                                or (is_state('vacuum.roborock_s5_max', 'docked')
-                                    and state_attr('vacuum.roborock_s5_max', 'status') in ['Charging', 'Charging complete'])) }}
+                           and (((vacuum_state == 'idle')
+                                 and (vacuum_status == 'Idle'))
+                                or ((vacuum_state == 'docked')
+                                    and vacuum_status in ['Charging', 'Charging complete'])) }}
                 - if: "{{ result.accepted }}"
                   then:
                     - action: input_select.select_option
@@ -512,12 +514,14 @@ vacuum:
             sequence:
               # Отмена/повторное добавление инвалидирует старый ticket.
               - wait_template: >-
+                  {% set vacuum_state = states('vacuum.roborock_s5_max') -%}
+                  {% set vacuum_status = state_attr('vacuum.roborock_s5_max', 'status') -%}
                   {{ not is_state(request, 'on')
                      or states[request].last_changed.isoformat() != generation
-                     or (((is_state('vacuum.roborock_s5_max', 'idle')
-                           and is_state_attr('vacuum.roborock_s5_max', 'status', 'Idle'))
-                          or (is_state('vacuum.roborock_s5_max', 'docked')
-                              and state_attr('vacuum.roborock_s5_max', 'status') in ['Charging', 'Charging complete']))
+                     or ((((vacuum_state == 'idle')
+                           and (vacuum_status == 'Idle'))
+                          or ((vacuum_state == 'docked')
+                              and vacuum_status in ['Charging', 'Charging complete']))
                          and is_state('input_select.roborock_s5_max_active_room', 'none')
                          and not is_state('input_boolean.roborock_s5_max_queue_blocked', 'on')) }}
               - if: >-
@@ -575,10 +579,12 @@ vacuum:
               error: true
         # Пауза, возврат, ошибка и недоступность не завершают заявку.
         - wait_template: >-
-            {{ (is_state('vacuum.roborock_s5_max', 'idle')
-                and is_state_attr('vacuum.roborock_s5_max', 'status', 'Idle'))
-               or (is_state('vacuum.roborock_s5_max', 'docked')
-                   and state_attr('vacuum.roborock_s5_max', 'status') in ['Charging', 'Charging complete']) }}
+            {% set vacuum_state = states('vacuum.roborock_s5_max') -%}
+            {% set vacuum_status = state_attr('vacuum.roborock_s5_max', 'status') -%}
+            {{ ((vacuum_state == 'idle')
+                and (vacuum_status == 'Idle'))
+               or ((vacuum_state == 'docked')
+                   and vacuum_status in ['Charging', 'Charging complete']) }}
         - action: script.roborock_s5_max_room_queue_control
           data:
             operation: complete

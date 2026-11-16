@@ -11,22 +11,24 @@ cards:
             entity: sensor.ups_status
             primary: "Статус"
             secondary: >-
-              {% if is_state(entity, 'Online') %}
+              {% set entity_state = states(entity) -%}
+              {% if (entity_state == 'Online') %}
                 От сети
-              {% elif is_state(entity, 'Online Battery Charging') %}
+              {% elif (entity_state == 'Online Battery Charging') %}
                 Зарядка батареи
-              {% elif is_state(entity, 'On Battery Battery Discharging') %}
+              {% elif (entity_state == 'On Battery Battery Discharging') %}
                 От батареи
               {% else %}
-                {{ states(entity) }}
+                {{ entity_state }}
               {% endif %}
             icon: mdi:battery
             icon_color: >-
-              {% if is_state(entity, 'Online') %}
+              {% set entity_state = states(entity) -%}
+              {% if (entity_state == 'Online') %}
                 green
-              {% elif is_state(entity, 'Online Battery Charging') %}
+              {% elif (entity_state == 'Online Battery Charging') %}
                 amber
-              {% elif is_state(entity, 'On Battery Battery Discharging') %}
+              {% elif (entity_state == 'On Battery Battery Discharging') %}
                 red
               {% else %}
                 grey
@@ -37,18 +39,20 @@ cards:
             entity: switch.ups_data_plug
             primary: "Соединение"
             secondary: >-
-              {% if is_state(entity, 'on') %}
+              {% set entity_state = states(entity) -%}
+              {% if (entity_state == 'on') %}
                 Подключено
-              {% elif is_state(entity, 'off') %}
+              {% elif (entity_state == 'off') %}
                 Отключено
               {% else %}
-                {{ states(entity) }}
+                {{ entity_state }}
               {% endif %}
             icon: mdi:connection
             icon_color: >-
-              {% if is_state(entity, 'on') %}
+              {% set entity_state = states(entity) -%}
+              {% if (entity_state == 'on') %}
                 green
-              {% elif is_state(entity, 'off') %}
+              {% elif (entity_state == 'off') %}
                 red
               {% else %}
                 grey
@@ -82,18 +86,20 @@ cards:
         entity: binary_sensor.router_xray_status
         primary: "Xray"
         secondary: >-
-          {% if is_state(entity, 'on') %}
+          {% set entity_state = states(entity) -%}
+          {% if (entity_state == 'on') %}
             Работает
-          {% elif is_state(entity, 'off') %}
+          {% elif (entity_state == 'off') %}
             Недоступен
           {% else %}
-            {{ states(entity) }}
+            {{ entity_state }}
           {% endif %}
         icon: mdi:shield-check
         icon_color: >-
-          {% if is_state(entity, 'on') %}
+          {% set entity_state = states(entity) -%}
+          {% if (entity_state == 'on') %}
             green
-          {% elif is_state(entity, 'off') %}
+          {% elif (entity_state == 'off') %}
             red
           {% else %}
             grey
@@ -239,18 +245,20 @@ cards:
             entity: switch.cubeserver_vm_windows10
             primary: "Windows 10 VM"
             secondary: >-
-              {% if is_state(entity, 'on') %}
+              {% set entity_state = states(entity) -%}
+              {% if (entity_state == 'on') %}
                 Запущена
-              {% elif is_state(entity, 'off') %}
+              {% elif (entity_state == 'off') %}
                 Остановлена
               {% else %}
-                {{ states(entity) }}
+                {{ entity_state }}
               {% endif %}
             icon: mdi:microsoft-windows
             icon_color: >-
-              {% if is_state(entity, 'on') %}
+              {% set entity_state = states(entity) -%}
+              {% if (entity_state == 'on') %}
                 blue
-              {% elif is_state(entity, 'off') %}
+              {% elif (entity_state == 'off') %}
                 grey
               {% else %}
                 red
@@ -261,18 +269,20 @@ cards:
             entity: switch.cubeserver_vm_ubuntuyadisk
             primary: "Ubuntu YaDisk VM"
             secondary: >-
-              {% if is_state(entity, 'on') %}
+              {% set entity_state = states(entity) -%}
+              {% if (entity_state == 'on') %}
                 Запущена
-              {% elif is_state(entity, 'off') %}
+              {% elif (entity_state == 'off') %}
                 Остановлена
               {% else %}
-                {{ states(entity) }}
+                {{ entity_state }}
               {% endif %}
             icon: mdi:ubuntu
             icon_color: >-
-              {% if is_state(entity, 'on') %}
+              {% set entity_state = states(entity) -%}
+              {% if (entity_state == 'on') %}
                 orange
-              {% elif is_state(entity, 'off') %}
+              {% elif (entity_state == 'off') %}
                 grey
               {% else %}
                 red

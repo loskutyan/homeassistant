@@ -31,9 +31,9 @@ bedroom_air:
           default_entity_id: sensor.bedroom_co2
           device_class: carbon_dioxide
           unit_of_measurement: "ppm"
-          availability: >
-            {% set value = states('sensor.cgllc_cgs2_84ac_co2_density') | float(0) %}
-            {{ 0 < value < 10000 }}
+          availability: >-
+            {% set value = states('sensor.cgllc_cgs2_84ac_co2_density') %}
+            {{ is_number(value) and 0 < value | float < 10000 }}
           state: "{{ states('sensor.cgllc_cgs2_84ac_co2_density') }}"
           icon: mdi:molecule-co2
 
@@ -42,10 +42,10 @@ bedroom_air:
           default_entity_id: sensor.bedroom_tvoc
           device_class: volatile_organic_compounds
           unit_of_measurement: "ppb"
-          availability: >
-            {% set value = states('sensor.cgllc_cgs2_84ac_tvoc_density') | float(-1) %}
-            {{ 0 <= value < 1000 }}
-          state: >
+          availability: >-
+            {% set value = states('sensor.cgllc_cgs2_84ac_tvoc_density') %}
+            {{ is_number(value) and 0 <= value | float < 1000 }}
+          state: >-
             {% set index = states('sensor.cgllc_cgs2_84ac_tvoc_density') | float %}
             {% if index < 37 %}
               {{ (index * 4.5 + 52) | round(0) }}
@@ -61,9 +61,9 @@ bedroom_air:
           default_entity_id: sensor.bedroom_pm25
           device_class: pm25
           unit_of_measurement: "µg/m³"
-          availability: >
-            {% set value = states('sensor.cgllc_cgs2_84ac_pm25_density') | float(-1) %}
-            {{ 0 <= value < 1000 }}
+          availability: >-
+            {% set value = states('sensor.cgllc_cgs2_84ac_pm25_density') %}
+            {{ is_number(value) and 0 <= value | float < 1000 }}
           state: "{{ states('sensor.cgllc_cgs2_84ac_pm25_density') }}"
           icon: mdi:molecule
 
@@ -72,9 +72,9 @@ bedroom_air:
           default_entity_id: sensor.bedroom_pm10
           device_class: pm10
           unit_of_measurement: "µg/m³"
-          availability: >
-            {% set value = states('sensor.cgllc_cgs2_84ac_pm10_density') | float(-1) %}
-            {{ 0 <= value < 1000 }}
+          availability: >-
+            {% set value = states('sensor.cgllc_cgs2_84ac_pm10_density') %}
+            {{ is_number(value) and 0 <= value | float < 1000 }}
           state: "{{ states('sensor.cgllc_cgs2_84ac_pm10_density') }}"
           icon: mdi:grain
 
@@ -83,9 +83,9 @@ bedroom_air:
           default_entity_id: sensor.qingping_air2_temperature
           device_class: temperature
           unit_of_measurement: "°C"
-          availability: >
-            {% set value = states('sensor.cgllc_cgs2_84ac_temperature') | float(0) %}
-            {{ 0 < value < 100 }}
+          availability: >-
+            {% set value = states('sensor.cgllc_cgs2_84ac_temperature') %}
+            {{ is_number(value) and 0 < value | float < 100 }}
           state: "{{ states('sensor.cgllc_cgs2_84ac_temperature') }}"
 
         - name: "Bedroom aqara Температура"
@@ -93,9 +93,9 @@ bedroom_air:
           default_entity_id: sensor.bedroom_aqara_temperature
           device_class: temperature
           unit_of_measurement: "°C"
-          availability: >
-            {% set value = states('sensor.bedroom_aqara_air_sensor_temperature') | float(0) %}
-            {{ 10 < value < 100 }}
+          availability: >-
+            {% set value = states('sensor.bedroom_aqara_air_sensor_temperature') %}
+            {{ is_number(value) and 10 < value | float < 100 }}
           state: "{{ states('sensor.bedroom_aqara_air_sensor_temperature') }}"
 
         - name: "Температура"
@@ -103,19 +103,20 @@ bedroom_air:
           default_entity_id: sensor.bedroom_average_temperature
           device_class: temperature
           unit_of_measurement: "°C"
-          availability: >
+          availability: >-
             {% set temps = [
               states('sensor.qingping_air2_temperature'),
               states('sensor.bedroom_aqara_temperature')
             ] %}
-            {{ temps | reject('equalto', 'unavailable') | list | count == 2 }}
-          state: >
+            {{ temps | select('is_number') | list | count > 0 }}
+          state: >-
+            {% set source_state = states('sensor.qingping_air2_temperature') -%}
             {% set temps = [
-              states('sensor.qingping_air2_temperature'),
-              states('sensor.qingping_air2_temperature'),
+              source_state,
+              source_state,
               states('sensor.bedroom_aqara_temperature')
             ] %}
-            {% set filtered_temps = temps | reject('equalto', 'unavailable') | map('float') | list %}
+            {% set filtered_temps = temps | select('is_number') | map('float') | list %}
             {{ (filtered_temps | sum / filtered_temps | count) | round(2) }}
 
         - name: "Qingping air2 Влажность"
@@ -123,9 +124,9 @@ bedroom_air:
           default_entity_id: sensor.qingping_air2_humidity
           device_class: humidity
           unit_of_measurement: "%"
-          availability: >
-            {% set value = states('sensor.cgllc_cgs2_84ac_relative_humidity') | float(0) %}
-            {{ 0 < value < 100 }}
+          availability: >-
+            {% set value = states('sensor.cgllc_cgs2_84ac_relative_humidity') %}
+            {{ is_number(value) and 0 < value | float < 100 }}
           state: "{{ states('sensor.cgllc_cgs2_84ac_relative_humidity') }}"
 
         - name: "Bedroom aqara Влажность"
@@ -133,9 +134,9 @@ bedroom_air:
           default_entity_id: sensor.bedroom_aqara_humidity
           device_class: humidity
           unit_of_measurement: "%"
-          availability: >
-            {% set value = states('sensor.bedroom_aqara_air_sensor_humidity') | float(0) %}
-            {{ 5 < value < 100 }}
+          availability: >-
+            {% set value = states('sensor.bedroom_aqara_air_sensor_humidity') %}
+            {{ is_number(value) and 5 < value | float < 100 }}
           state: "{{ states('sensor.bedroom_aqara_air_sensor_humidity') }}"
 
         - name: "Влажность"
@@ -143,18 +144,18 @@ bedroom_air:
           default_entity_id: sensor.bedroom_average_humidity
           device_class: humidity
           unit_of_measurement: "%"
-          availability: >
+          availability: >-
             {% set hums = [
               states('sensor.qingping_air2_humidity'),
               states('sensor.bedroom_aqara_humidity')
             ] %}
-            {{ hums | reject('equalto', 'unavailable') | list | count == 2 }}
-          state: >
+            {{ hums | select('is_number') | list | count > 0 }}
+          state: >-
             {% set hums = [
               states('sensor.qingping_air2_humidity'),
               states('sensor.bedroom_aqara_humidity')
             ] %}
-            {% set filtered_hums = hums | reject('equalto', 'unavailable') | map('float') | list %}
+            {% set filtered_hums = hums | select('is_number') | map('float') | list %}
             {{ (filtered_hums | sum / filtered_hums | count) | round(2) }}
 
         - name: "Mi Fresh Air Bedroom CO²"
@@ -162,6 +163,9 @@ bedroom_air:
           default_entity_id: sensor.bedroom_airpurifier_co2
           device_class: carbon_dioxide
           unit_of_measurement: "ppm"
+          availability: >-
+            {{ has_value('fan.mijia_airpurifier_bedroom')
+               and is_number(state_attr('fan.mijia_airpurifier_bedroom', 'co2')) }}
           state: "{{ state_attr('fan.mijia_airpurifier_bedroom', 'co2') }}"
           icon: mdi:molecule-co2
 
@@ -170,6 +174,9 @@ bedroom_air:
           default_entity_id: sensor.bedroom_airpurifier_pm25
           device_class: pm25
           unit_of_measurement: "µg/m³"
+          availability: >-
+            {{ has_value('fan.mijia_airpurifier_bedroom')
+               and is_number(state_attr('fan.mijia_airpurifier_bedroom', 'pm25')) }}
           state: "{{ state_attr('fan.mijia_airpurifier_bedroom', 'pm25') }}"
           icon: mdi:grain
 
@@ -178,6 +185,9 @@ bedroom_air:
           default_entity_id: sensor.bedroom_airpurifier_temperature
           device_class: temperature
           unit_of_measurement: "°C"
+          availability: >-
+            {{ has_value('fan.mijia_airpurifier_bedroom')
+               and is_number(state_attr('fan.mijia_airpurifier_bedroom', 'temperature')) }}
           state: "{{ state_attr('fan.mijia_airpurifier_bedroom', 'temperature') }}"
           icon: mdi:thermometer
 
@@ -186,6 +196,9 @@ bedroom_air:
           default_entity_id: sensor.bedroom_airpurifier_current_speed
           device_class: volume_flow_rate
           unit_of_measurement: "m³/h"
+          availability: >-
+            {{ has_value('fan.mijia_airpurifier_bedroom')
+               and is_number(state_attr('fan.mijia_airpurifier_bedroom', 'control_speed')) }}
           state: "{{ state_attr('fan.mijia_airpurifier_bedroom', 'control_speed') }}"
           icon: mdi:speedometer
 
@@ -194,6 +207,9 @@ bedroom_air:
           default_entity_id: sensor.bedroom_airpurifier_favorite_speed
           device_class: volume_flow_rate
           unit_of_measurement: "m³/h"
+          availability: >-
+            {{ has_value('fan.mijia_airpurifier_bedroom')
+               and is_number(state_attr('fan.mijia_airpurifier_bedroom', 'favorite_speed')) }}
           state: "{{ state_attr('fan.mijia_airpurifier_bedroom', 'favorite_speed') }}"
           icon: mdi:speedometer
 
@@ -201,12 +217,18 @@ bedroom_air:
           unique_id: bedroom_airpurifier_dust_filter_life_remaining
           default_entity_id: sensor.bedroom_airpurifier_dust_filter_life_remaining
           unit_of_measurement: "%"
+          availability: >-
+            {{ has_value('fan.mijia_airpurifier_bedroom')
+               and is_number(state_attr('fan.mijia_airpurifier_bedroom', 'dust_filter_life_remaining')) }}
           state: "{{ state_attr('fan.mijia_airpurifier_bedroom', 'dust_filter_life_remaining') }}"
           icon: mdi:air-filter
 
         - name: "Mi Fresh Air Bedroom Дней до замены фильтра"
           unique_id: bedroom_airpurifier_dust_filter_life_remaining_days
           default_entity_id: sensor.bedroom_airpurifier_dust_filter_life_remaining_days
+          availability: >-
+            {{ has_value('fan.mijia_airpurifier_bedroom')
+               and is_number(state_attr('fan.mijia_airpurifier_bedroom', 'dust_filter_life_remaining_days')) }}
           state: "{{ state_attr('fan.mijia_airpurifier_bedroom', 'dust_filter_life_remaining_days') }}"
           icon: mdi:air-filter
 
@@ -220,17 +242,21 @@ bedroom_air:
           default_entity_id: sensor.bedroom_current_target_temperature_delta
           device_class: temperature
           unit_of_measurement: "°C"
-          availability: >
-            {{ states('sensor.bedroom_average_temperature') | float(0) > 0 }}
-          state: >
-            {{ states('sensor.bedroom_average_temperature') | float(22) - states('input_number.target_temperature') | float(22) }}
+          availability: >-
+            {{ is_number(states('sensor.bedroom_average_temperature'))
+               and is_number(states('input_number.target_temperature')) }}
+          state: >-
+            {{ states('sensor.bedroom_average_temperature') | float - states('input_number.target_temperature') | float }}
 
         - name: "Поправка к скорости бризера в спальне"
           unique_id: bedroom_airpurifier_target_co2_delta
           default_entity_id: sensor.bedroom_airpurifier_target_co2_delta
-          state: >
-            {% set temp_delta_ct = states('sensor.bedroom_current_target_temperature_delta') | float(1) %}
-            {% set temp_delta_ot = states('sensor.outside_target_temperature_delta') | float(1) %}
+          availability: >-
+            {{ is_number(states('sensor.bedroom_current_target_temperature_delta'))
+               and is_number(states('sensor.outside_target_temperature_delta')) }}
+          state: >-
+            {% set temp_delta_ct = states('sensor.bedroom_current_target_temperature_delta') | float %}
+            {% set temp_delta_ot = states('sensor.outside_target_temperature_delta') | float %}
             {% set x = temp_delta_ot | abs %}
             {% set k = 0.05 %}
             {% set exp_2kx = e**(-2*k*x) %}
@@ -242,30 +268,35 @@ bedroom_air:
         - name: "bedroom_airpurifier_speed_min_co2"
           unique_id: bedroom_airpurifier_speed_min_co2
           default_entity_id: sensor.bedroom_airpurifier_speed_min_co2
-          availability: >
-            {% set valid_speed = states('sensor.bedroom_airpurifier_favorite_speed') | float(0) >= 60 %}
-            {% set valid_temp = states('sensor.bedroom_average_temperature') | float(0) > 0 %}
-            {{ valid_speed and valid_temp }}
-          state: >
-            {% set co2_delta = states('sensor.bedroom_airpurifier_target_co2_delta') | float(0) %}
+          availability: >-
+            {% set speed = states('sensor.bedroom_airpurifier_favorite_speed') -%}
+            {% set temperature = states('sensor.bedroom_average_temperature') -%}
+            {{ is_number(speed)
+               and is_number(temperature)
+               and is_number(states('sensor.bedroom_airpurifier_target_co2_delta'))
+               and speed | float >= 60
+               and temperature | float > 0 }}
+          state: >-
+            {% set speed = states('sensor.bedroom_airpurifier_favorite_speed') | float -%}
+            {% set co2_delta = states('sensor.bedroom_airpurifier_target_co2_delta') | float %}
             {% set cooling_on = is_state('binary_sensor.bedroom_ac_is_cooling', 'on') | int %}
             {% set heating_on = is_state('switch.bedroom_airpurifier_ptc', 'on') | int %}
             {% set co2_shift = max(cooling_on, heating_on) * 150 + co2_delta * (1 - cooling_on) * (1 - heating_on)  %}
-            {% if states('sensor.bedroom_airpurifier_favorite_speed') | float <= 60 %}
+            {% if speed <= 60 %}
               0
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 70 %}
+            {% elif speed <= 70 %}
               {{ 600 + co2_shift }}
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 80 %}
+            {% elif speed <= 80 %}
               {{ 650 + co2_shift }}
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 90 %}
+            {% elif speed <= 90 %}
               {{ 700 + co2_shift }}
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 100 %}
+            {% elif speed <= 100 %}
               {{ 750 + co2_shift }}
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 110 %}
+            {% elif speed <= 110 %}
               {{ 800 + co2_shift }}
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 120 %}
+            {% elif speed <= 120 %}
               {{ 900 + co2_shift }}
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 130 %}
+            {% elif speed <= 130 %}
               {{ 950 + co2_shift }}
             {% else %}
               1200
@@ -274,30 +305,35 @@ bedroom_air:
         - name: "bedroom_airpurifier_speed_max_co2"
           unique_id: bedroom_airpurifier_speed_max_co2
           default_entity_id: sensor.bedroom_airpurifier_speed_max_co2
-          availability: >
-            {% set valid_speed = states('sensor.bedroom_airpurifier_favorite_speed') | float(0) >= 60 %}
-            {% set valid_temp = states('sensor.bedroom_average_temperature') | float(0) > 0 %}
-            {{ valid_speed and valid_temp }}
-          state: >
-            {% set co2_delta = states('sensor.bedroom_airpurifier_target_co2_delta') | float(0) %}
+          availability: >-
+            {% set speed = states('sensor.bedroom_airpurifier_favorite_speed') -%}
+            {% set temperature = states('sensor.bedroom_average_temperature') -%}
+            {{ is_number(speed)
+               and is_number(temperature)
+               and is_number(states('sensor.bedroom_airpurifier_target_co2_delta'))
+               and speed | float >= 60
+               and temperature | float > 0 }}
+          state: >-
+            {% set speed = states('sensor.bedroom_airpurifier_favorite_speed') | float -%}
+            {% set co2_delta = states('sensor.bedroom_airpurifier_target_co2_delta') | float %}
             {% set cooling_on = is_state('binary_sensor.bedroom_ac_is_cooling', 'on') | int %}
             {% set heating_on = is_state('switch.bedroom_airpurifier_ptc', 'on') | int %}
             {% set co2_shift = max(cooling_on, heating_on) * 150 + co2_delta * (1 - cooling_on) * (1 - heating_on)  %}
-            {% if states('sensor.bedroom_airpurifier_favorite_speed') | float <= 60 %}
+            {% if speed <= 60 %}
               {{ 600 + co2_shift }}
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 70 %}
+            {% elif speed <= 70 %}
               {{ 650 + co2_shift }}
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 80 %}
+            {% elif speed <= 80 %}
               {{ 700 + co2_shift }}
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 90 %}
+            {% elif speed <= 90 %}
               {{ 750 + co2_shift }}
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 100 %}
+            {% elif speed <= 100 %}
               {{ 800 + co2_shift }}
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 110 %}
+            {% elif speed <= 110 %}
               {{ 900 + co2_shift }}
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 120 %}
+            {% elif speed <= 120 %}
               {{ 950 + co2_shift }}
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 130 %}
+            {% elif speed <= 130 %}
               1200
             {% else %}
               5000
@@ -306,21 +342,25 @@ bedroom_air:
         - name: "bedroom_airpurifier_next_speed"
           unique_id: bedroom_airpurifier_next_speed
           default_entity_id: sensor.bedroom_airpurifier_next_speed
-          availability: "{{ states('sensor.bedroom_airpurifier_favorite_speed') | float(0) >= 60 }}"
-          state: >
-            {% if states('sensor.bedroom_airpurifier_favorite_speed') | float <= 60 %}
+          availability: >-
+            {% set speed = states('sensor.bedroom_airpurifier_favorite_speed') -%}
+            {{ is_number(speed)
+               and speed | float >= 60 }}
+          state: >-
+            {% set speed = states('sensor.bedroom_airpurifier_favorite_speed') | float -%}
+            {% if speed <= 60 %}
               70
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 70 %}
+            {% elif speed <= 70 %}
               80
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 80 %}
+            {% elif speed <= 80 %}
               90
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 90 %}
+            {% elif speed <= 90 %}
               100
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 100 %}
+            {% elif speed <= 100 %}
               110
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 110 %}
+            {% elif speed <= 110 %}
               120
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 120 %}
+            {% elif speed <= 120 %}
               130
             {% else %}
               150
@@ -329,21 +369,25 @@ bedroom_air:
         - name: "bedroom_airpurifier_previous_speed"
           unique_id: bedroom_airpurifier_previous_speed
           default_entity_id: sensor.bedroom_airpurifier_previous_speed
-          availability: "{{ states('sensor.bedroom_airpurifier_favorite_speed') | float(0) >= 60 }}"
-          state: >
-            {% if states('sensor.bedroom_airpurifier_favorite_speed') | float <= 70 %}
+          availability: >-
+            {% set speed = states('sensor.bedroom_airpurifier_favorite_speed') -%}
+            {{ is_number(speed)
+               and speed | float >= 60 }}
+          state: >-
+            {% set speed = states('sensor.bedroom_airpurifier_favorite_speed') | float -%}
+            {% if speed <= 70 %}
               60
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 80 %}
+            {% elif speed <= 80 %}
               70
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 90 %}
+            {% elif speed <= 90 %}
               80
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 100 %}
+            {% elif speed <= 100 %}
               90
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 110 %}
+            {% elif speed <= 110 %}
               100
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 120 %}
+            {% elif speed <= 120 %}
               110
-            {% elif states('sensor.bedroom_airpurifier_favorite_speed') | float <= 130 %}
+            {% elif speed <= 130 %}
               120
             {% else %}
               130
@@ -352,12 +396,17 @@ bedroom_air:
         - name: "bedroom_airpurifier_favourite_speed_needs_changes"
           unique_id: bedroom_airpurifier_favourite_speed_needs_changes
           default_entity_id: sensor.bedroom_airpurifier_favourite_speed_needs_changes
-          availability: >
-            {% set valid_min_co2 = states('sensor.bedroom_airpurifier_speed_min_co2') | float(-1) >= 0 %}
-            {% set valid_max_co2 = states('sensor.bedroom_airpurifier_speed_max_co2') | float(-1) >= 0 %}
-            {% set valid_co2 = states('sensor.bedroom_co2') | float(0) > 0 %}
-            {{ valid_min_co2 and valid_max_co2 and valid_co2 }}
-          state: >
+          availability: >-
+            {% set min_co2 = states('sensor.bedroom_airpurifier_speed_min_co2') -%}
+            {% set max_co2 = states('sensor.bedroom_airpurifier_speed_max_co2') -%}
+            {% set co2 = states('sensor.bedroom_co2') -%}
+            {{ is_number(min_co2)
+               and is_number(max_co2)
+               and is_number(co2)
+               and min_co2 | float >= 0
+               and max_co2 | float >= 0
+               and co2 | float > 0 }}
+          state: >-
             {% set hi = (states('sensor.bedroom_airpurifier_speed_max_co2') | float) + 15 %}
             {% set lo = (states('sensor.bedroom_airpurifier_speed_min_co2') | float) - 35 %}
             {% set co2 = states('sensor.bedroom_co2') | float %}
@@ -547,10 +596,13 @@ bedroom_air:
           entity_id: switch.bedroom_airpurifier_favourite_speed_temporary_fixed
           state: "off"
         - condition: template
-          value_template: >
-            {% set valid_prev_speed = states('sensor.bedroom_airpurifier_previous_speed') | int(0) > 0 %}
-            {% set valid_next_speed = states('sensor.bedroom_airpurifier_previous_speed') | int(0) > 0 %}
-            {{ valid_prev_speed and valid_next_speed }}
+          value_template: >-
+            {% set previous_speed = states('sensor.bedroom_airpurifier_previous_speed') -%}
+            {% set next_speed = states('sensor.bedroom_airpurifier_next_speed') -%}
+            {{ is_number(previous_speed)
+               and is_number(next_speed)
+               and previous_speed | float > 0
+               and next_speed | float > 0 }}
       actions:
         - action: input_number.set_value
           target:
@@ -581,12 +633,21 @@ bedroom_air:
           entity_id: fan.mijia_airpurifier_bedroom
           state: "off"
         - condition: template
-          value_template: >
-            {% set co2 = states('sensor.bedroom_co2') | float(600) %}
-            {% set threshold = states('sensor.breezers_turnon_co2_threshold') | float(600) %}
-            {% set somebody_home = is_state('switch.somebody_home', 'on') | int %}
-            {% set co2_delta = states('sensor.bedroom_airpurifier_target_co2_delta') | float(0) %}
-            {{ co2 > threshold + 50 + somebody_home * co2_delta }}
+          value_template: >-
+            {% set co2_raw = states('sensor.bedroom_co2') -%}
+            {% set threshold_raw = states('sensor.breezers_turnon_co2_threshold') -%}
+            {% set co2_delta_raw = states('sensor.bedroom_airpurifier_target_co2_delta') -%}
+            {% if is_number(co2_raw)
+               and is_number(threshold_raw)
+               and is_number(co2_delta_raw) %}
+              {% set co2 = co2_raw | float %}
+              {% set threshold = threshold_raw | float %}
+              {% set somebody_home = is_state('switch.somebody_home', 'on') | int %}
+              {% set co2_delta = co2_delta_raw | float %}
+              {{ co2 > threshold + 50 + somebody_home * co2_delta }}
+            {% else %}
+              {{ false }}
+            {% endif %}
         - condition: state
           entity_id: input_boolean.bedroom_airpurifier_favourite_speed_smart_control
           state: "on"
@@ -626,12 +687,21 @@ bedroom_air:
           entity_id: fan.mijia_airpurifier_bedroom
           state: "on"
         - condition: template
-          value_template: >
-            {% set co2 = states('sensor.bedroom_co2') | float(600) %}
-            {% set threshold = states('sensor.breezers_turnoff_co2_threshold') | float(600) %}
-            {% set somebody_home = is_state('switch.somebody_home', 'on') | int %}
-            {% set co2_delta = states('sensor.bedroom_airpurifier_target_co2_delta') | float(0) %}
-            {{ co2 < threshold + somebody_home * co2_delta }}
+          value_template: >-
+            {% set co2_raw = states('sensor.bedroom_co2') -%}
+            {% set threshold_raw = states('sensor.breezers_turnoff_co2_threshold') -%}
+            {% set co2_delta_raw = states('sensor.bedroom_airpurifier_target_co2_delta') -%}
+            {% if is_number(co2_raw)
+               and is_number(threshold_raw)
+               and is_number(co2_delta_raw) %}
+              {% set co2 = co2_raw | float %}
+              {% set threshold = threshold_raw | float %}
+              {% set somebody_home = is_state('switch.somebody_home', 'on') | int %}
+              {% set co2_delta = co2_delta_raw | float %}
+              {{ co2 < threshold + somebody_home * co2_delta }}
+            {% else %}
+              {{ false }}
+            {% endif %}
         - condition: state
           entity_id:
             - timer.bedroom_airpurifier_fixed_speed
@@ -640,12 +710,19 @@ bedroom_air:
           entity_id: switch.bedroom_airpurifier_favourite_speed_smart_control
           state: "on"
         - condition: template
-          value_template: >
-            {% set temp_delta_ot = states('sensor.outside_target_temperature_delta') | float(-99) %}
-            {% set temp_delta_ct = states('sensor.bedroom_current_target_temperature_delta') | float(99) %}
-            {% set somebody_home = states('switch.somebody_home') | bool(True) %}
-            {% set needs_cooling_from_outside = temp_delta_ot < -10 and temp_delta_ct > 1.5 and somebody_home %}
-            {{ not needs_cooling_from_outside }}
+          value_template: >-
+            {% set outside_target_delta = states('sensor.outside_target_temperature_delta') -%}
+            {% set inside_target_delta = states('sensor.bedroom_current_target_temperature_delta') -%}
+            {% if is_number(outside_target_delta)
+               and is_number(inside_target_delta) %}
+              {% set temp_delta_ot = outside_target_delta | float %}
+              {% set temp_delta_ct = inside_target_delta | float %}
+              {% set somebody_home = states('switch.somebody_home') | bool(True) %}
+              {% set needs_cooling_from_outside = temp_delta_ot < -10 and temp_delta_ct > 1.5 and somebody_home %}
+              {{ not needs_cooling_from_outside }}
+            {% else %}
+              {{ false }}
+            {% endif %}
       actions:
         - action: switch.turn_off
           target:

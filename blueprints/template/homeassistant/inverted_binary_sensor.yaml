@@ -14,12 +14,13 @@ variables:
   reference_entity: !input reference_entity
 binary_sensor:
   state: >
-    {% if states(reference_entity) == 'on' %}
+    {% set reference_state = states(reference_entity) -%}
+    {% if reference_state == 'on' %}
       off
-    {% elif states(reference_entity) == 'off' %}
+    {% elif reference_state == 'off' %}
       on
     {% else %}
-      {{ states(reference_entity) }}
+      {{ reference_state }}
     {% endif %}
   # delay_on: not_used in this example
   # delay_off: not_used in this example

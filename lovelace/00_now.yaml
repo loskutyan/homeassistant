@@ -169,20 +169,22 @@ cards:
                 entity: switch.roborock_s5_max_clean_bedroom
                 primary: 'Спальня'
                 secondary: >-
+                  {% set vacuum_state = states('vacuum.roborock_s5_max') -%}
+                  {% set entity_state = states(entity) -%}
                   {% if is_state('input_select.roborock_s5_max_active_room', 'bedroom') %}
                     {% if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') %}
                       Требует внимания
-                    {% elif is_state('vacuum.roborock_s5_max', 'cleaning')
+                    {% elif (vacuum_state == 'cleaning')
                        and is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
                       Убирает
-                    {% elif is_state('vacuum.roborock_s5_max', 'paused') %}
+                    {% elif (vacuum_state == 'paused') %}
                       Пауза
                     {% else %}
                       Ожидает пылесос
                     {% endif %}
-                  {% elif is_state(entity, 'on') %}
+                  {% elif (entity_state == 'on') %}
                     В очереди
-                  {% elif is_state(entity, 'off') %}
+                  {% elif (entity_state == 'off') %}
                     Добавить
                   {% else %}
                     Недоступно
@@ -192,13 +194,14 @@ cards:
                   action: toggle
                 icon: mdi:bed-king
                 icon_color: >-
-                  {% if is_state(entity, 'on') %}
+                  {% set entity_state = states(entity) -%}
+                  {% if (entity_state == 'on') %}
                     {% if is_state('input_select.roborock_s5_max_active_room', 'bedroom') %}
                       {{ 'red' if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') else 'orange' }}
                     {% else %}
                       blue
                     {% endif %}
-                  {% elif is_state(entity, 'off') %}
+                  {% elif (entity_state == 'off') %}
                     grey
                   {% else %}
                     red
@@ -207,20 +210,22 @@ cards:
                 entity: switch.roborock_s5_max_clean_kidsroom
                 primary: 'Детская'
                 secondary: >-
+                  {% set vacuum_state = states('vacuum.roborock_s5_max') -%}
+                  {% set entity_state = states(entity) -%}
                   {% if is_state('input_select.roborock_s5_max_active_room', 'kidsroom') %}
                     {% if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') %}
                       Требует внимания
-                    {% elif is_state('vacuum.roborock_s5_max', 'cleaning')
+                    {% elif (vacuum_state == 'cleaning')
                        and is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
                       Убирает
-                    {% elif is_state('vacuum.roborock_s5_max', 'paused') %}
+                    {% elif (vacuum_state == 'paused') %}
                       Пауза
                     {% else %}
                       Ожидает пылесос
                     {% endif %}
-                  {% elif is_state(entity, 'on') %}
+                  {% elif (entity_state == 'on') %}
                     В очереди
-                  {% elif is_state(entity, 'off') %}
+                  {% elif (entity_state == 'off') %}
                     Добавить
                   {% else %}
                     Недоступно
@@ -230,13 +235,14 @@ cards:
                   action: toggle
                 icon: mdi:bed
                 icon_color: >-
-                  {% if is_state(entity, 'on') %}
+                  {% set entity_state = states(entity) -%}
+                  {% if (entity_state == 'on') %}
                     {% if is_state('input_select.roborock_s5_max_active_room', 'kidsroom') %}
                       {{ 'red' if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') else 'orange' }}
                     {% else %}
                       blue
                     {% endif %}
-                  {% elif is_state(entity, 'off') %}
+                  {% elif (entity_state == 'off') %}
                     grey
                   {% else %}
                     red
@@ -245,20 +251,22 @@ cards:
                 entity: switch.roborock_s5_max_clean_kitchen
                 primary: 'Кухня'
                 secondary: >-
+                  {% set vacuum_state = states('vacuum.roborock_s5_max') -%}
+                  {% set entity_state = states(entity) -%}
                   {% if is_state('input_select.roborock_s5_max_active_room', 'kitchen') %}
                     {% if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') %}
                       Требует внимания
-                    {% elif is_state('vacuum.roborock_s5_max', 'cleaning')
+                    {% elif (vacuum_state == 'cleaning')
                        and is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
                       Убирает
-                    {% elif is_state('vacuum.roborock_s5_max', 'paused') %}
+                    {% elif (vacuum_state == 'paused') %}
                       Пауза
                     {% else %}
                       Ожидает пылесос
                     {% endif %}
-                  {% elif is_state(entity, 'on') %}
+                  {% elif (entity_state == 'on') %}
                     В очереди
-                  {% elif is_state(entity, 'off') %}
+                  {% elif (entity_state == 'off') %}
                     Добавить
                   {% else %}
                     Недоступно
@@ -268,13 +276,14 @@ cards:
                   action: toggle
                 icon: mdi:food-fork-drink
                 icon_color: >-
-                  {% if is_state(entity, 'on') %}
+                  {% set entity_state = states(entity) -%}
+                  {% if (entity_state == 'on') %}
                     {% if is_state('input_select.roborock_s5_max_active_room', 'kitchen') %}
                       {{ 'red' if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') else 'orange' }}
                     {% else %}
                       blue
                     {% endif %}
-                  {% elif is_state(entity, 'off') %}
+                  {% elif (entity_state == 'off') %}
                     grey
                   {% else %}
                     red
@@ -283,20 +292,22 @@ cards:
                 entity: switch.roborock_s5_max_clean_hallway
                 primary: 'Прихожая'
                 secondary: >-
+                  {% set vacuum_state = states('vacuum.roborock_s5_max') -%}
+                  {% set entity_state = states(entity) -%}
                   {% if is_state('input_select.roborock_s5_max_active_room', 'hallway') %}
                     {% if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') %}
                       Требует внимания
-                    {% elif is_state('vacuum.roborock_s5_max', 'cleaning')
+                    {% elif (vacuum_state == 'cleaning')
                        and is_state_attr('vacuum.roborock_s5_max', 'status', 'Segment cleaning') %}
                       Убирает
-                    {% elif is_state('vacuum.roborock_s5_max', 'paused') %}
+                    {% elif (vacuum_state == 'paused') %}
                       Пауза
                     {% else %}
                       Ожидает пылесос
                     {% endif %}
-                  {% elif is_state(entity, 'on') %}
+                  {% elif (entity_state == 'on') %}
                     В очереди
-                  {% elif is_state(entity, 'off') %}
+                  {% elif (entity_state == 'off') %}
                     Добавить
                   {% else %}
                     Недоступно
@@ -306,13 +317,14 @@ cards:
                   action: toggle
                 icon: mdi:door-open
                 icon_color: >-
-                  {% if is_state(entity, 'on') %}
+                  {% set entity_state = states(entity) -%}
+                  {% if (entity_state == 'on') %}
                     {% if is_state('input_select.roborock_s5_max_active_room', 'hallway') %}
                       {{ 'red' if is_state('input_boolean.roborock_s5_max_queue_blocked', 'on') else 'orange' }}
                     {% else %}
                       blue
                     {% endif %}
-                  {% elif is_state(entity, 'off') %}
+                  {% elif (entity_state == 'off') %}
                     grey
                   {% else %}
                     red

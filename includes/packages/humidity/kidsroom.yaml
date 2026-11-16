@@ -17,19 +17,23 @@ kidsroom_humidity:
         - name: "Нужно увлажнить воздух в детской"
           unique_id: kidsroom_needs_humidification
           default_entity_id: binary_sensor.kidsroom_needs_humidification
-          state: >
+          availability: >-
+            {{ is_number(states('sensor.kidsroom_average_humidity')) }}
+          state: >-
             {% set humidifier_state_on = states('humidifier.kidsroom_smartmi_humidifier') | bool(False) %}
             {% set humidifier_speed = states('sensor.kidsroom_smartmi_humidifier_motor_speed') | int(0) %}
-            {% set low_hum = states('sensor.kidsroom_average_humidity') | float(100) < 35 %}
+            {% set low_hum = states('sensor.kidsroom_average_humidity') | float < 35 %}
             {{ (not humidifier_state_on or humidifier_speed == 0) and low_hum }}
 
     - sensor:
         - name: "kidsroom_humidifier_mode_needs_changes"
           unique_id: kidsroom_humidifier_mode_needs_changes
           default_entity_id: sensor.kidsroom_humidifier_mode_needs_changes
-          state: >
+          availability: >-
+            {{ is_number(states('sensor.kidsroom_average_humidity')) }}
+          state: >-
             {% set current_mode = state_attr('humidifier.kidsroom_smartmi_humidifier', 'mode') %}
-            {% set current_humidity = states('sensor.kidsroom_average_humidity') | float(0) %}
+            {% set current_humidity = states('sensor.kidsroom_average_humidity') | float %}
             {% set breezer_state = states('fan.mijia_airpurifier_kidsroom') %}
             {% set somebody_home = states('switch.somebody_home') %}
             {% if current_humidity > 30 and breezer_state == 'off' and somebody_home == 'off' %}
@@ -108,6 +112,12 @@ kidsroom_humidity:
           for:
             minutes: 1
       conditions:
+        - condition: template
+          value_template: >-
+            {% set change = states('sensor.kidsroom_humidifier_mode_needs_changes') %}
+            {% set current = state_attr('humidifier.kidsroom_smartmi_humidifier', 'mode') %}
+            {{ is_number(states('sensor.kidsroom_average_humidity')) and change in ['Silent', 'Medium', 'High', 'keep']
+               and (change != 'keep' or current in ['Silent', 'Medium', 'High']) }}
         - condition: state
           entity_id: timer.kidsroom_humidifier_fixed_mode
           state: "idle"
