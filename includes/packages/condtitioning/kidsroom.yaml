@@ -10,6 +10,10 @@ conditioning_kidsroom:
       power_sensor: binary_sensor.kidsroom_ac_power
 
   input_boolean:
+    # Без initial: активная просушка восстанавливается после рестарта.
+    kidsroom_ac_self_dry_active:
+      name: "Просушка кондиционера в детской выполняется"
+
     kidsroom_ac_power:
       name: "Кондиционер в детской включен"
 
@@ -18,6 +22,12 @@ conditioning_kidsroom:
 
     kidsroom_ac_swing_mode:
       name: "Режим качания жалюзи кондиционера в детской"
+
+  input_datetime:
+    kidsroom_ac_self_dry_finish_at:
+      name: "Срок окончания просушки кондиционера в детской"
+      has_date: true
+      has_time: true
 
   input_number:
     kidsroom_ac_temperature:
@@ -149,7 +159,20 @@ conditioning_kidsroom:
   script:
     kidsroom_ac_self_dry:
       alias: "Просушка кондиционера в детской"
+      mode: single
       sequence:
+        - condition: state
+          entity_id: input_boolean.kidsroom_ac_self_dry_active
+          state: "off"
+        # Срок сохраняем до аппаратных команд; повторный запуск его не продлевает.
+        - action: input_datetime.set_datetime
+          target:
+            entity_id: input_datetime.kidsroom_ac_self_dry_finish_at
+          data:
+            timestamp: "{{ now().timestamp() + 4 * 60 * 60 }}"
+        - action: input_boolean.turn_on
+          target:
+            entity_id: input_boolean.kidsroom_ac_self_dry_active
         - action: switch.turn_off
           target:
             entity_id: switch.kidsroom_auto_conditioning
@@ -170,26 +193,90 @@ conditioning_kidsroom:
             entity_id: notify.tg_bot
           data:
             message: "💦 Запущено осушение кондиционера в детской!"
-        - delay:
-            hours: 4
+
+    kidsroom_ac_self_dry_finish:
+      alias: "Завершение просушки кондиционера в детской"
+      mode: single
+      sequence:
+        - condition: state
+          entity_id: input_boolean.kidsroom_ac_self_dry_active
+          state: "on"
+        - condition: template
+          value_template: >-
+            {% set deadline = state_attr('input_datetime.kidsroom_ac_self_dry_finish_at', 'timestamp') %}
+            {{ not is_number(deadline) or deadline | float(0) <= now().timestamp() }}
+        - condition: template
+          value_template: >-
+            {{ has_value('climate.kidsroom_ac')
+               and has_value('remote.kidsroom_broadlink_rm4mini_remote')
+               and has_value('input_boolean.kidsroom_ac_power')
+               and has_value('input_boolean.kidsroom_auto_conditioning')
+               and has_value('switch.kidsroom_ac')
+               and has_value('switch.kidsroom_auto_conditioning') }}
+        # Сначала выключаем AC, чтобы автоматическое охлаждение не успело вмешаться.
+        - action: switch.turn_off
+          target:
+            entity_id: switch.kidsroom_ac
         - action: climate.set_fan_mode
           target:
             entity_id: climate.kidsroom_ac
           data:
             fan_mode: "auto"
+        # SmartIR логирует ошибки ИК без исключения: проверяем фактическое питание.
+        # При неизвестном/включённом питании маркер остаётся ON для следующей попытки.
+        - condition: template
+          value_template: >-
+            {{ is_state('binary_sensor.kidsroom_ac_power', 'off')
+               or is_state('switch.kidsroom_ac_plug', 'off') }}
         - action: switch.turn_on
           target:
             entity_id: switch.kidsroom_auto_conditioning
-        - action: switch.turn_off
+        - condition: template
+          value_template: >-
+            {{ is_state('input_boolean.kidsroom_ac_power', 'off')
+               and is_state('input_boolean.kidsroom_auto_conditioning', 'on')
+               and has_value('climate.kidsroom_ac')
+               and is_state_attr('climate.kidsroom_ac', 'fan_mode', 'auto') }}
+        - action: input_boolean.turn_off
           target:
-            entity_id: switch.kidsroom_ac
+            entity_id: input_boolean.kidsroom_ac_self_dry_active
         - action: notify.send_message
+          continue_on_error: true
           target:
             entity_id: notify.tg_bot
           data:
             message: "☀ Осушение кондиционера в детской закончено!"
 
   automation:
+    - id: "Восстановление и завершение просушки кондиционера в детской"
+      alias: kidsroom_ac_self_dry_deadline
+      triggers:
+        - trigger: time
+          at: input_datetime.kidsroom_ac_self_dry_finish_at
+        - trigger: homeassistant
+          event: start
+        - trigger: time_pattern
+          minutes: "/1"
+        - trigger: state
+          entity_id:
+            - climate.kidsroom_ac
+            - remote.kidsroom_broadlink_rm4mini_remote
+            - binary_sensor.kidsroom_ac_power
+            - switch.kidsroom_ac_plug
+          from:
+            - "unknown"
+            - "unavailable"
+        - trigger: state
+          entity_id: binary_sensor.kidsroom_ac_power
+          to: "off"
+      conditions:
+        - condition: state
+          entity_id: input_boolean.kidsroom_ac_self_dry_active
+          state: "on"
+      actions:
+        # Проверки актуального срока находятся в скрипте, а не в снимке триггера.
+        - action: script.kidsroom_ac_self_dry_finish
+
     - id: "Выбор режима работы кондиционера в детской"
       alias: select_kidsroom_ac_mode
       triggers:

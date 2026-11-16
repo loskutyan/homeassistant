@@ -3,14 +3,17 @@ kidsroom_heating:
     kidsroom_airpurifier_heater_remind:
       name: "Нагреватель бризера в детской включен, напомнить через "
       duration: 7200
+      restore: true
 
     kidsroom_airpurifier_heater_turn_off:
       name: "Нагреватель бризера в детской включен, выключение через "
       duration: 18000
+      restore: true
 
     kidsroom_airpurifier_heater_cooldown:
       name: "Нагреватель бризера в детской остывает, можно включить через "
       duration: 1800
+      restore: true
 
   template:
     - binary_sensor:
@@ -102,6 +105,33 @@ kidsroom_heating:
           target:
             entity_id: switch.kidsroom_airpurifier_ptc
 
+    - id: "Восстановление ограничения нагрева бризера в детской"
+      alias: kidsroom_airpurifier_heater_restore_limit
+      triggers:
+        - trigger: homeassistant
+          event: start
+        - trigger: time_pattern
+          minutes: "/1"
+        - trigger: state
+          entity_id: switch.kidsroom_airpurifier_ptc
+          from:
+            - "unknown"
+            - "unavailable"
+          to: "on"
+      conditions:
+        - condition: state
+          entity_id: switch.kidsroom_airpurifier_ptc
+          state: "on"
+        # Даём штатному обработчику включения две секунды на запуск таймера.
+        - condition: template
+          value_template: >-
+            {{ not is_state('timer.kidsroom_airpurifier_heater_turn_off', 'active')
+               and (now() - states.switch.kidsroom_airpurifier_ptc.last_changed).total_seconds() >= 2 }}
+      actions:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.kidsroom_airpurifier_ptc
+
     - id: "Включение нагревателя бризера в детской - таймеры, уведомление"
       alias: kidsroom_airpurifier_heater_turned_on_timers_notify
       initial_state: true
@@ -142,10 +172,22 @@ kidsroom_heating:
           to: "idle"
         - trigger: homeassistant
           event: start
+        - trigger: state
+          entity_id: switch.kidsroom_airpurifier_ptc
+          from:
+            - "unknown"
+            - "unavailable"
+          to: "on"
       conditions:
         - condition: state
           entity_id: switch.kidsroom_airpurifier_ptc
           state: "on"
+        - condition: state
+          entity_id: timer.kidsroom_airpurifier_heater_remind
+          state: "idle"
+        - condition: state
+          entity_id: timer.kidsroom_airpurifier_heater_turn_off
+          state: "active"
       actions:
         - action: notify.send_message
           continue_on_error: true

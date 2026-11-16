@@ -131,19 +131,15 @@ vacuum:
   input_boolean:
     roborock_s5_max_clean_bedroom:
       name: "Очередь пылесоса: спальня"
-      icon: mdi:bed-king
       initial: false
     roborock_s5_max_clean_kidsroom:
       name: "Очередь пылесоса: детская"
-      icon: mdi:bed
       initial: false
     roborock_s5_max_clean_kitchen:
       name: "Очередь пылесоса: кухня"
-      icon: mdi:food-fork-drink
       initial: false
     roborock_s5_max_clean_hallway:
       name: "Очередь пылесоса: прихожая"
-      icon: mdi:door
       initial: false
     roborock_s5_max_queue_blocked:
       name: "Очередь пылесоса заблокирована"
