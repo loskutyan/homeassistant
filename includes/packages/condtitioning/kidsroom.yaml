@@ -251,6 +251,7 @@ conditioning_kidsroom:
   automation:
     - id: "Восстановление и завершение просушки кондиционера в детской"
       alias: kidsroom_ac_self_dry_deadline
+      initial_state: true
       triggers:
         - trigger: time
           at: input_datetime.kidsroom_ac_self_dry_finish_at

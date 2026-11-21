@@ -101,6 +101,7 @@ bedroom_air:
         - name: "Температура"
           unique_id: bedroom_average_temperature
           default_entity_id: sensor.bedroom_average_temperature
+          state_class: measurement
           device_class: temperature
           unit_of_measurement: "°C"
           availability: >-
@@ -142,6 +143,7 @@ bedroom_air:
         - name: "Влажность"
           unique_id: bedroom_average_humidity
           default_entity_id: sensor.bedroom_average_humidity
+          state_class: measurement
           device_class: humidity
           unit_of_measurement: "%"
           availability: >-

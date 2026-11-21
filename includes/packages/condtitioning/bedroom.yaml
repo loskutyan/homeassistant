@@ -48,7 +48,6 @@ conditioning_bedroom:
       min: 0
       max: 100
       step: 1
-      initial: 50
       unit_of_measurement: "%"
       icon: mdi:water-percent
 
@@ -259,6 +258,7 @@ conditioning_bedroom:
   automation:
     - id: "Восстановление и завершение просушки кондиционера в спальне"
       alias: bedroom_ac_self_dry_deadline
+      initial_state: true
       triggers:
         - trigger: time
           at: input_datetime.bedroom_ac_self_dry_finish_at

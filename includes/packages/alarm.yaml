@@ -208,48 +208,124 @@ alarm:
     close_bathroom_valves:
       alias: "Закрытие кранов в ванной"
       sequence:
-        - action: switch.turn_on
-          target:
-            entity_id: switch.bathroom_valves_relay_right
-          continue_on_error: false
-        - delay:
-            seconds: 30
-        - action: switch.turn_off
-          target:
-            entity_id: switch.bathroom_valves_relay_right
-          continue_on_error: true
+        - action: script.move_bathroom_valves
+          data:
+            direction: close
+          response_variable: movement
+        - condition: template
+          value_template: "{{ movement is mapping and movement.completed }}"
         - action: notify.send_message
+          continue_on_error: true
           target:
             entity_id: notify.tg_urgent
           data:
             message: "🚱 Краны перекрыты! {{ states('sensor.time_date') }}"
-          continue_on_error: true
-        - action: input_boolean.turn_off
-          target:
-            entity_id: input_boolean.bathroom_valves
 
     open_bathroom_valves:
       alias: "Открытие кранов в ванной"
       sequence:
-        - action: switch.turn_on
-          target:
-            entity_id: switch.bathroom_valves_relay_left
-          continue_on_error: false
-        - delay:
-            seconds: 20
-        - action: switch.turn_off
-          target:
-            entity_id: switch.bathroom_valves_relay_left
-          continue_on_error: true
+        - action: script.move_bathroom_valves
+          data:
+            direction: open
+          response_variable: movement
+        - condition: template
+          value_template: "{{ movement is mapping and movement.completed }}"
         - action: notify.send_message
+          continue_on_error: true
           target:
             entity_id: notify.tg_urgent
           data:
             message: "🚰 Краны открыты! {{ states('sensor.time_date') }}"
+
+    move_bathroom_valves:
+      alias: "Движение кранов в ванной"
+      mode: queued
+      max: 4
+      sequence:
+        - condition: template
+          value_template: "{{ direction in ['open', 'close', 'recover'] }}"
+        - variables:
+            opening: "{{ direction == 'open' }}"
+            open_relay: switch.bathroom_valves_relay_left
+            close_relay: switch.bathroom_valves_relay_right
+            leak_sensors: &bathroom_leak_sensors
+              - binary_sensor.bathroom_aqara_leak_sensor_water_leak
+              - binary_sensor.washing_machine_aqara_leak_sensor_water_leak
+              - binary_sensor.dishwasher_aqara_leak_sensor_water_leak
+            interrupted: false
+        - variables:
+            relay: "{{ open_relay if opening else close_relay }}"
+        - if: "{{ not (is_state(open_relay, 'off') and is_state(close_relay, 'off')) }}"
+          then:
+            - action: switch.turn_off
+              target:
+                entity_id: "{{ [open_relay, close_relay] }}"
+              continue_on_error: true
+            - wait_template: "{{ is_state(open_relay, 'off') and is_state(close_relay, 'off') }}"
+              timeout:
+                seconds: 5
+            - if: "{{ not wait.completed }}"
+              then:
+                - stop: "Движение кранов отменено: выключение обоих реле не подтверждено."
+                  error: true
+        - if: "{{ direction == 'recover' }}"
+          then:
+            - stop: "Оба реле кранов обесточены."
+        # Проверяем датчики перед включением реле, уже внутри очереди.
+        - if: >-
+            {{ opening and (expand(leak_sensors) | selectattr('state', 'eq', 'off') | list | count
+                            != leak_sensors | count) }}
+          then:
+            - stop: "Открытие кранов отменено: датчики не подтверждают отсутствие протечки."
+        # После ошибки включения всё равно пытаемся обесточить реле.
+        - action: switch.turn_on
+          target:
+            entity_id: "{{ relay }}"
           continue_on_error: true
-        - action: input_boolean.turn_on
+        - variables:
+            pulse_ends_at: "{{ now().timestamp() + (20 if opening else 30) }}"
+        - wait_template: "{{ is_state(relay, 'on') }}"
+          timeout:
+            seconds: 5
+        - variables:
+            relay_started: "{{ wait.completed }}"
+        - if: "{{ relay_started }}"
+          then:
+            - if: "{{ opening }}"
+              then:
+                # При протечке отпускаем реле открытия раньше, затем очередь выполнит закрытие.
+                - wait_template: >-
+                    {{ expand(leak_sensors) | selectattr('state', 'eq', 'on') | list | count > 0 }}
+                  timeout:
+                    seconds: "{{ [0, pulse_ends_at - now().timestamp()] | max }}"
+                - variables:
+                    interrupted: "{{ wait.completed }}"
+              else:
+                - delay:
+                    seconds: "{{ [0, pulse_ends_at - now().timestamp()] | max }}"
+        - action: switch.turn_off
+          target:
+            entity_id: "{{ relay }}"
+          continue_on_error: true
+        - wait_template: "{{ is_state(open_relay, 'off') and is_state(close_relay, 'off') }}"
+          timeout:
+            seconds: 5
+        - if: "{{ not relay_started or not wait.completed }}"
+          then:
+            - stop: "Не подтверждено включение или завершение импульса реле кранов."
+              error: true
+        - if: >-
+            {{ interrupted or (opening and (expand(leak_sensors) | selectattr('state', 'eq', 'on') | list | count > 0)) }}
+          then:
+            - stop: "Открытие кранов прервано из-за протечки."
+        - action: "input_boolean.turn_{{ 'on' if opening else 'off' }}"
           target:
             entity_id: input_boolean.bathroom_valves
+        - variables:
+            movement:
+              completed: true
+        - stop: "Движение кранов завершено."
+          response_variable: movement
 
     hallway_door_is_opened_notify:
       alias: "Входная дверь открыта - уведомление"
@@ -281,17 +357,60 @@ alarm:
               🔓 {{ states('sensor.time') }} - {{ messages | random }}
 
   automation:
-    - id: "Протечка воды"
-      alias: water_leak_detected_alarm
+    - id: "Выключение реле кранов после прерванного движения"
+      alias: bathroom_valves_relay_recovery
+      initial_state: true
       triggers:
+        - trigger: homeassistant
+          event: start
+        - trigger: state
+          entity_id: script.move_bathroom_valves
+          to: "off"
         - trigger: state
           entity_id:
-            - binary_sensor.bathroom_aqara_leak_sensor_water_leak
-            - binary_sensor.washing_machine_aqara_leak_sensor_water_leak
-            - binary_sensor.dishwasher_aqara_leak_sensor_water_leak
+            - switch.bathroom_valves_relay_left
+            - switch.bathroom_valves_relay_right
           to: "on"
+        - trigger: time_pattern
+          minutes: "/1"
+      conditions:
+        - condition: state
+          entity_id: script.move_bathroom_valves
+          state: "off"
+        - condition: template
+          value_template: >-
+            {{ is_state('switch.bathroom_valves_relay_left', 'on')
+               or is_state('switch.bathroom_valves_relay_right', 'on') }}
+      actions:
+        # Тот же скрипт сериализует очистку и запрошенные движения.
+        - action: script.move_bathroom_valves
+          data:
+            direction: recover
+
+    - id: "Протечка воды"
+      alias: water_leak_detected_alarm
+      initial_state: true
+      variables:
+        leak_sensors: *bathroom_leak_sensors
+      triggers:
+        - trigger: state
+          entity_id: *bathroom_leak_sensors
+          to: "on"
+          id: leak
+        - trigger: homeassistant
+          event: start
+        - trigger: template
+          value_template: >-
+            {{ states('switch.bathroom_valves_relay_left') in ['on', 'off']
+               and states('switch.bathroom_valves_relay_right') in ['on', 'off'] }}
+      conditions:
+        # При запуске и восстановлении связи состояние датчика уже может быть ON.
+        - condition: template
+          value_template: >-
+            {{ trigger.id == 'leak' or expand(leak_sensors) | selectattr('state', 'eq', 'on') | list | count > 0 }}
       actions:
         - action: script.close_bathroom_valves
+          continue_on_error: true
         - action: alarm_control_panel.alarm_trigger
           target:
             entity_id: alarm_control_panel.miio_gateway

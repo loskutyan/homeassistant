@@ -99,7 +99,7 @@ cubeserver:
     cubeserver_docker_llama_swap_stop: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} 'docker stop llama-swap'"
 
   script:
-    # Один запрос по ходу операции, без цикла повторов.
+    # Один свежий запрос за вызов; ожидание с повторами задаёт вызывающий скрипт.
     cubeserver_check_status:
       alias: "cubeserver: разово проверить состояние VM или контейнера"
       mode: parallel
@@ -167,8 +167,6 @@ cubeserver:
                     message: "⚠ Запуск VM Windows отменён: остановка llama-swap не подтверждена."
                 - stop: "Остановка llama-swap не подтверждена."
                   error: true
-        - variables:
-            guest_was_reachable: "{{ is_state('binary_sensor.cubeserver_vm_windows10_ping', 'on') }}"
         - action: "shell_command.cubeserver_vm_windows10_{{ 'run' if starting else 'shutdown' }}"
           response_variable: command
           continue_on_error: true
@@ -183,32 +181,53 @@ cubeserver:
                   ⚠ Команда {{ 'запуска' if starting else 'выключения' }} VM Windows завершилась ошибкой.
             - stop: "Команда изменения состояния VM Windows завершилась ошибкой."
               error: true
-        # Ping подсказывает момент проверки, а выключение подтверждает только virsh.
-        - if: "{{ starting or guest_was_reachable }}"
+        - variables:
+            vm:
+              confirmed: false
+        - if: "{{ starting }}"
           then:
             - wait_template: >-
-                {{ is_state('binary_sensor.cubeserver_vm_windows10_ping', 'on' if starting else 'off') }}
+                {{ is_state('binary_sensor.cubeserver_vm_windows10_ping', 'on') }}
               timeout:
                 minutes: 2
-          else:
-            # Если гость уже не отвечает, перехода ping не будет. Даём ACPI время.
-            - delay:
-                seconds: 15
-        - if: "{{ starting and not is_state('binary_sensor.cubeserver_vm_windows10_ping', 'on') }}"
-          then:
-            - action: notify.send_message
-              continue_on_error: true
-              target:
-                entity_id: notify.tg_bot
+            - if: "{{ not is_state('binary_sensor.cubeserver_vm_windows10_ping', 'on') }}"
+              then:
+                - action: notify.send_message
+                  continue_on_error: true
+                  target:
+                    entity_id: notify.tg_bot
+                  data:
+                    message: "⚠ Windows не начала отвечать на ping после запуска VM."
+                - stop: "Гостевая Windows не отвечает на ping."
+                  error: true
+            - action: script.cubeserver_check_status
               data:
-                message: "⚠ Windows не начала отвечать на ping после запуска VM."
-            - stop: "Гостевая Windows не отвечает на ping."
-              error: true
-        - action: script.cubeserver_check_status
-          data:
-            probe: windows_vm
-            expected_states: "{{ ['running'] if starting else ['shut off'] }}"
-          response_variable: vm
+                probe: windows_vm
+                expected_states: ["running"]
+              response_variable: vm
+          else:
+            # Потеря ping не означает остановку VM. Ждём свежего ответа virsh.
+            # Бюджет опроса — 2 минуты; уже начатый shell_command может добавить
+            # до 60 секунд (лимит HA). Число запросов тоже ограничено.
+            - variables:
+                shutdown_check_deadline: "{{ as_timestamp(now()) + 120 }}"
+            - repeat:
+                sequence:
+                  - action: script.cubeserver_check_status
+                    data:
+                      probe: windows_vm
+                      expected_states: ["shut off"]
+                    response_variable: vm
+                  - if: >-
+                      {{ (vm is not mapping or not vm.confirmed) and repeat.index < 25
+                         and as_timestamp(now()) < shutdown_check_deadline }}
+                    then:
+                      - delay:
+                          seconds: >-
+                            {{ [[shutdown_check_deadline - as_timestamp(now()), 0] | max, 5] | min }}
+                until: >-
+                  {{ (vm is mapping and vm.confirmed)
+                     or as_timestamp(now()) >= shutdown_check_deadline or repeat.index >= 25 }}
         - if: "{{ vm is not mapping or not vm.confirmed }}"
           then:
             - action: notify.send_message
@@ -276,6 +295,7 @@ cubeserver:
   automation:
     - id: "Началась загрузка торрента - уведомление"
       alias: torrent_downloading_started_notify
+      mode: queued
       initial_state: true
       triggers:
         - trigger: event
@@ -289,6 +309,7 @@ cubeserver:
 
     - id: "Загрузка торрента завершена - уведомление"
       alias: torrent_downloading_completed_notify
+      mode: queued
       initial_state: true
       triggers:
         - trigger: event

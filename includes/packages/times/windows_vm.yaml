@@ -21,11 +21,17 @@ windows_vm_time:
           state: >
             {% set tv_is_on = is_state('remote.sony_xr_65a80j', 'on') %}
             {% set tv_input_selected = is_state_attr('media_player.sony_xr_65a80j', 'media_content_id', 'extInput:hdmi?port=4') %}
-            {{ tv_is_on and tv_input_selected }}
+            {% set pending = is_state('script.bedroom_tv_gaming_mode_turn_on', 'on')
+                             or is_state('script.cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_on', 'on') %}
+            {{ pending or (tv_is_on and tv_input_selected) }}
           turn_on:
-            action: script.bedroom_tv_gaming_mode_turn_on
+            action: script.turn_on
+            target:
+              entity_id: script.bedroom_tv_gaming_mode_turn_on
           turn_off:
-            action: script.bedroom_tv_gaming_mode_turn_off
+            action: script.turn_on
+            target:
+              entity_id: script.bedroom_tv_gaming_mode_turn_off
           icon: mdi:controller
 
         - name: "Вывод изображения с VM Windows на телевизор в спальне"
@@ -55,11 +61,16 @@ windows_vm_time:
             {% set vm_is_on = is_state('switch.cubeserver_vm_windows10', 'on') %}
             {% set tv_gaming_mode_is_on = is_state('switch.bedroom_tv_gaming_mode', 'on') %}
             {% set vm_tv_display_selected = is_state('input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10', 'on') %}
-            {{ vm_is_on and tv_gaming_mode_is_on and vm_tv_display_selected }}
+            {% set pending = is_state('script.cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_on', 'on') %}
+            {{ pending or (vm_is_on and tv_gaming_mode_is_on and vm_tv_display_selected) }}
           turn_on:
-            action: script.cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_on
+            action: script.turn_on
+            target:
+              entity_id: script.cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_on
           turn_off:
-            action: script.cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_off
+            action: script.turn_on
+            target:
+              entity_id: script.cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_off
           icon: mdi:controller
 
         - name: "Использование монитора в спальне для VM Windows"
@@ -79,7 +90,89 @@ windows_vm_time:
   script:
     bedroom_tv_gaming_mode_turn_on:
       alias: "Включение режима игры на телевизоре в спальне"
+      mode: parallel
       sequence:
+        - action: script.bedroom_tv_gaming_mode
+          data:
+            operation: tv_on
+
+    bedroom_tv_gaming_mode_turn_off:
+      alias: "Выключение режима игры на телевизоре в спальне"
+      mode: parallel
+      sequence:
+        - action: script.bedroom_tv_gaming_mode
+          data:
+            operation: tv_off
+            cancel_vm_gaming: "{{ is_state('script.cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_on', 'on') }}"
+
+    cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_on:
+      alias: "Включение режима игры на телевизоре в спальне"
+      mode: parallel
+      sequence:
+        - action: script.bedroom_tv_gaming_mode
+          data:
+            operation: vm_on
+
+    cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_off:
+      alias: "Выключение режима игры на телевизоре в спальне"
+      mode: parallel
+      sequence:
+        - action: script.bedroom_tv_gaming_mode
+          data:
+            operation: vm_off
+
+    bedroom_tv_gaming_mode:
+      alias: "Управление игровым режимом телевизора в спальне"
+      mode: restart
+      fields:
+        operation:
+          required: true
+          selector:
+            select:
+              options: ["tv_on", "tv_off", "vm_on", "vm_off"]
+      sequence:
+        - condition: template
+          value_template: "{{ operation in ['tv_on', 'tv_off', 'vm_on', 'vm_off'] }}"
+        - if: "{{ operation in ['tv_off', 'vm_off'] }}"
+          then:
+            - if: "{{ operation == 'vm_off' or cancel_vm_gaming | default(false) }}"
+              then:
+                - action: input_boolean.turn_off
+                  target:
+                    entity_id: input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10
+            - action: script.bedroom_tv_leave_gaming_input
+            - stop: "Игровой режим выключен."
+        - if: >-
+            {{ operation == 'vm_on'
+               and (not is_state('switch.cubeserver_vm_windows10', 'on')
+                    or is_state('script.cubeserver_vm_windows10_run', 'on')) }}
+          then:
+            # Выключение игрового режима отменяет ожидание, а запуск VM завершается отдельно.
+            - if: "{{ is_state('script.cubeserver_vm_windows10_run', 'off') }}"
+              then:
+                - action: script.turn_on
+                  target:
+                    entity_id: script.cubeserver_vm_windows10_run
+            - wait_template: "{{ is_state('script.cubeserver_vm_windows10_run', 'off') }}"
+              timeout:
+                minutes: 5
+            - if: "{{ not wait.completed }}"
+              then:
+                - stop: "Истекло время ожидания запуска VM Windows."
+                  error: true
+            - if: "{{ not is_state('binary_sensor.cubeserver_vm_windows10_ping', 'on') }}"
+              then:
+                - stop: "Гостевая Windows не отвечает на ping."
+                  error: true
+            - action: script.cubeserver_check_status
+              data:
+                probe: windows_vm
+                expected_states: ["running"]
+              response_variable: vm
+            - if: "{{ vm is not mapping or not vm.confirmed }}"
+              then:
+                - stop: "Запуск VM Windows не подтверждён."
+                  error: true
         - if:
             - condition: state
               entity_id: remote.sony_xr_65a80j
@@ -116,79 +209,76 @@ windows_vm_time:
             entity_id: media_player.sony_xr_65a80j
           data:
             source: "HDMI 4"
-
-    bedroom_tv_gaming_mode_turn_off:
-      alias: "Выключение режима игры на телевизоре в спальне"
-      sequence:
-        - if:
-            - condition: state
-              entity_id: remote.sony_xr_65a80j
-              state: "on"
-            - condition: state
-              entity_id: media_player.sony_xr_65a80j
-              attribute: source
-              state: "HDMI 4"
+        - if: "{{ operation == 'vm_on' }}"
           then:
-            - action: remote.send_command
+            - wait_template: >-
+                {{ is_state('media_player.sony_xr_65a80j', 'on')
+                   and is_state_attr('media_player.sony_xr_65a80j', 'media_content_id', 'extInput:hdmi?port=4') }}
+              timeout:
+                seconds: 25
+              continue_on_timeout: false
+            - action: media_player.volume_set
               target:
-                entity_id: remote.sony_xr_65a80j
+                entity_id: media_player.sony_xr_65a80j
               data:
-                num_repeats: 2
-                delay_secs: 0.4
-                hold_secs: 0
-                command: "Home"
+                volume_level: 0.2
+            - action: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10
+
+    bedroom_tv_leave_gaming_input:
+      alias: "Выход с игрового входа телевизора в спальне"
+      mode: parallel
+      sequence:
+        - condition: state
+          entity_id: remote.sony_xr_65a80j
+          state: "on"
+        - action: homeassistant.update_entity
+          target:
+            entity_id: media_player.sony_xr_65a80j
+          continue_on_error: true
+        - condition: template
+          value_template: &monitor_request_is_current >-
+            {% if monitor_requested_at is not defined -%}
+              {{ true }}
+            {%- else -%}
+              {% set tv_on = 'script.bedroom_tv_gaming_mode_turn_on' -%}
+              {% set vm_on = 'script.cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_on' -%}
+              {{ is_state('input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10', 'off')
+                 and is_state(tv_on, 'off') and is_state(vm_on, 'off')
+                 and as_timestamp(state_attr(tv_on, 'last_triggered'), 0) <= monitor_requested_at
+                 and as_timestamp(state_attr(vm_on, 'last_triggered'), 0) <= monitor_requested_at }}
+            {%- endif %}
+        - condition: template
+          value_template: >-
+            {{ is_state_attr('media_player.sony_xr_65a80j', 'media_content_id', 'extInput:hdmi?port=4')
+               or is_state_attr('media_player.sony_xr_65a80j', 'source', 'HDMI 4') }}
+        - action: remote.send_command
+          target:
+            entity_id: remote.sony_xr_65a80j
+          data:
+            num_repeats: 2
+            delay_secs: 0.4
+            hold_secs: 0
+            command: "Home"
 
     cubeserver_vm_windows10_switch_display_to_bedroom_monitor:
       alias: "Смена дисплея для VM Windows на монитор в спальне"
       sequence:
+        - variables:
+            monitor_requested_at: "{{ monitor_requested_at | default(as_timestamp(now())) }}"
+        # Отложенная смена дисплея не должна перебивать новый запрос на игровой режим ТВ.
+        - condition: template
+          value_template: *monitor_request_is_current
         - action: shell_command.cubeserver_vm_windows10_switch_to_internal_display
-        - action: switch.turn_off
-          target:
-            entity_id: switch.bedroom_tv_gaming_mode
+        - action: script.bedroom_tv_leave_gaming_input
+          data:
+            monitor_requested_at: "{{ monitor_requested_at }}"
 
     cubeserver_vm_windows10_switch_display_to_bedroom_tv:
       alias: "Смена дисплея для VM Windows на телевизор в спальне"
       sequence:
         - action: shell_command.cubeserver_vm_windows10_switch_to_external_display
-
-    cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_on:
-      alias: "Включение режима игры на телевизоре в спальне"
-      sequence:
-        - if:
-            - condition: state
-              entity_id: switch.cubeserver_vm_windows10
-              state: "off"
-          then:
-            - action: switch.turn_on
-              target:
-                entity_id: switch.cubeserver_vm_windows10
-        - action: switch.turn_on
-          target:
-            entity_id: switch.bedroom_tv_gaming_mode
-        - wait_template: >-
-            {{ is_state('media_player.sony_xr_65a80j', 'on')
-               and is_state_attr('media_player.sony_xr_65a80j', 'media_content_id', 'extInput:hdmi?port=4') }}
-          timeout:
-            seconds: 25
-          continue_on_timeout: false
-        - action: media_player.volume_set
-          target:
-            entity_id: media_player.sony_xr_65a80j
-          data:
-            volume_level: 0.2
-        - action: input_boolean.turn_on
-          target:
-            entity_id: input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10
-
-    cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_off:
-      alias: "Выключение режима игры на телевизоре в спальне"
-      sequence:
-        - action: switch.turn_off
-          target:
-            entity_id: switch.bedroom_tv_gaming_mode
-        - action: input_boolean.turn_off
-          target:
-            entity_id: input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10
 
     cubeserver_vm_windows10_with_bedroom_monitor_run:
       alias: "cubeserver: включение VM Windows 10 с монитором в спальне"
@@ -231,6 +321,9 @@ windows_vm_time:
             entity_id: >
               {% set display = 'tv' if trigger.to_state.state | bool else 'monitor' %}
               script.cubeserver_vm_windows10_switch_display_to_bedroom_{{ display }}
+          data:
+            variables:
+              monitor_requested_at: "{{ as_timestamp(trigger.to_state.last_changed) }}"
 
     - id: "Выбор дисплея при включении VM Windows"
       alias: cubeserver_vm_windows10_select_display_after_turn_on
@@ -242,12 +335,19 @@ windows_vm_time:
           to: "on"
           for:
             minutes: 1
+      conditions:
+        - condition: state
+          entity_id: script.cubeserver_vm_windows10_with_bedroom_tv_gaming_turn_on
+          state: "off"
       actions:
         - action: script.turn_on
           target:
             entity_id: >
               {% set display = 'tv' if is_state('input_boolean.using_bedroom_tv_for_cubeserver_vm_windows10', 'on') else 'monitor' %}
               script.cubeserver_vm_windows10_switch_display_to_bedroom_{{ display }}
+          data:
+            variables:
+              monitor_requested_at: "{{ as_timestamp(trigger.to_state.last_changed) }}"
 
     - id: "Отслеживание использования монитора в спальне для VM Windows"
       alias: tracking_cubeserver_vm_windows10_bedroom_monitor_using

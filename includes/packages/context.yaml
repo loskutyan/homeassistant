@@ -6,7 +6,6 @@ context:
       max: 100
       step: 0.01
       unit_of_measurement: "RUB/kWh"
-      initial: 7.28
       icon: mdi:currency-rub
 
   sensor:

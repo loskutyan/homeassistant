@@ -38,7 +38,6 @@ tg_system_status:
 
     - id: 'Отчет о состоянии системы в боте'
       alias: home_assistant_report_notify
-      initial_state: true
       triggers:
         - trigger: event
           event_type: telegram_text

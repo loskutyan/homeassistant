@@ -53,7 +53,6 @@ movie_time:
   automation:
     - id: "Включен фильм в спальне, приглушаем свет"
       alias: bedroom_movie_playing_dimming_lights
-      initial_state: true
       triggers:
         - trigger: state
           entity_id: sensor.bedroom_movie_status
@@ -63,7 +62,6 @@ movie_time:
 
     - id: "Фильм на паузе в спальне, приглушаем свет"
       alias: bedroom_movie_paused_dimming_lights
-      initial_state: true
       triggers:
         - trigger: state
           entity_id: sensor.bedroom_movie_status

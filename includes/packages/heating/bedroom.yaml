@@ -120,6 +120,7 @@ bedroom_heating:
 
     - id: "Восстановление ограничения нагрева бризера в спальне"
       alias: bedroom_airpurifier_heater_restore_limit
+      initial_state: true
       triggers:
         - trigger: homeassistant
           event: start

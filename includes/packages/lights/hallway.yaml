@@ -224,7 +224,6 @@ hallway_lights:
 
     - id: 'Выключение приветственного мерцания LED-ленты в прихожей'
       alias: hallway_welcome_led_light_turn_on
-      initial_state: true
       triggers:
         - trigger: state
           entity_id: timer.hallway_welcome_led_light_turn_off
