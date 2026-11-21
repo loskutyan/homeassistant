@@ -23,7 +23,7 @@ heating_common:
         - name: "Разница уличной и желаемой температур"
           unique_id: outside_target_temperature_delta
           default_entity_id: sensor.outside_target_temperature_delta
-          device_class: temperature
+          device_class: temperature_delta
           unit_of_measurement: "°C"
           availability: >-
             {{ is_number(states('sensor.outside_temperature'))

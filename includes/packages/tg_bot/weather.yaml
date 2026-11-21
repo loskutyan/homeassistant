@@ -4,6 +4,13 @@ tg_weather:
         - name: "Шестой час почасового прозноза погоды"
           unique_id: yandex_weather_hourly_forecast_6th_hour
           default_entity_id: sensor.yandex_weather_hourly_forecast_6th_hour
+          availability: >-
+            {% set hourly = state_attr('weather.yandex_weather', 'forecastHourly') %}
+            {% set forecast = hourly[6]
+               if hourly is sequence and hourly is not string and hourly is not mapping and hourly | count > 6
+               else none %}
+            {% set dt = forecast.get('datetime') if forecast is mapping else none %}
+            {{ dt is string and dt | float(none) is none and as_datetime(dt, none) is not none }}
           state: >
             {% set dt = state_attr('weather.yandex_weather', 'forecastHourly')[6]['datetime'] %}
             {{ as_datetime(dt).hour }}
@@ -11,6 +18,13 @@ tg_weather:
         - name: "Двенадцатый час почасового прозноза погоды"
           unique_id: yandex_weather_hourly_forecast_12th_hour
           default_entity_id: sensor.yandex_weather_hourly_forecast_12th_hour
+          availability: >-
+            {% set hourly = state_attr('weather.yandex_weather', 'forecastHourly') %}
+            {% set forecast = hourly[12]
+               if hourly is sequence and hourly is not string and hourly is not mapping and hourly | count > 12
+               else none %}
+            {% set dt = forecast.get('datetime') if forecast is mapping else none %}
+            {{ dt is string and dt | float(none) is none and as_datetime(dt, none) is not none }}
           state: >
             {% set dt = state_attr('weather.yandex_weather', 'forecastHourly')[12]['datetime'] %}
             {{ as_datetime(dt).hour }}
@@ -68,7 +82,7 @@ tg_weather:
           data:
             message: |-
               {% set w_dt = states('sensor.yandex_weather_data_update_time') %}
-              {% set w_time = as_datetime(w_dt).astimezone().strftime('%H:%M') %}
+              {% set w_time = as_datetime(w_dt, none) if w_dt | float(none) is none else none %}
               {% set condition = states('weather.yandex_weather') %}
               {% set wind_speed = (state_attr('weather.yandex_weather', 'wind_speed') | float(0) / 3.6) | round(1) %}
               {% set wind_bearing = state_attr('weather.yandex_weather', 'wind_bearing') %}
@@ -90,7 +104,7 @@ tg_weather:
                 {% set messages = messages + ['Добрый вечер!', 'Вечер в хату!'] %}
               {% endif %}
               {{ messages | random }}
-              {{ condition_emoji }} По состоянию на {{ w_time }} на улице {{ friendly_condition.lower() }}.
+              {{ condition_emoji }} {% if w_time is not none %}По состоянию на {{ w_time.astimezone().strftime('%H:%M') }}{% else %}Время обновления неизвестно,{% endif %} на улице {{ friendly_condition.lower() }}.
               Температура {{ state_attr('weather.yandex_weather', 'temperature') }}{{ temp_unit }},
               ощущается как {{ state_attr('weather.yandex_weather', 'feels_like') }}{{ temp_unit }}.
               Ветер {{ friendly_wind_bearing }}, со скоростью {{ wind_speed }} м/с.
@@ -101,7 +115,18 @@ tg_weather:
             entity_id: notify.tg_bot
           data:
             message: |-
-              {% set forecast = state_attr('weather.yandex_weather', 'forecastHourly')[6] -%}
+              {% set hourly = state_attr('weather.yandex_weather', 'forecastHourly') -%}
+              {% set forecast = hourly[6]
+                 if hourly is sequence and hourly is not string and hourly is not mapping and hourly | count > 6
+                 else none -%}
+              {% set forecast_dt = forecast.get('datetime') if forecast is mapping else none -%}
+              {% set forecast_time = as_datetime(forecast_dt, none)
+                 if forecast_dt is string and forecast_dt | float(none) is none else none -%}
+              {% set numbers = [forecast.get('native_temperature'), forecast.get('native_apparent_temperature'),
+                                forecast.get('wind_bearing'), forecast.get('native_wind_speed'),
+                                forecast.get('native_wind_gust_speed')] if forecast is mapping else [] -%}
+              {% if forecast is mapping and forecast_time is not none and forecast.get('condition') is string
+                    and numbers | select('number') | reject('boolean') | select('is_number') | list | count == 5 -%}
               {% set temp = forecast['native_temperature'] %}
               {% set temp_feels_like = forecast['native_apparent_temperature'] %}
               {% set condition = forecast['condition'] %}
@@ -117,7 +142,7 @@ tg_weather:
                 'Теперь к прогнозам.',
                 'Далее.',
               ] %}
-              {% set fc_hour = states('sensor.yandex_weather_hourly_forecast_6th_hour') | int(-1) %}
+              {% set fc_hour = forecast_time.hour %}
               {% if 0 <= fc_hour < 6 %}
                 {% set day_part = ['Ночью'] %}
               {% elif 6 <= fc_hour < 12 %}
@@ -134,6 +159,10 @@ tg_weather:
               Температура ожидается около {{ temp }}{{ temp_unit }},
               будет ощущаться как {{ temp_feels_like }}{{ temp_unit }}.
               Ветер {{ friendly_wind_bearing }}, скорость {{ wind_speed }} м/с (с порывами до {{ wind_gust_speed }} м/с).
+              {%- else %}
+              ⚠ Прогноз на шестой час недоступен: данные ещё не получены или неполны.
+              {%- endif %}
+
         - delay:
             seconds: 15
         - action: notify.send_message
@@ -141,7 +170,18 @@ tg_weather:
             entity_id: notify.tg_bot
           data:
             message: |-
-              {% set forecast = state_attr('weather.yandex_weather', 'forecastHourly')[12] -%}
+              {% set hourly = state_attr('weather.yandex_weather', 'forecastHourly') -%}
+              {% set forecast = hourly[12]
+                 if hourly is sequence and hourly is not string and hourly is not mapping and hourly | count > 12
+                 else none -%}
+              {% set forecast_dt = forecast.get('datetime') if forecast is mapping else none -%}
+              {% set forecast_time = as_datetime(forecast_dt, none)
+                 if forecast_dt is string and forecast_dt | float(none) is none else none -%}
+              {% set numbers = [forecast.get('native_temperature'), forecast.get('native_apparent_temperature'),
+                                forecast.get('wind_bearing'), forecast.get('native_wind_speed'),
+                                forecast.get('native_wind_gust_speed')] if forecast is mapping else [] -%}
+              {% if forecast is mapping and forecast_time is not none and forecast.get('condition') is string
+                    and numbers | select('number') | reject('boolean') | select('is_number') | list | count == 5 -%}
               {% set temp = forecast['native_temperature'] %}
               {% set temp_feels_like = forecast['native_apparent_temperature'] %}
               {% set condition = forecast['condition'] %}
@@ -157,7 +197,7 @@ tg_weather:
                 'Теперь к прогнозам.',
                 'Далее.',
               ] %}
-              {% set fc_hour = states('sensor.yandex_weather_hourly_forecast_12th_hour') | int(-1) %}
+              {% set fc_hour = forecast_time.hour %}
               {% if 0 <= fc_hour < 6 %}
                 {% set day_part = ['Ночью'] %}
               {% elif 6 <= fc_hour < 12 %}
@@ -174,6 +214,9 @@ tg_weather:
               Температура будет примерно {{ temp }}{{ temp_unit }},
               по ощущениям около {{ temp_feels_like }}{{ temp_unit }}.
               Ветер {{ friendly_wind_bearing }}, скорость {{ wind_speed }} м/с (с порывами до {{ wind_gust_speed }} м/с).
+              {%- else %}
+              ⚠ Прогноз на двенадцатый час недоступен: данные ещё не получены или неполны.
+              {%- endif %}
 
   automation:
     - id: "Прогноз погоды на день"

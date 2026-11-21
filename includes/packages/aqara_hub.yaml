@@ -24,7 +24,7 @@ aqara_hub:
             {% elif vol > 0 %}
               mdi:volume-low
             {% else %}
-              mdi: volume-mute
+              mdi:volume-mute
             {% endif %}
 
   automation:

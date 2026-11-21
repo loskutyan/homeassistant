@@ -40,7 +40,7 @@ kidsroom_air:
         - name: "Cleargrass air tVOC"
           unique_id: kidsroom_tvoc
           default_entity_id: sensor.kidsroom_tvoc
-          device_class: volatile_organic_compounds
+          device_class: volatile_organic_compounds_parts
           unit_of_measurement: "ppb"
           availability: >-
             {% set value = states('sensor.cgllc_s1_04e8_tvoc_density') %}
@@ -223,7 +223,7 @@ kidsroom_air:
         - name: "Разница текущей и желаемой температур в детской"
           unique_id: kidsroom_current_target_temperature_delta
           default_entity_id: sensor.kidsroom_current_target_temperature_delta
-          device_class: temperature
+          device_class: temperature_delta
           unit_of_measurement: "°C"
           availability: >-
             {{ is_number(states('sensor.kidsroom_average_temperature'))

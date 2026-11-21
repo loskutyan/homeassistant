@@ -8,6 +8,18 @@ tg_climate_status:
             entity_id: notify.tg_bot
           data:
             message: |-
+              {%- macro reading(entity_id, unit='', decimals=none) -%}
+                {%- set value = states(entity_id) -%}
+                {%- if not is_number(value) -%}
+                  нет данных
+                {%- elif decimals == 0 -%}
+                  {{ value | int }}{{ unit }}
+                {%- elif decimals is not none -%}
+                  {{ value | round(decimals) }}{{ unit }}
+                {%- else -%}
+                  {{ value }}{{ unit }}
+                {%- endif -%}
+              {%- endmacro -%}
               {%- macro humidifier_status(room) -%}
                 {%- set hum = states('humidifier.' ~ room ~ '_smartmi_humidifier') -%}
                 {%- if hum == 'off' -%}
@@ -17,7 +29,7 @@ tg_climate_status:
                   {%- if tank == 'off' -%}
                     контейнер снят
                   {%- else -%}
-                    {{ states('sensor.' ~ room ~ '_smartmi_humidifier_motor_speed') }} об/мин, ур. воды {{ states('sensor.' ~ room ~ '_smartmi_humidifier_water_level') }}%
+                    {{ reading('sensor.' ~ room ~ '_smartmi_humidifier_motor_speed', ' об/мин') }}, ур. воды {{ reading('sensor.' ~ room ~ '_smartmi_humidifier_water_level', '%') }}
                   {%- endif -%}
                 {%- else -%}
                   недоступен
@@ -27,8 +39,6 @@ tg_climate_status:
                 {%- set breezer = states('fan.mijia_airpurifier_' ~ room) -%}
                 {%- if breezer == 'off' -%}
                   выключен
-                {%- elif breezer == 'unavailable' -%}
-                  недоступен
                 {%- elif breezer == 'on' -%}
                   {%- set mode = states('sensor.' ~ room ~ '_airpurifier_preset_mode') -%}
                   {%- if mode == 'Sleep' -%}
@@ -43,23 +53,27 @@ tg_climate_status:
                     {%- else -%}
                       {%- set mode_msg = 'фиксированный' -%}
                     {%- endif -%}
+                  {%- else -%}
+                    {%- set mode_msg = 'нет данных' -%}
                   {%- endif -%}
                   {%- set heater_msg = '' -%}
                   {%- if is_state('binary_sensor.' ~ room ~ '_airpurifier_ptc_status', 'on') -%}
                     {%- set heater_msg = ', 🔥 подогрев включен' -%}
                   {%- endif -%}
-                  режим {{ mode_msg }}, скорость {{ states('sensor.' ~ room ~ '_airpurifier_current_speed') }}{{ heater_msg }}
+                  режим {{ mode_msg }}, скорость {{ reading('sensor.' ~ room ~ '_airpurifier_current_speed') }}{{ heater_msg }}
+                {%- else -%}
+                  недоступен
                 {%- endif -%}
               {%- endmacro -%}
               🛌 Спальня:
-              🌡 {{ states('sensor.bedroom_average_temperature') | round(1) }}°C  💧 {{ states('sensor.bedroom_average_humidity') | round(1) }}%
-              🌲 {{ states('sensor.bedroom_co2') | int }}ppm ⚛ {{ states('sensor.bedroom_pm25') }}ppm
+              🌡 {{ reading('sensor.bedroom_average_temperature', '°C', 1) }}  💧 {{ reading('sensor.bedroom_average_humidity', '%', 1) }}
+              🌲 {{ reading('sensor.bedroom_co2', ' ppm', 0) }}  ⚛ {{ reading('sensor.bedroom_pm25', ' µg/m³') }}
               🚿 Увлажнитель: {{ humidifier_status('bedroom') }}
               💨 Бризер: {{ breezer_status('bedroom') }}
 
               🧒 Детская:
-              🌡 {{ states('sensor.kidsroom_average_temperature') | round(1) }}°C  💧 {{ states('sensor.kidsroom_average_humidity') | round(1) }}%
-              🌲 {{ states('sensor.kidsroom_co2') | int }}ppm ⚛ {{ states('sensor.kidsroom_pm25') }}ppm
+              🌡 {{ reading('sensor.kidsroom_average_temperature', '°C', 1) }}  💧 {{ reading('sensor.kidsroom_average_humidity', '%', 1) }}
+              🌲 {{ reading('sensor.kidsroom_co2', ' ppm', 0) }}  ⚛ {{ reading('sensor.kidsroom_pm25', ' µg/m³') }}
               🚿 Увлажнитель: {{ humidifier_status('kidsroom') }}
               💨 Бризер: {{ breezer_status('kidsroom') }}
 

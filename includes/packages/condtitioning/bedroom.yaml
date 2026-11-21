@@ -356,15 +356,20 @@ conditioning_bedroom:
         - trigger: state
           entity_id: climate.bedroom_ac
           attribute: last_on_operation
+      variables:
+        operation: >-
+          {{ trigger.to_state.attributes.get('last_on_operation')
+             if trigger is defined and trigger.to_state is defined and trigger.to_state is not none else none }}
       conditions:
         - condition: template
-          value_template: "{{ trigger.to_state.state is defined and trigger.to_state.state not in ['unknown', 'unavailable'] }}"
+          value_template: >-
+            {{ operation in (state_attr('input_select.bedroom_ac_mode', 'options') or []) }}
       actions:
         - action: input_select.select_option
           target:
             entity_id: input_select.bedroom_ac_mode
           data:
-            option: "{{ trigger.to_state.state }}"
+            option: "{{ operation }}"
 
     - id: "Отслеживание температуры кондиционера в спальне"
       alias: tracking_bedroom_ac_temperature

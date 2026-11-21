@@ -37,14 +37,14 @@ bedroom_air:
           state: "{{ states('sensor.cgllc_cgs2_84ac_co2_density') }}"
           icon: mdi:molecule-co2
 
-        - name: "Qingping air2 tVOC"
+        - name: "Qingping Air 2 eTVOC (оценка)"
           unique_id: bedroom_tvoc
           default_entity_id: sensor.bedroom_tvoc
-          device_class: volatile_organic_compounds
-          unit_of_measurement: "ppb"
+          unit_of_measurement: "усл. ед."
           availability: >-
             {% set value = states('sensor.cgllc_cgs2_84ac_tvoc_density') %}
             {{ is_number(value) and 0 <= value | float < 1000 }}
+          # Сохраняем прежнюю шкалу оценки. Единица пересчёта не подтверждена.
           state: >-
             {% set index = states('sensor.cgllc_cgs2_84ac_tvoc_density') | float %}
             {% if index < 37 %}
@@ -242,7 +242,7 @@ bedroom_air:
         - name: "Разница текущей и желаемой температур в спальне"
           unique_id: bedroom_current_target_temperature_delta
           default_entity_id: sensor.bedroom_current_target_temperature_delta
-          device_class: temperature
+          device_class: temperature_delta
           unit_of_measurement: "°C"
           availability: >-
             {{ is_number(states('sensor.bedroom_average_temperature'))
