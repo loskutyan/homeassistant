@@ -88,8 +88,29 @@ windows_vm_time:
             - action: remote.turn_on
               target:
                 entity_id: remote.sony_xr_65a80j
-            - delay:
-                seconds: 10
+        # В режиме ожидания Bravia опрашивается реже, поэтому запрашиваем обновление.
+        - variables:
+            deadline: "{{ now().timestamp() + 30 }}"
+            tv_ready: false
+        - repeat:
+            sequence:
+              - action: homeassistant.update_entity
+                target:
+                  entity_id: media_player.sony_xr_65a80j
+                continue_on_error: true
+              - variables:
+                  tv_ready: >-
+                    {{ is_state('media_player.sony_xr_65a80j', 'on')
+                       and 'HDMI 4' in (state_attr('media_player.sony_xr_65a80j', 'source_list') or []) }}
+              - if: "{{ not tv_ready and now().timestamp() < deadline }}"
+                then:
+                  - delay:
+                      seconds: 3
+            until: "{{ tv_ready or now().timestamp() >= deadline }}"
+        - if: "{{ not tv_ready }}"
+          then:
+            - stop: "Телевизор не подтвердил готовность выбрать HDMI 4."
+              error: true
         - action: media_player.select_source
           target:
             entity_id: media_player.sony_xr_65a80j
@@ -144,8 +165,12 @@ windows_vm_time:
         - action: switch.turn_on
           target:
             entity_id: switch.bedroom_tv_gaming_mode
-        - delay:
-            seconds: 5
+        - wait_template: >-
+            {{ is_state('media_player.sony_xr_65a80j', 'on')
+               and is_state_attr('media_player.sony_xr_65a80j', 'media_content_id', 'extInput:hdmi?port=4') }}
+          timeout:
+            seconds: 25
+          continue_on_timeout: false
         - action: media_player.volume_set
           target:
             entity_id: media_player.sony_xr_65a80j

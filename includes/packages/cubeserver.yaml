@@ -44,6 +44,7 @@ cubeserver:
             action: shell_command.cubeserver_vm_ubuntuyadisk_shutdown
           icon: mdi:ubuntu
 
+  # Диагностические статусы опрашиваются раз в сутки. Скрипты сверяют свежий ответ отдельно.
   command_line:
     - binary_sensor:
         unique_id: cubeserver_vm_windows10_virsh_status
@@ -64,13 +65,30 @@ cubeserver:
           ssh -i /config/ha.key -o StrictHostKeyChecking=no
           root@{{ states('sensor.cubeserver_ip') }}
           docker inspect --type container llama-swap
-        value_template: "{{ 'running' if value_json[0]['State']['Status'] == 'running' else 'not running' }}"
+        value_template: >-
+          {% set containers = value_json | default([]) %}
+          {% set status = containers[0]['State']['Status'] if containers else none %}
+          {% if status == 'running' %}
+            running
+          {% elif status in ['exited', 'created'] %}
+            not running
+          {% else %}
+            {{ none }}
+          {% endif %}
         device_class: connectivity
         payload_on: "running"
         payload_off: "not running"
         scan_interval: 86400
 
   shell_command:
+    cubeserver_windows_vm_status: >-
+      ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no -i /config/ha.key
+      root@{{ states('sensor.cubeserver_ip') }}
+      "env LC_ALL=C virsh domstate --domain '{{ states('sensor.cubeserver_windows10_vm_name') }}'"
+    cubeserver_llama_swap_status: >-
+      ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no -i /config/ha.key
+      root@{{ states('sensor.cubeserver_ip') }}
+      "docker inspect --type container --format '{% raw %}{{.State.Status}}{% endraw %}' llama-swap"
     cubeserver_vm_windows10_run: 'ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} ''virsh start "{{ states(''sensor.cubeserver_windows10_vm_name'') }}"'''
     cubeserver_vm_windows10_shutdown: 'ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states(''sensor.cubeserver_ip'') }} ''virsh shutdown "{{ states(''sensor.cubeserver_windows10_vm_name'') }}"'''
     cubeserver_vm_ubuntuyadisk_run: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} virsh start 'Ubuntu'"
@@ -81,75 +99,129 @@ cubeserver:
     cubeserver_docker_llama_swap_stop: "ssh -i /config/ha.key -o StrictHostKeyChecking=no root@{{ states('sensor.cubeserver_ip') }} 'docker stop llama-swap'"
 
   script:
+    # Один запрос по ходу операции, без цикла повторов.
+    cubeserver_check_status:
+      alias: "cubeserver: разово проверить состояние VM или контейнера"
+      mode: parallel
+      sequence:
+        - variables:
+            status_response: null
+        - action: "shell_command.cubeserver_{{ probe }}_status"
+          response_variable: status_response
+          continue_on_error: true
+        - variables:
+            result:
+              confirmed: >-
+                {{ status_response is mapping and status_response.returncode == 0
+                   and status_response.stdout in expected_states }}
+        - stop: "Проверка состояния завершена."
+          response_variable: result
+
     cubeserver_vm_windows10_run:
       alias: "cubeserver: включение VM Windows 10"
       sequence:
-        - action: homeassistant.update_entity
-          target:
-            entity_id: binary_sensor.cubeserver_container_llama_swap_status
-        - if:
-            - condition: state
-              entity_id: binary_sensor.cubeserver_container_llama_swap_status
-              state: "on"
+        - action: script.cubeserver_vm_windows10_transition
+          data:
+            operation: start
+
+    cubeserver_vm_windows10_shutdown:
+      alias: "cubeserver: выключение VM Windows 10"
+      sequence:
+        - action: script.cubeserver_vm_windows10_transition
+          data:
+            operation: shutdown
+
+    cubeserver_vm_windows10_transition:
+      alias: "cubeserver: изменить состояние VM Windows 10"
+      mode: queued
+      max: 4
+      sequence:
+        - condition: template
+          value_template: "{{ operation in ['start', 'shutdown'] }}"
+        - variables:
+            starting: "{{ operation == 'start' }}"
+        - if: "{{ starting }}"
+          then:
+            - action: script.cubeserver_check_status
+              data:
+                probe: llama_swap
+                expected_states: ["exited", "created"]
+              response_variable: container
+            - if: "{{ container is not mapping or not container.confirmed }}"
+              then:
+                - action: notify.send_message
+                  continue_on_error: true
+                  target:
+                    entity_id: notify.tg_bot
+                  data:
+                    message: "🐳 Запуск VM Windows: останавливаем llama-swap..."
+                - action: script.cubeserver_llama_swap_docker_stop
+                  response_variable: container
+            - if: "{{ container is not mapping or not container.confirmed }}"
+              then:
+                - action: notify.send_message
+                  continue_on_error: true
+                  target:
+                    entity_id: notify.tg_bot
+                  data:
+                    message: "⚠ Запуск VM Windows отменён: остановка llama-swap не подтверждена."
+                - stop: "Остановка llama-swap не подтверждена."
+                  error: true
+        - variables:
+            guest_was_reachable: "{{ is_state('binary_sensor.cubeserver_vm_windows10_ping', 'on') }}"
+        - action: "shell_command.cubeserver_vm_windows10_{{ 'run' if starting else 'shutdown' }}"
+          response_variable: command
+          continue_on_error: true
+        - if: "{{ command is not defined or command is not mapping or command.returncode != 0 }}"
           then:
             - action: notify.send_message
               continue_on_error: true
               target:
                 entity_id: notify.tg_bot
               data:
-                message: "🐳 Запуск VM Windows: останавливаем llama-swap..."
-            - action: script.cubeserver_llama_swap_docker_stop
-        - delay:
-            seconds: 2
-        - action: shell_command.cubeserver_vm_windows10_run
-        - delay:
-            minutes: 2
-        - action: homeassistant.update_entity
-          target:
-            entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
-        - if:
-            - or:
-                - not:
-                    - condition: state
-                      entity_id: switch.cubeserver_vm_windows10
-                      state: "on"
-                - not:
-                    - condition: state
-                      entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
-                      state: "on"
+                message: >-
+                  ⚠ Команда {{ 'запуска' if starting else 'выключения' }} VM Windows завершилась ошибкой.
+            - stop: "Команда изменения состояния VM Windows завершилась ошибкой."
+              error: true
+        # Ping подсказывает момент проверки, а выключение подтверждает только virsh.
+        - if: "{{ starting or guest_was_reachable }}"
           then:
-            - action: notify.send_message
-              target:
-                entity_id: notify.tg_bot
-              data:
-                message: "⚠ Запуск VM Windows прошел неуспешно"
-
-    cubeserver_vm_windows10_shutdown:
-      alias: "cubeserver: выключение VM Windows 10"
-      sequence:
-        - action: shell_command.cubeserver_vm_windows10_shutdown
-        - delay:
-            minutes: 2
-        - action: homeassistant.update_entity
-          target:
-            entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
-        - if:
-            - or:
-                - not:
-                    - condition: state
-                      entity_id: switch.cubeserver_vm_windows10
-                      state: "off"
-                - not:
-                    - condition: state
-                      entity_id: binary_sensor.cubeserver_vm_windows10_virsh_status
-                      state: "off"
-          then:
-            - action: notify.send_message
-              target:
-                entity_id: notify.tg_bot
-              data:
-                message: "⚠ Выключение VM Windows прошло неуспешно"
+            - wait_template: >-
+                {{ is_state('binary_sensor.cubeserver_vm_windows10_ping', 'on' if starting else 'off') }}
+              timeout:
+                minutes: 2
           else:
+            # Если гость уже не отвечает, перехода ping не будет. Даём ACPI время.
+            - delay:
+                seconds: 15
+        - if: "{{ starting and not is_state('binary_sensor.cubeserver_vm_windows10_ping', 'on') }}"
+          then:
+            - action: notify.send_message
+              continue_on_error: true
+              target:
+                entity_id: notify.tg_bot
+              data:
+                message: "⚠ Windows не начала отвечать на ping после запуска VM."
+            - stop: "Гостевая Windows не отвечает на ping."
+              error: true
+        - action: script.cubeserver_check_status
+          data:
+            probe: windows_vm
+            expected_states: "{{ ['running'] if starting else ['shut off'] }}"
+          response_variable: vm
+        - if: "{{ vm is not mapping or not vm.confirmed }}"
+          then:
+            - action: notify.send_message
+              continue_on_error: true
+              target:
+                entity_id: notify.tg_bot
+              data:
+                message: >-
+                  ⚠ Не удалось подтвердить {{ 'запуск' if starting else 'выключение' }} VM Windows.
+            - stop: "Состояние VM Windows не подтверждено."
+              error: true
+        - if: "{{ not starting }}"
+          then:
             - action: notify.send_message
               continue_on_error: true
               target:
@@ -162,21 +234,44 @@ cubeserver:
       alias: "cubeserver: остановка контейнера llama-swap"
       sequence:
         - action: shell_command.cubeserver_docker_llama_swap_stop
-        - delay:
-            seconds: 5
-        - action: homeassistant.update_entity
-          target:
-            entity_id: binary_sensor.cubeserver_container_llama_swap_status
+          continue_on_error: true
+        # Даже если команда завершилась с ошибкой, состояние могло измениться.
+        - action: script.cubeserver_check_status
+          data:
+            probe: llama_swap
+            expected_states: ["exited", "created"]
+          response_variable: container
+        - if: "{{ container is not mapping or not container.confirmed }}"
+          then:
+            - action: notify.send_message
+              continue_on_error: true
+              target:
+                entity_id: notify.tg_bot
+              data:
+                message: "⚠ Остановка llama-swap не подтверждена."
+        - stop: "Проверка остановки llama-swap завершена."
+          response_variable: container
 
     cubeserver_llama_swap_docker_start:
       alias: "cubeserver: запуск контейнера llama-swap"
       sequence:
         - action: shell_command.cubeserver_docker_llama_swap_start
-        - delay:
-            seconds: 20
-        - action: homeassistant.update_entity
-          target:
-            entity_id: binary_sensor.cubeserver_container_llama_swap_status
+          continue_on_error: true
+        - action: script.cubeserver_check_status
+          data:
+            probe: llama_swap
+            expected_states: ["running"]
+          response_variable: container
+        - if: "{{ container is not mapping or not container.confirmed }}"
+          then:
+            - action: notify.send_message
+              continue_on_error: true
+              target:
+                entity_id: notify.tg_bot
+              data:
+                message: "⚠ Запуск llama-swap не подтверждён."
+            - stop: "Запуск llama-swap не подтверждён."
+              error: true
 
   automation:
     - id: "Началась загрузка торрента - уведомление"

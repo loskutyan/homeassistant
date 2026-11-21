@@ -621,8 +621,6 @@ vacuum:
             entity_id: camera.roborock_s5_max_vacuum_map
           data:
             filename: "/config/www/cam_captures/roborock_s5_max_vacuum_map.jpg"
-        - delay:
-            seconds: 3
         - action: telegram_bot.send_photo
           data:
             chat_id:

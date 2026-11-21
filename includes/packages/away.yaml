@@ -267,16 +267,20 @@ away:
             - action: lock.lock
               target:
                 entity_id: lock.aqara_smart_lock_u200
-            - delay:
+            - wait_template: "{{ is_state('lock.aqara_smart_lock_u200', 'locked') }}"
+              timeout:
                 seconds: 15
-            - if:
-                - condition: state
-                  entity_id: lock.aqara_smart_lock_u200
-                  state: "locked"
+            - if: "{{ wait.completed }}"
               then:
                 - action: script.hallway_door_lock_was_locked_notify
               else:
-                - action: script.hallway_door_lock_is_unlocked_notify
+                - action: notify.send_message
+                  target:
+                    entity_id: notify.tg_urgent
+                  data:
+                    message: >-
+                      ⚠ Закрытие входной двери не подтверждено.
+                      Состояние замка: {{ states('lock.aqara_smart_lock_u200') }}.
 
   automation:
     - id: "Все ушли из дома, закрываем дверь"
